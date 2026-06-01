@@ -5,7 +5,7 @@
 // 拦住：标注/登记表结构损坏、epoch 引用不存在的 mapId、标注文件缺失。
 // 配准是否「贴得准」无法在此断言（靠预览 URL 肉眼看 + tests/georef 的 sanity）。
 
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { z } from "zod";
 import { EpochSchema, HistoricalMapSchema } from "../src/data/schema";
 import { epochs } from "../src/data/epochs";
@@ -33,10 +33,27 @@ for (const e of epochs) {
   }
 }
 
-// 3) 每张 map 的 Allmaps 标注文件必须存在
+// 3) 每张 map 的 Allmaps 标注文件必须存在，且其 target.source.id 必须等于
+//    iiifInfoUrl 去掉末尾 /info.json 的基址（拦住 SOP 附录列的「断链」常见坑：
+//    标注指向的 IIIF 基址与登记的 info.json 不一致时，浏览器取不到瓦片）。
 for (const m of maps) {
-  if (!existsSync(m.annotationPath))
+  if (!existsSync(m.annotationPath)) {
     fail(`map ${m.id} 的标注文件缺失: ${m.annotationPath}`);
+    continue;
+  }
+  const expectedBase = m.iiifInfoUrl.replace(/\/info\.json$/, "");
+  try {
+    const ann = JSON.parse(readFileSync(m.annotationPath, "utf8")) as {
+      items?: { target?: { source?: { id?: string } } }[];
+    };
+    const sourceId = ann.items?.[0]?.target?.source?.id;
+    if (sourceId !== expectedBase)
+      fail(
+        `map ${m.id} 标注 target.source.id (${sourceId}) ≠ iiifInfoUrl 基址 (${expectedBase})`,
+      );
+  } catch (e) {
+    fail(`map ${m.id} 标注 JSON 解析失败: ${m.annotationPath}（${String(e)}）`);
+  }
 }
 
 // 4) 自托管底图样式：必须已改写为指向 Wasabi（拦住误提交未改写 / 仍指向被墙域名的 style）

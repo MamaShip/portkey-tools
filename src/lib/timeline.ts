@@ -40,3 +40,32 @@ export function resolveOverlay(
   }
   return { kind: "historical", mapId: epoch.mapId ?? null };
 }
+
+/**
+ * 底部时间轴的站点展示顺序：order 升序（左旧 → 右新），最右通常是 `present`。
+ * 与 sortEpochs 同序，单列出来语义自解释（UI 直接用它渲染横条）。
+ */
+export function timelineStations(epochs: readonly Epoch[]): Epoch[] {
+  return sortEpochs(epochs);
+}
+
+/**
+ * 键盘 ←/→ 在相邻站点间移动（方向键二维控制器的「时间轴」轴，见 plan §决策6）。
+ * dir = +1 走向更新年代（→，order 增大），-1 走向更旧（←）。
+ * 边界**饱和不回绕**：已在最旧/最新再按对应方向，停在原地。
+ * 当前 id 不存在时，回退到最旧（dir>0）/最新（dir<0）的端点站点。
+ */
+export function stepEpoch(
+  epochs: readonly Epoch[],
+  currentEpochId: string,
+  dir: 1 | -1,
+): string {
+  const ordered = sortEpochs(epochs);
+  if (ordered.length === 0) return currentEpochId;
+  const idx = ordered.findIndex((e) => e.id === currentEpochId);
+  if (idx === -1)
+    return (dir > 0 ? ordered[0] : ordered[ordered.length - 1]).id;
+  const next = idx + dir;
+  if (next < 0 || next >= ordered.length) return currentEpochId; // 饱和
+  return ordered[next].id;
+}

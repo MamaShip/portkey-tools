@@ -2,7 +2,13 @@
 // Copyright (C) 2026 MamaShip
 
 import { describe, it, expect } from "vitest";
-import { sortEpochs, getEpochById, resolveOverlay } from "../src/lib/timeline";
+import {
+  sortEpochs,
+  getEpochById,
+  resolveOverlay,
+  timelineStations,
+  stepEpoch,
+} from "../src/lib/timeline";
 import type { Epoch } from "../src/data/schema";
 
 const sample: Epoch[] = [
@@ -78,5 +84,45 @@ describe("resolveOverlay", () => {
       kind: "historical",
       mapId: null,
     });
+  });
+});
+
+describe("timelineStations", () => {
+  it("按 order 升序（左旧 → 右新，最右 present）", () => {
+    expect(timelineStations(sample).map((e) => e.id)).toEqual([
+      "1909",
+      "1933",
+      "present",
+    ]);
+  });
+});
+
+describe("stepEpoch", () => {
+  // 站点（order 升序）：1909 → 1933 → present
+  it("→（dir=1）走向更新年代", () => {
+    expect(stepEpoch(sample, "1909", 1)).toBe("1933");
+    expect(stepEpoch(sample, "1933", 1)).toBe("present");
+  });
+
+  it("←（dir=-1）走向更旧年代", () => {
+    expect(stepEpoch(sample, "present", -1)).toBe("1933");
+    expect(stepEpoch(sample, "1933", -1)).toBe("1909");
+  });
+
+  it("边界饱和：最新再 → 停在原地", () => {
+    expect(stepEpoch(sample, "present", 1)).toBe("present");
+  });
+
+  it("边界饱和：最旧再 ← 停在原地", () => {
+    expect(stepEpoch(sample, "1909", -1)).toBe("1909");
+  });
+
+  it("未知 id：→ 回退到最旧端点，← 回退到最新端点", () => {
+    expect(stepEpoch(sample, "nope", 1)).toBe("1909");
+    expect(stepEpoch(sample, "nope", -1)).toBe("present");
+  });
+
+  it("空表：原样返回", () => {
+    expect(stepEpoch([], "x", 1)).toBe("x");
   });
 });

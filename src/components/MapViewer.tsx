@@ -4,8 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { WarpedMapLayer } from "@allmaps/maplibre";
-import annotation from "../data/annotations/chengdu-1933.json";
 import { maps } from "../data/maps";
+import { epochs } from "../data/epochs";
+import { getAnnotation } from "../lib/annotations";
+import { resolveOverlay, stepEpoch, timelineStations } from "../lib/timeline";
 import { clampOpacity } from "../lib/opacity";
 import positronStyle from "../data/basemap/positron.json";
 import {
@@ -14,6 +16,7 @@ import {
   MIN_ZOOM,
   MAX_ZOOM,
 } from "../data/basemap/extent";
+import Timeline from "./Timeline";
 import OpacityControl from "./OpacityControl";
 import MapLoadingOverlay, { type LoadStage } from "./MapLoadingOverlay";
 
@@ -22,21 +25,41 @@ import MapLoadingOverlay, { type LoadStage } from "./MapLoadingOverlay";
 // 被 GFW 阻断，大陆未翻墙会黑屏；改自托管后大陆免翻墙可用，且零坐标改动（OSM/WGS-84）。
 const STYLE = positronStyle as unknown as maplibregl.StyleSpecification;
 
-// Phase 1 只有一张历史图（chengdu-1933）。Phase 2 会从 epochs/maps 登记表泛化为多图 + 时间轴。
-const MAP_1933 = maps.find((m) => m.id === "chengdu-1933");
-const INITIAL_OPACITY = MAP_1933?.defaultOpacity ?? 0.7;
+const mapsById = new Map(maps.map((m) => [m.id, m]));
+const STATIONS = timelineStations(epochs); // 已按 order 升序（左旧 → 右新）
+
+// 首屏默认站点 = 最新的历史 epoch，保持 Phase 1「开局即见叠加层」体验；无历史图则退到「现今」。
+const NEWEST_HISTORICAL = [...STATIONS]
+  .reverse()
+  .find((e) => e.kind === "historical");
+const INITIAL_EPOCH_ID = NEWEST_HISTORICAL?.id ?? "present";
+const INITIAL_OPACITY =
+  (NEWEST_HISTORICAL?.mapId
+    ? mapsById.get(NEWEST_HISTORICAL.mapId)?.defaultOpacity
+    : undefined) ?? 0.7;
+
+// 键盘 ↑/↓ 每次调透明度的步长（方向键二维控制器的「古今融合」轴，见 plan §决策6）。
+const OPACITY_STEP = 0.05;
 
 export default function MapViewer() {
   const ref = useRef<HTMLDivElement>(null);
-  const warpedRef = useRef<WarpedMapLayer | null>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  // mapId → 该图的 WarpedMapLayer。首次切到某历史 epoch 时才懒建（未访问的图永不拉瓦片）。
+  const layersRef = useRef<Map<string, WarpedMapLayer>>(new Map());
+
+  const [mapReady, setMapReady] = useState(false);
+  const [currentEpochId, setCurrentEpochId] = useState(INITIAL_EPOCH_ID);
   const [opacity, setOpacity] = useState(INITIAL_OPACITY);
   // 首屏加载层状态：init→historical→done，done 后淡出再由 dismissed 卸载。
   const [stage, setStage] = useState<LoadStage>("init");
   const [dismissed, setDismissed] = useState(false);
 
-  // 初始化地图 + 叠加历史图（仅一次）。
+  // 初始化地图（仅一次）：底图 + 控件 + 首屏加载判定 + 全局方向键控制器。
+  // 历史叠加层的增删/透明度交由下面的「编排」effect 按当前 epoch 驱动。
   useEffect(() => {
     if (!ref.current) return;
+    // 捕获稳定的图层表引用，供 cleanup 使用（避免 react-hooks 的 ref-in-cleanup 告警）。
+    const layers = layersRef.current;
 
     // 加载完成判定：去重 + 兜底定时器。任何事件都不触发时，也保证加载层最终淡出，
     // 用户永不被永久遮挡。
@@ -63,9 +86,13 @@ export default function MapViewer() {
       // 把拖拽/缩放锁在成都包围盒内：① 范围外烘焙快照里没有瓦片；
       // ② 限定可达瓦片集合（与 bake 脚本同源 extent，永不漂移）。
       maxBounds: CHENGDU_BOUNDS,
+      // 关闭 MapLibre 自带方向键平移：方向键改由本组件统一作「时间轴 ←→ / 透明度 ↑↓」
+      // 二维控制（plan §决策6）。平移仍可鼠标/触控拖拽，缩放用 NavigationControl。
+      keyboard: false,
       // CJK 表意文字用浏览器本地字体渲染，不下载汉字字形（只需烘焙拉丁字形）。
       localIdeographFontFamily: "sans-serif",
     });
+    mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl());
 
     // OpenFreeMap 样式可能引用其 sprite 中并不存在的 POI 图标（office/gate/atm…），
@@ -79,52 +106,98 @@ export default function MapViewer() {
     map.on("load", () => {
       // 底图样式 + 初始视口矢量瓦片就绪，进入历史图加载阶段。
       setStage("historical");
-
-      // @allmaps/maplibre 的 WarpedMapLayer：浏览器端从 Wasabi 的 IIIF 瓦片实时扭合。
-      const warped = new WarpedMapLayer({ layerId: "warped-chengdu-1933" });
-      map.addLayer(warped);
-
       // @allmaps 事件经 WarpedMapLayer 转发到 map 上（map.fire(event.type,…)）。
-      // 在 addGeoreferenceAnnotation 之前注册，避免错过早到的瓦片事件。
-      // allrequestedtilesloaded 后续平移/缩放会再次触发，markDone 的 done 守卫保证只首屏生效。
+      // 在编排 effect 添加图层之前注册，避免错过早到的瓦片事件。
+      // allrequestedtilesloaded 后续平移/切换会再次触发，markDone 的 done 守卫保证只首屏生效。
       map.on("firstmaptileloaded", () => setStage("historical"));
       map.on("allrequestedtilesloaded", markDone);
-
-      const results = warped.addGeoreferenceAnnotation(annotation);
-      const errors = results.filter((r) => r instanceof Error);
-      if (errors.length > 0) {
-        console.error("WarpedMapLayer 加载配准标注出错：", errors);
-      }
-      warped.setOpacity(clampOpacity(INITIAL_OPACITY));
-      warpedRef.current = warped;
+      // 触发编排 effect 懒建首屏历史图层。
+      setMapReady(true);
     });
+
+    // 全局方向键二维控制器：←→ 走时间轴，↑↓ 调透明度，均 preventDefault
+    // （避免页面滚动 / 与竖向滑块原生键步进重复触发）。
+    const onKey = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case "ArrowRight":
+          e.preventDefault();
+          setCurrentEpochId((id) => stepEpoch(epochs, id, 1));
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          setCurrentEpochId((id) => stepEpoch(epochs, id, -1));
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setOpacity((o) => clampOpacity(o + OPACITY_STEP));
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          setOpacity((o) => clampOpacity(o - OPACITY_STEP));
+          break;
+      }
+    };
+    window.addEventListener("keydown", onKey);
 
     return () => {
       done = true;
       clearTimeout(safetyTimer);
       clearTimeout(dismissTimer);
-      warpedRef.current = null;
+      window.removeEventListener("keydown", onKey);
+      layers.clear();
+      mapRef.current = null;
       map.remove();
     };
   }, []);
 
-  // 滑块变化 → 同步到叠加层透明度。
+  // 编排：当前 epoch / 透明度 → 各历史图层的存在性与透明度。
+  // 活动历史图：懒建（首访才拉瓦片）并设为当前透明度；其余已建图层置 0（瞬时 A/B，不重拉）。
   useEffect(() => {
-    warpedRef.current?.setOpacity(clampOpacity(opacity));
-  }, [opacity]);
+    const map = mapRef.current;
+    if (!map || !mapReady) return;
+
+    const { mapId } = resolveOverlay(epochs, currentEpochId);
+
+    if (mapId && !layersRef.current.has(mapId)) {
+      const annotation = getAnnotation(mapId);
+      if (annotation) {
+        const layer = new WarpedMapLayer({ layerId: `warped-${mapId}` });
+        map.addLayer(layer);
+        const results = layer.addGeoreferenceAnnotation(annotation);
+        const errors = results.filter((r) => r instanceof Error);
+        if (errors.length > 0) {
+          console.error(`WarpedMapLayer(${mapId}) 加载配准标注出错：`, errors);
+        }
+        layersRef.current.set(mapId, layer);
+      } else {
+        console.error(`缺少 ${mapId} 的配准标注（src/data/annotations/）`);
+      }
+    }
+
+    for (const [id, layer] of layersRef.current) {
+      layer.setOpacity(id === mapId ? clampOpacity(opacity) : 0);
+    }
+  }, [currentEpochId, opacity, mapReady]);
+
+  const overlay = resolveOverlay(epochs, currentEpochId);
+  const activeMap = overlay.mapId ? mapsById.get(overlay.mapId) : undefined;
 
   return (
     <>
       <div ref={ref} style={{ position: "absolute", inset: 0 }} />
       {!dismissed && <MapLoadingOverlay stage={stage} />}
-      {MAP_1933 && (
-        <OpacityControl
-          title={MAP_1933.title}
-          value={opacity}
-          onChange={setOpacity}
-          attribution={MAP_1933.attribution}
-        />
-      )}
+      <Timeline
+        stations={STATIONS}
+        currentEpochId={currentEpochId}
+        onSelect={setCurrentEpochId}
+      />
+      <OpacityControl
+        title={activeMap?.title ?? "现今"}
+        value={opacity}
+        onChange={setOpacity}
+        attribution={activeMap?.attribution}
+        disabled={!activeMap}
+      />
     </>
   );
 }
