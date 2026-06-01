@@ -8,12 +8,14 @@ import annotation from "../data/annotations/chengdu-1933.json";
 import { maps } from "../data/maps";
 import { clampOpacity } from "../lib/opacity";
 import positronStyle from "../data/basemap/positron.json";
-import { CHENGDU_BOUNDS, MIN_ZOOM, MAX_ZOOM } from "../data/basemap/extent";
+import {
+  CHENGDU_BOUNDS,
+  HISTORICAL_MAP_BOUNDS,
+  MIN_ZOOM,
+  MAX_ZOOM,
+} from "../data/basemap/extent";
 import OpacityControl from "./OpacityControl";
 import MapLoadingOverlay, { type LoadStage } from "./MapLoadingOverlay";
-
-// 成都天府广场附近，[lng, lat]（全程 WGS-84）
-const CHENGDU: [number, number] = [104.0658, 30.6571];
 
 // 自托管的 positron 矢量样式：瓦片/字形/sprite 均指向 Wasabi（见 docs/object-storage.md），
 // 由 scripts/bake-basemap.ts 烘焙生成。原 OpenFreeMap 公共实例（tiles.openfreemap.org）
@@ -47,13 +49,15 @@ export default function MapViewer() {
       setStage("done");
       dismissTimer = setTimeout(() => setDismissed(true), 450);
     };
-    const safetyTimer = setTimeout(markDone, 15000);
+    const safetyTimer = setTimeout(markDone, 20000);
 
     const map = new maplibregl.Map({
       container: ref.current,
       style: STYLE,
-      center: CHENGDU,
-      zoom: 12.5,
+      // 开局 fitBounds 到 1933 老图覆盖的中心城区（留少量内边距），而非更大的成都全域，
+      // 避免老图开局缩成一小块。
+      bounds: HISTORICAL_MAP_BOUNDS,
+      fitBoundsOptions: { padding: 24 },
       minZoom: MIN_ZOOM,
       maxZoom: MAX_ZOOM,
       // 把拖拽/缩放锁在成都包围盒内：① 范围外烘焙快照里没有瓦片；

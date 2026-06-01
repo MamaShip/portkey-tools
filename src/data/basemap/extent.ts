@@ -12,6 +12,14 @@ export const CHENGDU_BOUNDS: [[number, number], [number, number]] = [
   [104.4, 30.95],
 ];
 
+// 初始视野：1933 老图实际覆盖的中心城区（取配准 GCP 外包络，约 5×3.5km）。
+// 老图只覆盖主城一隅，用 CHENGDU_BOUNDS / zoom 12.5 开局会显得范围过大、老图缩成一小块，
+// 故开局 fitBounds 到此处。形如 [[西, 南], [东, 北]]。
+export const HISTORICAL_MAP_BOUNDS: [[number, number], [number, number]] = [
+  [104.0418, 30.6458],
+  [104.0934, 30.677],
+];
+
 // 显示缩放下限：再缩小已看不到成都，且会拉取范围外瓦片。
 export const MIN_ZOOM = 10;
 
