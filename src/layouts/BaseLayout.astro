@@ -1,0 +1,67 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 MamaShip
+//
+// 共享布局：网站随时间长出更多工具，每个工具 = 一个新路由，复用此外壳。
+interface Props {
+  title: string;
+  description?: string;
+  /** 地图等需占满视口的工具页设为 true，去掉默认内容边距 */
+  fullBleed?: boolean;
+}
+
+const { title, description, fullBleed = false } = Astro.props;
+const siteName = "Portkey Tools";
+---
+
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {description && <meta name="description" content={description} />}
+    <title>{title === siteName ? title : `${title} · ${siteName}`}</title>
+  </head>
+  <body class:list={[{ fullbleed: fullBleed }]}>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    color-scheme: light dark;
+    --maxw: 42rem;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  body {
+    font-family:
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      "Noto Sans SC",
+      sans-serif;
+    line-height: 1.6;
+  }
+  /* 内容型页面（首页/about/copyright）的默认排版边距 */
+  body:not(.fullbleed) {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+  /* 工具页（地图）占满视口，无边距 */
+  body.fullbleed {
+    overflow: hidden;
+  }
+  a {
+    color: #2563eb;
+  }
+</style>
