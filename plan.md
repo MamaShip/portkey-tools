@@ -228,7 +228,7 @@ MapLibre 用 `filter` 表达式按当前 epoch 的年份过滤显示哪些要素
 
 | 阶段 | 任务 | 可观测产出（Demo） | 测试闸门（CI / 可自动化） |
 |---|---|---|---|
-| **0 脚手架+底图** | 初始化 Astro+TS；连 Pages 原生 Git 集成；建 Wasabi 公开桶并设 Content-Type；`/tools/chengdu-historical-map` 用 OpenFreeMap 底图定位成都，可缩放/拖拽 | 一个 `pages.dev` URL：能拖动的成都地图 | typecheck/lint/build 全绿；Playwright 冒烟：地图 canvas 挂载、无未捕获 console 报错；**浏览器拉一个 Wasabi 瓦片验证 public+CORS** |
+| **0 脚手架+底图** ✅ | 初始化 Astro+TS；连 Pages 原生 Git 集成；建 Wasabi 公开桶并设 Content-Type；`/tools/chengdu-historical-map` 用 OpenFreeMap 底图定位成都，可缩放/拖拽 | 一个 `pages.dev` URL：能拖动的成都地图 | typecheck/lint/build 全绿；Playwright 冒烟：地图 canvas 挂载、无未捕获 console 报错；**浏览器拉一个 Wasabi 瓦片验证 public+CORS** |
 | **1 端到端一张图**（垂直切片，先啃最硬的未知） | 选最准的一张，跑完 §6 配准；`@allmaps/maplibre` 叠加 + 透明度滑块 | 预览 URL 上：老图叠在现代成都正确位置，可淡入淡出 | 该图 `maps.ts` 条目 + Allmaps 标注 JSON 通过 schema 校验；**配准 sanity 测试**：从标注算出的地理 bbox 落在成都经纬度框内、控制点残差低于阈值；透明度/状态单元测试 |
 | **2 时间轴+全部图+合规** | 配准其余 4–7 张并登记；离散时间轴 + epoch 切换（含 `现今`）；版权/来源页 + 举报 `mailto:` | 预览 URL：时间轴切换逐层换图；版权页列出各图出处 | **全部**图的 schema + 配准 sanity 校验；**引用完整性测试**：epochs 引用的每个 `mapId` 在 maps 表存在、每个标注文件存在；epoch 排序/选择逻辑单元测试 |
 | **3 体验增强** | 卷帘/swipe 对照；URL hash 深链接（epoch+视野）；移动端适配；island 懒加载 | 可分享的深链接 URL 能还原视图；移动端可用 | URL hash 序列化↔反序列化**往返单元测试**；Playwright：访问深链接能还原 epoch+视野；响应式快照 |

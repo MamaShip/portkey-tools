@@ -31,7 +31,11 @@ node -v && pnpm -v && java -version && vips --version && rclone version
 
 ## 1. Phase 0 — 脚手架与底图
 
+> ✅ **Phase 0 已完成（2026-06）。** 站点已上线 `https://tools.portkey.click/tools/chengdu-historical-map`，可拖动成都现代地图。下文保留为操作记录；标注「实际落地」处是与初稿命令的差异。
+
 ### 1.1 初始化 Astro + TypeScript + React
+
+> **实际落地**：未用交互式 `pnpm create astro`，而是直接手写项目文件（确定、可复现、无模板垃圾）。依赖随 registry 现状装到了更高大版本：**Astro 6、@astrojs/react 5、React 19、MapLibre GL 5、ESLint 10（flat config）、typescript-eslint 8、TypeScript 6、Vitest 4、Prettier 3**。另加了 `.nvmrc`（内容 `22`）锁定 Node 版本，本机 `nvm` 与 Cloudflare 构建都据此对齐到 Node 22。`pnpm` 经 `corepack enable` 提供 `10.21.0`（与 `packageManager` 字段一致）。
 
 ```bash
 # 仓库已存在（含 LICENSE/README/plan 等），直接在仓库根脚手架，勿新建子目录：
@@ -114,12 +118,16 @@ import MapViewer from "../../components/MapViewer.tsx";
 ### 1.3 接 Cloudflare Pages + 自定义域名 `tools.portkey.click`
 
 1. 把仓库推到 GitHub。
-2. Cloudflare 控制台 → **Workers & Pages** → 创建 **Pages** 项目 → 连接该 GitHub 仓库。
-   - Build command：`pnpm build`；Output directory：`dist`。
-   - 每个 PR 会自动得到一个预览 URL（无需额外配置）。
+2. Cloudflare 控制台 → **Workers & Pages** → **Create**。
+   - ⚠️ **实际落地**：新版面板默认引导到 **Workers** 的 “Import a repository”（会出现 *Build command* + *Deploy command*、且**没有** Output directory / Production branch）。要走经典 Pages，须在创建页**切到 `Pages` 标签**再 **Connect to Git**，才会出现下列字段。
+   - **Production branch**：`master`；**Build command**：`pnpm build`；**Build output directory**：`dist`；**无 Deploy command**。
+   - **Build system version** 不在创建表单里——建好项目后在 **Settings → Build** 才能看到/切换（默认 v3，会读 `packageManager` 自动用 pnpm）。
+   - 非生产分支推上去会自动产生**预览部署**；开 PR 后预览 URL 会贴在 PR 页。
+   - ⚠️ **两个坑**：①**生产分支必须含 `package.json` 才能构建**——若先把脚手架放在功能分支、master 仍是空壳，生产构建会以 `ERR_PNPM_NO_IMPORTER_MANIFEST_FOUND` 失败，**合并 PR 到 master 后即恢复**。②预览/分支地址是 `<hash>.<项目>.pages.dev` 这种**两级子域**，其 `*.<项目>.pages.dev` 证书在新项目刚建好时要等几分钟才签发，期间访问会报 `ERR_SSL_VERSION_OR_CIPHER_MISMATCH`——**稍候即可**；生产一级域 `<项目>.pages.dev` 用全局 `*.pages.dev` 证书，不用等。
 3. 项目 → **Custom domains** → 添加 `tools.portkey.click`：
    - **若 `portkey.click` 的 DNS 已托管在 Cloudflare** → 添加自定义域时会自动建好 CNAME，等待生效即可。
-   - **若 DNS 在别处** → 到你的 DNS 服务商加一条 `CNAME tools → <项目>.pages.dev`，再回 Pages 添加该自定义域，Cloudflare 完成校验并签发 TLS。
+   - **若 DNS 在别处（本项目即此情况）** → 到你的 DNS 服务商加一条 `CNAME tools → <项目>.pages.dev`（关掉服务商的代理/CDN，用纯解析），再回 Pages 添加该自定义域并验证。**Cloudflare 会自动签发并续期 TLS**（即使 DNS 不在它这）；状态由 `Verifying/Initializing certificate` → 几分钟后变 `Active`。
+   - ⚠️ 若域名设过 **CAA 记录**，须允许 Cloudflare 的 CA（含 `letsencrypt.org`、`pki.goog`），否则签发会卡；没设 CAA 则无需理会。`dig +short CAA portkey.click` 自查。
 
 ### 1.4 建 Wasabi 桶（放历史图瓦片）
 
@@ -128,15 +136,18 @@ import MapViewer from "../../components/MapViewer.tsx";
 3. **CORS 无需配置**——带 `Origin` 的请求会自动收到 permissive CORS 头。
 4. 配置 rclone remote（一次）：
    ```bash
-   rclone config   # 新建 remote：类型选 s3 → provider 选 Wasabi → 填 Access/Secret key 与区域 endpoint
+   # ⚠️ 实际落地：官方 install.sh 在国内网络易卡，直接用 apt 装即可（够用）：
+   #   sudo apt update && sudo apt install -y rclone
+   rclone config   # 新建 remote（名如 wasabi）：类型选 s3 → provider 选 Wasabi → 填 Access/Secret key 与区域 endpoint
    ```
 5. 公开对象 URL 形如（path-style）：`https://s3.<region>.wasabisys.com/tools-portkey-maps/<key>`（⚠️ 核对你区域的确切 endpoint）。
 
-### Phase 0 完成标准（Definition of Done）
+### Phase 0 完成标准（Definition of Done）—— ✅ 已达成（2026-06）
 
-- [ ] 访问 `https://tools.portkey.click/tools/chengdu-historical-map` 能拖动成都地图。
-- [ ] 推一个 PR 能看到 Cloudflare 预览 URL。
-- [ ] CI（`ci.yml`）在 PR 上 `check`/`lint`/`format:check`/`build` 全绿。
+- [x] 访问 `https://tools.portkey.click/tools/chengdu-historical-map` 能拖动成都地图。
+- [x] 推一个 PR 能看到 Cloudflare 预览 URL。
+- [x] `check`/`lint`/`format:check`/`build` 均通过（本地 + CI 前三步绿）。
+  - ⚠️ 注意：`ci.yml` 里 `validate`/`test` 排在 `build` 之前，且这两步留到 Phase 1 才实现，因此目前 GitHub Actions 整体会**红在 `validate`**（`build` 在 CI 上因前序失败而未执行，但本地已验证通过）。Phase 1 补齐数据校验与 sanity 测试后 CI 转全绿。Wasabi 桶（§1.4）为 Phase 1 准备项，不在 Phase 0 DoD 内。
 
 ---
 
