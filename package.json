@@ -17,6 +17,8 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@allmaps/annotation": "1.0.0-beta.37",
+    "@allmaps/maplibre": "1.0.0-beta.43",
     "@astrojs/react": "^5.0.6",
     "astro": "^6.4.2",
     "maplibre-gl": "^5.24.0",
