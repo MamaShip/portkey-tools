@@ -35,7 +35,7 @@
 | 层 | 选择（v1 主方案） | 理由 | 备选 / 升级路径 |
 |---|---|---|---|
 | 地图渲染库 | **MapLibre GL JS**（稳定版 5.x，v6 预发布中） | OSS、WebGL 矢量渲染、连续缩放体验好、矢量/栅格皆可、生态最活跃；与 Allmaps 插件、PMTiles 原生协议契合 | OpenLayers（GIS 能力更强但更重）、Leaflet（最简单但偏栅格、偏老） |
-| 现代底图 | **OpenFreeMap 公共实例**（无 key、无限制） | 零基础设施即可得到一张完整 OSM 矢量底图，MapLibre 自动加署名；可自托管作为兜底 | 自托管 **Protomaps PMTiles + R2 + Worker**（拥有自己的底图，学习价值高，见 §4.2）；MapTiler 免费档（需 key，有额度） |
+| 现代底图 | **自托管 OpenFreeMap positron 快照（Wasabi）** | 公共实例 `tiles.openfreemap.org` 被 GFW 阻断、大陆黑屏 → 改为构建期把成都范围瓦片/字形/sprite 快照到 Wasabi 自托管，大陆免翻墙可用；WGS-84 原生、配准零改动（见 §4.2 / `docs/basemap.md`） | 直连 OpenFreeMap 公共实例（境外/可翻墙最省事）；自托管 **Protomaps PMTiles**；MapTiler 免费档（需 key） |
 | 历史地图叠加 | **Allmaps + IIIF**（浏览器内实时扭合） | 配准产物仅是一份微型 JSON 标注，可随时重配而无需重新切片；纯静态；无需安装 QGIS；正是为历史地图配准而生 | **QGIS/GDAL 预扭合 → 栅格瓦片**（见 §4.3 Plan B，烘焙成永久瓦片或需要脱离 Allmaps 时） |
 | 历史图瓦片格式 | **静态 IIIF 瓦片**（由 `allmaps/iiif-tiler` 生成） | Allmaps 浏览器端按需读取 IIIF，配合实时扭合；纯静态文件 | 单文件 **PMTiles**（栅格）；预切好的 XYZ 瓦片金字塔 |
 | 站点框架 | **Astro + TypeScript**（islands 架构） | 静态优先、默认零 JS；可把"重"的地图组件作为单个 island 挂在某一路由，其余页面保持极轻；多页"工具索引"契合"不断长工具"的愿景；现代、AI 友好 | SvelteKit、Next.js；或纯 Vite + 原生 TS |
@@ -58,7 +58,7 @@
 
 ### 4.2 现代底图
 
-**v1 主方案：OpenFreeMap 公共实例。** 直接把 MapLibre 的 `style` 指向其托管的样式 URL 即可，无需 key、无请求上限，MapLibre 会自动渲染 `© OpenStreetMap` 署名。优点是**零基础设施**，最快得到一张可用的成都底图。风险是依赖一个靠捐赠运行的第三方公共实例（无 SLA）；缓解方式是它**完全开源、可自托管**（提供每周全球 planet 的 MBTiles/Btrfs 下载）。
+**v1 现状：自托管 OpenFreeMap positron 快照（Wasabi）。** 起初直连 OpenFreeMap 公共实例（`tiles.openfreemap.org`，无 key、零基础设施），但该域名被 **GFW 阻断**，大陆未翻墙整页黑屏。遂改为**构建期把 positron 样式在成都包围盒（z10–14）范围内的矢量瓦片/字形/sprite 快照下来、自托管到 Wasabi**，运行时浏览器直连 Wasabi（已验证大陆可达）。OpenFreeMap 基于 OSM 开放数据、鼓励自托管，保留署名即合规；WGS-84 原生，**老图配准零改动**。实现：烘焙脚本 `scripts/bake-basemap.ts`、范围单一来源 `src/data/basemap/extent.ts`、改写后样式 `src/data/basemap/positron.json`（入库可评审）；CJK 汉字用浏览器本地字体渲染（`localIdeographFontFamily`），不烘焙汉字字形。**完整机制与更新指南见 `docs/basemap.md`。**
 
 **升级路径（学习价值高 / 想拥有自己的底图）：Protomaps PMTiles，单文件直读。**
 - 思路：把成都/四川局部矢量底图打包成**单个 `.pmtiles` 文件**，MapLibre 通过 `pmtiles://` 协议（`@protomaps/basemaps` 提供样式）读取。
@@ -229,7 +229,7 @@ MapLibre 用 `filter` 表达式按当前 epoch 的年份过滤显示哪些要素
 | 阶段 | 任务 | 可观测产出（Demo） | 测试闸门（CI / 可自动化） |
 |---|---|---|---|
 | **0 脚手架+底图** ✅ | 初始化 Astro+TS；连 Pages 原生 Git 集成；建 Wasabi 公开桶并设 Content-Type；`/tools/chengdu-historical-map` 用 OpenFreeMap 底图定位成都，可缩放/拖拽 | 一个 `pages.dev` URL：能拖动的成都地图 | typecheck/lint/build 全绿；Playwright 冒烟：地图 canvas 挂载、无未捕获 console 报错；**浏览器拉一个 Wasabi 瓦片验证 public+CORS** |
-| **1 端到端一张图**（垂直切片，先啃最硬的未知） | 选最准的一张，跑完 §6 配准；`@allmaps/maplibre` 叠加 + 透明度滑块 | 预览 URL 上：老图叠在现代成都正确位置，可淡入淡出 | 该图 `maps.ts` 条目 + Allmaps 标注 JSON 通过 schema 校验；**配准 sanity 测试**：从标注算出的地理 bbox 落在成都经纬度框内、控制点残差低于阈值；透明度/状态单元测试 |
+| **1 端到端一张图** ✅（垂直切片，先啃最硬的未知） | 选最准的一张，跑完 §6 配准；`@allmaps/maplibre` 叠加 + 透明度滑块 | 预览 URL 上：老图叠在现代成都正确位置，可淡入淡出 | 该图 `maps.ts` 条目 + Allmaps 标注 JSON 通过 schema 校验；**配准 sanity 测试**：从标注算出的地理 bbox 落在成都经纬度框内、控制点残差低于阈值；透明度/状态单元测试 |
 | **2 时间轴+全部图+合规** | 配准其余 4–7 张并登记；离散时间轴 + epoch 切换（含 `现今`）；版权/来源页 + 举报 `mailto:` | 预览 URL：时间轴切换逐层换图；版权页列出各图出处 | **全部**图的 schema + 配准 sanity 校验；**引用完整性测试**：epochs 引用的每个 `mapId` 在 maps 表存在、每个标注文件存在；epoch 排序/选择逻辑单元测试 |
 | **3 体验增强** | 卷帘/swipe 对照；URL hash 深链接（epoch+视野）；移动端适配；island 懒加载 | 可分享的深链接 URL 能还原视图；移动端可用 | URL hash 序列化↔反序列化**往返单元测试**；Playwright：访问深链接能还原 epoch+视野；响应式快照 |
 | **4 标注层**（未来，架构已预留） | 按 §5.3 写带时间有效期的 GeoJSON；渲染+按 epoch 过滤+弹窗；（可选）在未扭合老图上绘制要素 | 要素随时间轴出现/消失，点击有弹窗 | GeoJSON schema 校验；**时间过滤纯函数单元测试**：给定年份 Y，可见要素集合正确 |
@@ -286,7 +286,7 @@ CI（PR + push 触发）依次执行：安装依赖（pnpm，带缓存）→ `as
 |---|---|---|
 | 应用托管 | Cloudflare Pages | ¥0（带宽无限） |
 | 瓦片/重资产存储 | Wasabi（已有账号） | ¥0 边际（几 GB 在已付的 1TB 最低消费内） |
-| 现代底图 | OpenFreeMap 公共实例 | ¥0 |
+| 现代底图 | 自托管 OpenFreeMap positron 快照（Wasabi，~150–250MB） | ¥0 边际（在已付 1TB 内） |
 | CI | GitHub Actions（公开仓库） | ¥0 |
 | （可选）CDN / 自托管底图 Worker | Cloudflare | ¥0（免费档内） |
 | 配准工具 | Allmaps / QGIS | ¥0（开源） |
@@ -301,6 +301,6 @@ CI（PR + push 触发）依次执行：安装依赖（pnpm，带缓存）→ `as
 2. **Phase 1 端到端样图**：《1933年成都街市图》（民国测绘类，预期可较好对齐；用 TPS + 较多控制点）。
 3. **开发环境**：**Ubuntu**（工具链 apt 即装；与 CI 的 ubuntu runner 一致，减少环境漂移）。Mac 可作备选；Windows 走 WSL2。
 4. **标注层**：定为 **Phase 4**，v1 仅按 §5 预留架构。
-5. **底图路线**：v1 用 OpenFreeMap 公共实例（最快）；自托管 Protomaps（放 Wasabi 直读）作为后续可选学习项。
+5. **底图路线**：v1 **已改为自托管 OpenFreeMap positron 快照（Wasabi）**——因公共实例 `tiles.openfreemap.org` 被 GFW 阻断、大陆黑屏（详见 §4.2 / `docs/basemap.md`）。自托管 Protomaps 仍为后续可选学习项。
 
 > Phase 0–1 的逐步执行清单见配套文件 `phase-0-1-guide.md`。

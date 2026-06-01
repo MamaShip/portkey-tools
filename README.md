@@ -6,7 +6,9 @@
 
 当前第一个工具是 **成都历史地图查看器**：在现代地图上叠加经过地理配准的成都历史老地图（宣统年间 ~ 1975 年），可在时间轴上切换时间点、用透明度滑块在古今之间淡入淡出，观察街道与城市形态的演变。
 
-> 状态：**Phase 0 已完成**（脚手架 + 现代底图已上线 `tools.portkey.click`），进行中 Phase 1（《1933年成都街市图》端到端配准）。架构与设计决策见 [`plan.md`](./plan.md)；逐步落地清单见 [`phase-0-1-guide.md`](./phase-0-1-guide.md)。
+> 状态：**Phase 0–1 已完成**——《1933年成都街市图》已端到端地理配准并上线 `tools.portkey.click`（叠加在现代成都、可用透明度滑块古今淡入淡出）；现代底图已改为自托管 Wasabi 快照（大陆免翻墙）。下一步 **Phase 2**（其余历史图 + 离散时间轴 + MapViewer 泛化 + 版权页）。
+>
+> 文档导航：架构与设计决策 [`plan.md`](./plan.md) · 现代底图机制与更新 [`docs/basemap.md`](./docs/basemap.md) · 新增历史图 SOP [`docs/adding-a-map.md`](./docs/adding-a-map.md) · 对象存储目录约定 [`docs/object-storage.md`](./docs/object-storage.md) · Phase 0–1 历史落地清单 [`phase-0-1-guide.md`](./phase-0-1-guide.md)。
 
 ## 它是怎么工作的
 
@@ -44,8 +46,9 @@ pnpm dev          # http://localhost:4321 → /tools/chengdu-historical-map
 | `pnpm dev` / `pnpm build` / `pnpm preview` | 开发 / 构建 / 预览 |
 | `pnpm check` | 类型检查（astro check） |
 | `pnpm lint` · `pnpm format:check` | 代码检查 / 格式检查 |
-| `pnpm validate` | 校验地图登记表、时间轴与配准标注（schema + 引用完整性） |
+| `pnpm validate` | 校验地图登记表、时间轴、配准标注与底图样式（schema + 引用完整性） |
 | `pnpm test` | 单元测试（含配准 sanity） |
+| `pnpm bake:basemap` | 重新烘焙现代底图快照（下载 + 改写样式；机制见 [`docs/basemap.md`](./docs/basemap.md)） |
 
 CI 由 GitHub Actions 跑上述质量闸门（见 `.github/workflows/ci.yml`）；部署与每个 PR 的预览 URL 由 Cloudflare Pages 原生 Git 集成负责。
 

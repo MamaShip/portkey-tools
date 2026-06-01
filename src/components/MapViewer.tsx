@@ -46,9 +46,9 @@ export default function MapViewer() {
     });
     map.addControl(new maplibregl.NavigationControl());
 
-    // OpenFreeMap 的 liberty 样式引用了若干其 sprite 中并不存在的 POI 图标
-    // （office/gate/atm…），会逐个刷 "Image could not be loaded" 告警。
-    // 注册透明占位图消除噪声（不影响渲染；底图本就无这些图标）。
+    // OpenFreeMap 样式可能引用其 sprite 中并不存在的 POI 图标（office/gate/atm…），
+    // 会逐个刷 "Image could not be loaded" 告警。注册透明占位图消除噪声
+    // （不影响渲染；底图本就无这些图标）。
     map.on("styleimagemissing", (e) => {
       if (map.hasImage(e.id)) return;
       map.addImage(e.id, { width: 1, height: 1, data: new Uint8Array(4) });
