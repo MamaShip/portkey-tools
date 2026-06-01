@@ -1,0 +1,15 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 MamaShip
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import MapViewer from "../../components/MapViewer.tsx";
+---
+
+<BaseLayout
+  title="成都历史地图查看器"
+  description="在现代地图上叠加经过地理配准的成都历史老地图。"
+  fullBleed
+>
+  {/* MapLibre 依赖 window，组件仅客户端渲染 */}
+  <MapViewer client:only="react" />
+</BaseLayout>
