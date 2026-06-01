@@ -10,6 +10,7 @@ import { clampOpacity } from "../lib/opacity";
 import positronStyle from "../data/basemap/positron.json";
 import { CHENGDU_BOUNDS, MIN_ZOOM, MAX_ZOOM } from "../data/basemap/extent";
 import OpacityControl from "./OpacityControl";
+import MapLoadingOverlay, { type LoadStage } from "./MapLoadingOverlay";
 
 // 成都天府广场附近，[lng, lat]（全程 WGS-84）
 const CHENGDU: [number, number] = [104.0658, 30.6571];
@@ -27,10 +28,27 @@ export default function MapViewer() {
   const ref = useRef<HTMLDivElement>(null);
   const warpedRef = useRef<WarpedMapLayer | null>(null);
   const [opacity, setOpacity] = useState(INITIAL_OPACITY);
+  // 首屏加载层状态：init→historical→done，done 后淡出再由 dismissed 卸载。
+  const [stage, setStage] = useState<LoadStage>("init");
+  const [dismissed, setDismissed] = useState(false);
 
   // 初始化地图 + 叠加历史图（仅一次）。
   useEffect(() => {
     if (!ref.current) return;
+
+    // 加载完成判定：去重 + 兜底定时器。任何事件都不触发时，也保证加载层最终淡出，
+    // 用户永不被永久遮挡。
+    let done = false;
+    let dismissTimer: ReturnType<typeof setTimeout> | undefined;
+    const markDone = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(safetyTimer);
+      setStage("done");
+      dismissTimer = setTimeout(() => setDismissed(true), 450);
+    };
+    const safetyTimer = setTimeout(markDone, 15000);
+
     const map = new maplibregl.Map({
       container: ref.current,
       style: STYLE,
@@ -55,9 +73,19 @@ export default function MapViewer() {
     });
 
     map.on("load", () => {
+      // 底图样式 + 初始视口矢量瓦片就绪，进入历史图加载阶段。
+      setStage("historical");
+
       // @allmaps/maplibre 的 WarpedMapLayer：浏览器端从 Wasabi 的 IIIF 瓦片实时扭合。
       const warped = new WarpedMapLayer({ layerId: "warped-chengdu-1933" });
       map.addLayer(warped);
+
+      // @allmaps 事件经 WarpedMapLayer 转发到 map 上（map.fire(event.type,…)）。
+      // 在 addGeoreferenceAnnotation 之前注册，避免错过早到的瓦片事件。
+      // allrequestedtilesloaded 后续平移/缩放会再次触发，markDone 的 done 守卫保证只首屏生效。
+      map.on("firstmaptileloaded", () => setStage("historical"));
+      map.on("allrequestedtilesloaded", markDone);
+
       const results = warped.addGeoreferenceAnnotation(annotation);
       const errors = results.filter((r) => r instanceof Error);
       if (errors.length > 0) {
@@ -68,6 +96,9 @@ export default function MapViewer() {
     });
 
     return () => {
+      done = true;
+      clearTimeout(safetyTimer);
+      clearTimeout(dismissTimer);
       warpedRef.current = null;
       map.remove();
     };
@@ -81,6 +112,7 @@ export default function MapViewer() {
   return (
     <>
       <div ref={ref} style={{ position: "absolute", inset: 0 }} />
+      {!dismissed && <MapLoadingOverlay stage={stage} />}
       {MAP_1933 && (
         <OpacityControl
           title={MAP_1933.title}
