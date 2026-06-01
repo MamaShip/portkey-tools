@@ -7,17 +7,17 @@ import { WarpedMapLayer } from "@allmaps/maplibre";
 import annotation from "../data/annotations/chengdu-1933.json";
 import { maps } from "../data/maps";
 import { clampOpacity } from "../lib/opacity";
+import positronStyle from "../data/basemap/positron.json";
+import { CHENGDU_BOUNDS, MIN_ZOOM, MAX_ZOOM } from "../data/basemap/extent";
 import OpacityControl from "./OpacityControl";
 
 // 成都天府广场附近，[lng, lat]（全程 WGS-84）
 const CHENGDU: [number, number] = [104.0658, 30.6571];
 
-// OpenFreeMap 公共实例的矢量样式（无 key、无请求上限；MapLibre 自动渲染 OSM 署名）。
-// 用 positron（极简浅灰底图）：① 不含 terrain/密集 POI 图层，避免 liberty 样式
-// 在 worker 里对可空字段做 filter 求值刷出的 "Expected number, found null" 告警；
-// ② 中性浅底更利于半透明历史图叠加层的可读性。
-// 备选：…/styles/liberty（全彩详细）、…/styles/bright。⚠️ 若底图空白，核对当前样式名/URL。
-const STYLE_URL = "https://tiles.openfreemap.org/styles/positron";
+// 自托管的 positron 矢量样式：瓦片/字形/sprite 均指向 Wasabi（见 docs/object-storage.md），
+// 由 scripts/bake-basemap.ts 烘焙生成。原 OpenFreeMap 公共实例（tiles.openfreemap.org）
+// 被 GFW 阻断，大陆未翻墙会黑屏；改自托管后大陆免翻墙可用，且零坐标改动（OSM/WGS-84）。
+const STYLE = positronStyle as unknown as maplibregl.StyleSpecification;
 
 // Phase 1 只有一张历史图（chengdu-1933）。Phase 2 会从 epochs/maps 登记表泛化为多图 + 时间轴。
 const MAP_1933 = maps.find((m) => m.id === "chengdu-1933");
@@ -33,9 +33,16 @@ export default function MapViewer() {
     if (!ref.current) return;
     const map = new maplibregl.Map({
       container: ref.current,
-      style: STYLE_URL,
+      style: STYLE,
       center: CHENGDU,
       zoom: 12.5,
+      minZoom: MIN_ZOOM,
+      maxZoom: MAX_ZOOM,
+      // 把拖拽/缩放锁在成都包围盒内：① 范围外烘焙快照里没有瓦片；
+      // ② 限定可达瓦片集合（与 bake 脚本同源 extent，永不漂移）。
+      maxBounds: CHENGDU_BOUNDS,
+      // CJK 表意文字用浏览器本地字体渲染，不下载汉字字形（只需烘焙拉丁字形）。
+      localIdeographFontFamily: "sans-serif",
     });
     map.addControl(new maplibregl.NavigationControl());
 

@@ -10,7 +10,7 @@
 
 ## 它是怎么工作的
 
-- **现代底图**：[OpenFreeMap](https://openfreemap.org)（基于 OpenStreetMap 的矢量瓦片，无 API key），由 [MapLibre GL JS](https://maplibre.org) 渲染。全程 WGS-84 坐标系。
+- **现代底图**：[OpenFreeMap](https://openfreemap.org) positron（基于 OpenStreetMap 的矢量瓦片）的成都范围**快照，自托管在 Wasabi**（避开被 GFW 阻断的公共服务，大陆免翻墙可用），由 [MapLibre GL JS](https://maplibre.org) 渲染。全程 WGS-84 坐标系。机制与更新指南见 [`docs/basemap.md`](./docs/basemap.md)。
 - **历史地图**：每张老地图切成静态 [IIIF](https://iiif.io) 瓦片托管在对象存储；用 [Allmaps](https://allmaps.org) 在浏览器内按控制点实时扭合（warp）叠加到现代底图上。配准产物是一份开放标准的 Georeference Annotation（JSON）。
 - **站点**：[Astro](https://astro.build) + TypeScript（islands 架构），地图工具是一个仅客户端渲染的 React island。
 - **托管**：应用在 Cloudflare Pages；历史图瓦片在对象存储（Wasabi），不入库。

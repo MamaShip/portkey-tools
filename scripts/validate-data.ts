@@ -10,6 +10,7 @@ import { z } from "zod";
 import { EpochSchema, HistoricalMapSchema } from "../src/data/schema";
 import { epochs } from "../src/data/epochs";
 import { maps } from "../src/data/maps";
+import positronStyle from "../src/data/basemap/positron.json";
 
 let ok = true;
 const fail = (m: string) => {
@@ -36,6 +37,30 @@ for (const e of epochs) {
 for (const m of maps) {
   if (!existsSync(m.annotationPath))
     fail(`map ${m.id} 的标注文件缺失: ${m.annotationPath}`);
+}
+
+// 4) 自托管底图样式：必须已改写为指向 Wasabi（拦住误提交未改写 / 仍指向被墙域名的 style）
+{
+  const style = positronStyle as unknown as {
+    version?: number;
+    glyphs?: string;
+    sprite?: string;
+    sources?: { openmaptiles?: { tiles?: string[] } };
+  };
+  const WASABI_HOST = "s3.ap-southeast-1.wasabisys.com";
+  if (style.version !== 8) fail("basemap positron.json: version 应为 8");
+  if (JSON.stringify(style).includes("tiles.openfreemap.org"))
+    fail(
+      "basemap positron.json: 仍含 tiles.openfreemap.org（未改写为自托管 Wasabi）",
+    );
+  for (const [name, val] of [
+    ["glyphs", style.glyphs],
+    ["sprite", style.sprite],
+    ["tiles", style.sources?.openmaptiles?.tiles?.[0]],
+  ] as const) {
+    if (typeof val !== "string" || !val.includes(WASABI_HOST))
+      fail(`basemap positron.json: ${name} 未指向 Wasabi`);
+  }
 }
 
 if (!ok) process.exit(1);

@@ -30,8 +30,11 @@ portkey/                                   (bucket 根)
 │     └─ <assetType>/                       资产类型：iiif | pmtiles | data | ...
 │        └─ <resourceId>/                   单个资源（如一张历史地图的 id）
 │           └─ ...
-├─ basemaps/                                跨工具共享的自托管底图（未来，PMTiles 等）
-│  └─ <name>.pmtiles
+├─ basemaps/                                跨工具共享的自托管底图
+│  └─ openfreemap-positron/                 OpenFreeMap positron 成都快照（矢量瓦片，见下）
+│     ├─ tiles/{z}/{x}/{y}.pbf
+│     ├─ sprites/ofm.json|.png|@2x.json|@2x.png
+│     └─ fonts/{fontstack}/{range}.pbf
 └─ （其余顶层类别按需新增，如 site/ 等，保持「按类别」而非「按工具」散落桶根）
 ```
 
@@ -62,6 +65,38 @@ java -jar iiif-tiler.jar <ascii-name>.jpg -version 3 -tile_size 512 -output tile
   -identifier https://s3.ap-southeast-1.wasabisys.com/portkey/tools/<toolId>/iiif/
 # iiif-tiler 会把图名追加到 identifier 之后 → info.json id 即 .../iiif/<mapId>
 ```
+
+## 自托管底图：OpenFreeMap positron（成都快照）
+
+交互底图原本直连 `tiles.openfreemap.org`，该域名被 GFW 阻断，大陆未翻墙会黑屏。改为把
+positron 在**成都包围盒 + z10–14** 范围内的矢量瓦片/sprite/拉丁字形快照到 Wasabi 自托管，
+运行时浏览器直连 Wasabi 取底图，大陆免翻墙可用，且零坐标改动（OSM/WGS-84，老图配准照旧）。
+
+| 项         | 值                                                                                  |
+| ---------- | ----------------------------------------------------------------------------------- |
+| 资产前缀   | `portkey/basemaps/openfreemap-positron/`                                            |
+| 范围/缩放  | 见 `src/data/basemap/extent.ts`（bbox 与 z 由它单一来源，MapViewer 与烘焙脚本共用） |
+| 运行时引用 | `src/data/basemap/positron.json`（改写后指向 Wasabi 的 style，提交入库、可评审）    |
+| 瓦片数量   | z10–14 约 1,300 张（区域小，故可自托管）                                            |
+
+**（重新）烘焙 + 上传步骤**（面向小白的完整图文指南见 [basemap.md](./basemap.md)）：
+
+```bash
+pnpm bake:basemap          # 下载到 basemap-dist/ 并改写 src/data/basemap/positron.json（无需密钥）
+pnpm format                # 规整改写后的 positron.json
+# 然后按脚本末尾打印的 rclone 命令上传（需 wasabi remote）：
+rclone copy basemap-dist/openfreemap-positron/tiles   wasabi:portkey/basemaps/openfreemap-positron/tiles \
+  --header-upload "Content-Type: application/x-protobuf" \
+  --header-upload "Content-Encoding: gzip" \
+  --header-upload "Cache-Control: public, max-age=7776000" --transfers 32 --progress
+# fonts/ 同上头部；sprites/ 仅加 Cache-Control（Content-Type 由 rclone 按扩展名自动判定）
+```
+
+> **关键坑**：瓦片/字形是 **gzip 压缩的 protobuf**，上传时**必须**带 `Content-Encoding: gzip`
+> （`bake:basemap` 已把字节 gzip 好，rclone 命令也带了该头）；否则浏览器拿到压缩字节、
+> MapLibre 解不开 → 底图空白。CJK 汉字字形不烘焙（MapLibre `localIdeographFontFamily`
+> 用浏览器本地字体渲染）。底图为冻结快照、缓存 3 个月（`max-age=7776000`）：URL 不带哈希，
+> 故重烘焙覆盖同名对象后，回访用户最长 3 个月内自然刷新（全新访客立即生效）。
 
 ## 当前实例：成都历史地图查看器
 
