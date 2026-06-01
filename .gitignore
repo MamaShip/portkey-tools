@@ -1,0 +1,22 @@
+# 依赖与构建产物
+node_modules/
+dist/
+.astro/
+coverage/
+
+# 环境变量与密钥（绝不入库）
+.env
+.env.*
+
+# 本地瓦片中转目录：IIIF 瓦片体量大、极少变动，存于对象存储，不进 Git
+tiles/
+
+# 历史地图源扫描图：大二进制，切片后产物上对象存储，源图本地暂存不入库
+*.jpg
+*.jpeg
+*.tif
+*.tiff
+
+# 系统/编辑器杂项
+.DS_Store
+*.log

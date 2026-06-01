@@ -1,0 +1,14 @@
+# 既有手写文档：交由人工维护，避免 format:check 改动其排版
+README.md
+plan.md
+phase-0-1-guide.md
+LICENSE
+
+# 构建产物 / 依赖 / 锁文件 / 本地瓦片中转 / 二进制
+dist/
+.astro/
+node_modules/
+coverage/
+pnpm-lock.yaml
+tiles/
+*.jpg
