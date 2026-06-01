@@ -16,12 +16,12 @@ export const maps: HistoricalMap[] = [
     annotationPath: "src/data/annotations/chengdu-1933.json",
     defaultOpacity: 0.7,
     provenance: {
-      // TODO: 补充确切收藏机构 / 出处，并同步到「来源与版权」页（copyright.astro）。
-      source: "待补（收藏机构 / 出处）",
+      source: "参谋本部 四川陆地测量局（中华民国二十二年 / 1933）",
+      author: "参谋本部 四川陆地测量局",
       license: "Public Domain",
       notes:
-        "民国二十二年（1933）成都街市测绘图；制图者多为当时政府部门，视为公共领域。",
+        "中华民国二十二年（1933）参谋本部四川陆地测量局测制：5 月测图、12 月制版；制图者为当时政府测绘机构，视为公共领域。",
     },
-    attribution: "《1933年成都街市图》（公共领域）",
+    attribution: "《1933年成都街市图》· 参谋本部四川陆地测量局制（公共领域）",
   },
 ];
