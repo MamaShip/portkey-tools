@@ -1,0 +1,90 @@
+# .github/workflows/ci.yml
+#
+# 质量闸门（无需任何 secrets，因此 fork 发来的 PR 也能完整运行）。
+# 部署与 PR 预览由 Cloudflare Pages 的原生 Git 集成负责，不在此文件内。
+#
+# 假设：使用 pnpm，且 package.json 中已定义如下脚本——
+#   "check":     astro check            # 类型检查（Astro + TS）
+#   "lint":      eslint .
+#   "format:check": prettier --check .
+#   "validate":  tsx scripts/validate-data.ts   # 用 zod 校验 epochs/maps/标注 + 引用完整性
+#   "test":      vitest run             # 单元测试（含配准 sanity）
+#   "build":     astro build
+#   "test:e2e":  playwright test        # 可选，DOM 级冒烟
+# 如脚本名不同，请相应调整下方 run 命令。
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# 同一分支/PR 新推送时取消上一次仍在跑的 CI，省额度
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: 类型检查 / Lint / 数据校验 / 测试 / 构建
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # —— 静态检查 ——
+      - name: Typecheck
+        run: pnpm run check
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Format check
+        run: pnpm run format:check
+
+      # —— 数据闸门：地图登记表 / 时间轴 / Allmaps 标注 的 schema + 引用完整性 ——
+      # 这一步能在 CI 里拦住：标注 JSON 结构损坏、epoch 引用了不存在的 mapId、
+      # 标注文件缺失、配准 bbox 不在成都经纬度框内、控制点残差超阈值等。
+      - name: Validate data registry & georeference annotations
+        run: pnpm run validate
+
+      # —— 单元测试：纯逻辑（epoch 选择、时间过滤、URL hash 往返、配准 sanity）——
+      - name: Unit tests
+        run: pnpm run test
+
+      # —— 构建：尽早暴露构建期错误 ——
+      - name: Build
+        run: pnpm run build
+
+  # 可选的 E2E 冒烟：只断言 DOM/canvas 存在与无未捕获 console 报错，不做像素 diff
+  # （WebGL 在无头 CI 里像素结果不稳定）。先不需要可整段删除。
+  e2e:
+    name: E2E 冒烟（Playwright）
+    runs-on: ubuntu-latest
+    needs: quality
+    if: ${{ false }} # 准备好 e2e/ 后改成 true 启用
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:e2e
