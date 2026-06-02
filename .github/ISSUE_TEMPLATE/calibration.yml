@@ -1,0 +1,45 @@
+name: 📐 提供 / 修正配准数据
+description: 指出某张老图对不齐，或提交更准的控制点
+title: "校准数据："
+labels: ["calibration"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        老图是「近似贴合」（越老越需要揉），但若你发现明显偏移、或愿意贡献更准的控制点，非常欢迎！
+        配准用 [Allmaps Editor](https://editor.allmaps.org) 打控制点、导出 Georeference Annotation（JSON）。
+        背景见仓库 `docs/adding-a-map.md`。
+  - type: input
+    id: map
+    attributes:
+      label: 涉及的地图
+      description: 哪张图（图名或 mapId）。
+      placeholder: 例：chengdu-1911 / 宣统三年成都街市图
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题描述
+      description: 哪一带对不齐？往哪个方向偏？
+      placeholder: 例：城西一带整体向北偏约一个街区；东门附近还好。
+    validations:
+      required: true
+  - type: textarea
+    id: annotation
+    attributes:
+      label: 你的配准数据（可选）
+      description: 直接贴 Allmaps 导出的 Georeference Annotation JSON，或描述你打的控制点。
+      render: json
+  - type: input
+    id: editor-link
+    attributes:
+      label: Allmaps Editor 链接（可选）
+      placeholder: https://editor.allmaps.org/……
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认
+      options:
+        - label: 我理解老图为近似贴合；我提交的配准数据可按 CC0 用于本项目。
+          required: true

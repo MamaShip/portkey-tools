@@ -1,0 +1,67 @@
+name: 🗺️ 提交一张老地图
+description: 推荐一张可加入站点的成都历史地图
+title: "老地图提交："
+labels: ["new-map"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢推荐！本站只收录**公共领域**（多为当时政府机构所制、年代久远）的成都历史地图，
+        且优先**制图相对标准**的图（已剔除写意性素材）。请尽量填全来源信息，便于核实与署名。
+  - type: input
+    id: title
+    attributes:
+      label: 图名
+      placeholder: 例：1948年成都市街道详图
+    validations:
+      required: true
+  - type: input
+    id: year
+    attributes:
+      label: 年代 / 出版年
+      placeholder: 例：1948（或起止年 1949–1950）
+    validations:
+      required: true
+  - type: input
+    id: author
+    attributes:
+      label: 制图者 / 出版者（可选）
+      placeholder: 例：四川陆地测量局
+  - type: input
+    id: source
+    attributes:
+      label: 来源 / 收藏机构 / 出处
+      description: 在哪里能找到这张图（图书馆、档案馆、藏家、网站等）。用于「来源与版权」页署名。
+      placeholder: 例：美国国会图书馆 / 某图书馆古地图库
+    validations:
+      required: true
+  - type: dropdown
+    id: license
+    attributes:
+      label: 版权状态
+      options:
+        - 公共领域（年代久远 / 政府机构所制）
+        - 不确定，需要进一步核实
+        - 其他（在补充说明里写明）
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: 在线链接 / 扫描源（可选）
+      description: 高清扫描图或 IIIF info.json 的链接（如果有）。
+      placeholder: https://……
+  - type: textarea
+    id: notes
+    attributes:
+      label: 补充说明（可选）
+      description: 覆盖范围（城区 / 郊外）、清晰度、为何值得收录、是否分多幅扫描等。
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认
+      options:
+        - label: 我相信这张图属于公共领域（或已在上面如实说明版权状态）。
+          required: true
+        - label: 这是一张制图相对标准的地图，而非写意 / 艺术性插画。
+          required: false

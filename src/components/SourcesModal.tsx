@@ -8,16 +8,15 @@
 import { maps } from "../data/maps";
 
 const REPO = "https://github.com/MamaShip/portkey-tools";
-// 三类反馈/贡献入口：预填 label/title，落到 new issue 页（title 已 URL 编码的中文前缀）。
+// 三类反馈/贡献入口：直接打开对应的 GitHub Issue Form（模板在 .github/ISSUE_TEMPLATE/，
+// 各自带好 labels/title）。?template= 的值即模板文件名。注意：Issue Forms 只在仓库
+// 默认分支（master）上生效。
 const ISSUE_LINKS = [
-  { label: "反馈 bug", href: `${REPO}/issues/new?labels=bug` },
-  {
-    label: "提交老地图",
-    href: `${REPO}/issues/new?labels=new-map&title=${encodeURIComponent("老地图提交：")}`,
-  },
+  { label: "反馈 bug", href: `${REPO}/issues/new?template=bug.yml` },
+  { label: "提交老地图", href: `${REPO}/issues/new?template=new-map.yml` },
   {
     label: "提供校准数据",
-    href: `${REPO}/issues/new?labels=calibration&title=${encodeURIComponent("校准数据：")}`,
+    href: `${REPO}/issues/new?template=calibration.yml`,
   },
 ];
 

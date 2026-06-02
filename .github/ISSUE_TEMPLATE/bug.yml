@@ -1,0 +1,60 @@
+name: 🐛 反馈 Bug
+description: 报告网站或地图工具的问题（显示异常、交互失灵、报错等）
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！请尽量填全下面几项，便于复现与定位。提交前可先搜一下是否已有相同问题。
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 问题描述
+      description: 简述遇到的问题。
+      placeholder: 例：切到 1933 时透明度滑块没反应。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 一步步怎么操作能重现。
+      placeholder: |
+        1. 打开 https://tools.portkey.click/cd-old-map
+        2. 用方向键切到 1933
+        3. 拖动透明度滑块
+        4. 观察到 ……
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+      description: 你预期应该发生什么。
+    validations:
+      required: false
+  - type: input
+    id: map-context
+    attributes:
+      label: 相关地图 / 时间点（可选）
+      description: 问题出现在哪张历史图或哪个时间站点。
+      placeholder: 例：1933 / 1915 拼幅 / 现今
+  - type: input
+    id: env
+    attributes:
+      label: 环境（可选）
+      description: 浏览器、设备与系统版本。
+      placeholder: 例：Chrome 126 / iPhone 13 / iOS 17
+  - type: textarea
+    id: extra
+    attributes:
+      label: 截图 / 控制台报错（可选）
+      description: 可贴截图，或按 F12 在控制台里复制红色报错文本。
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认
+      options:
+        - label: 我已搜索过现有 issue，没有重复。
+          required: true

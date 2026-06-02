@@ -1,0 +1,8 @@
+# Issue 选择页配置。模板文件名即 SourcesModal 里 ?template= 的值。
+# 留 blank_issues_enabled: true 作为逃生口（其他主题仍可开空白 issue）；
+# 想强制走模板可改 false。
+blank_issues_enabled: true
+contact_links:
+  - name: 侵权举报 / 版权问题（邮件私下处理）
+    url: mailto:youdangls@gmail.com
+    about: 认为某张历史地图存在版权问题？请直接邮件联系，我会尽快将对应图片下架，不必公开开 issue。

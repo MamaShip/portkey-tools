@@ -6,9 +6,9 @@
 
 当前第一个工具是 **成都老地图**：在现代地图上叠加经过地理配准的成都历史老地图（宣统年间 ~ 1975 年），可在时间轴上切换时间点、用透明度滑块在古今之间淡入淡出，观察街道与城市形态的演变。
 
-> 状态：**Phase 0–1 已完成**——《1933年成都街市图》已端到端地理配准并上线 `tools.portkey.click`（叠加在现代成都、可用透明度滑块古今淡入淡出）；现代底图已改为自托管 Wasabi 快照（大陆免翻墙）。下一步 **Phase 2**（其余历史图 + 离散时间轴 + MapViewer 泛化 + 版权页）。
+> 状态：**Phase 0–2 已完成（Phase 2 工程完成）**——已上线 `tools.portkey.click/cd-old-map`：4 张配准历史图（1911 / 1915 拼幅 / 1933 / 1944）、离散时间轴 + epoch 切换（含「现今」）、来源/版权弹窗（含 `mailto:` 举报），全部质量闸门绿灯；现代底图为自托管 Wasabi 快照（大陆免翻墙）。继续向 5–8 张目标增图（尤其 1950s–1975 时段）属架构已支持的内容工作，只待源扫描图。下一步功能性工作是 **Phase 3**（卷帘对照 / URL 深链接 / 移动端）。
 >
-> 文档导航：架构与设计决策 [`plan.md`](./plan.md) · 现代底图机制与更新 [`docs/basemap.md`](./docs/basemap.md) · 新增历史图 SOP [`docs/adding-a-map.md`](./docs/adding-a-map.md) · 对象存储目录约定 [`docs/object-storage.md`](./docs/object-storage.md) · Phase 0–1 历史落地清单 [`phase-0-1-guide.md`](./phase-0-1-guide.md)。
+> 文档导航：**新人从这里开始** → [`CLAUDE.md`](./CLAUDE.md)（状态速览）与 [`docs/development.md`](./docs/development.md)（上手与架构）· 架构与设计决策 [`plan.md`](./plan.md) · 现代底图机制与更新 [`docs/basemap.md`](./docs/basemap.md) · 新增历史图 SOP [`docs/adding-a-map.md`](./docs/adding-a-map.md) · 对象存储目录约定 [`docs/object-storage.md`](./docs/object-storage.md) · 贡献指南 [`CONTRIBUTING.md`](./CONTRIBUTING.md) · Phase 0–1 历史落地清单（已归档）[`docs/archive/phase-0-1-guide.md`](./docs/archive/phase-0-1-guide.md)。
 
 ## 它是怎么工作的
 
@@ -23,7 +23,7 @@ Astro · TypeScript · React · MapLibre GL JS · Allmaps（@allmaps/maplibre, @
 
 ## 本地开发
 
-前置（Ubuntu 示例；详见 `phase-0-1-guide.md`）：
+前置（Ubuntu 示例；详见 `docs/archive/phase-0-1-guide.md`）：
 
 ```bash
 # Node 22（Active LTS）+ pnpm

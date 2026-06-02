@@ -116,4 +116,4 @@ rclone copy ./tiles/<mapId> \
 ```
 
 > 瓦片体量大、极少变动，**永不进 git**（`.gitignore` 已忽略 `tiles/`、`*.jpg` 等）。
-> 重新生成方式见本文件与 `phase-0-1-guide.md` §2.2–2.3。
+> 重新生成方式见本文件与 `docs/archive/phase-0-1-guide.md` §2.2–2.3。
