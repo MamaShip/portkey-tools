@@ -32,7 +32,7 @@ pnpm check && pnpm lint && pnpm format:check && pnpm validate && pnpm test
 
   ```
   // SPDX-License-Identifier: AGPL-3.0-or-later
-  // Copyright (C) 2026 MamaShip
+  // Copyright (C) 2026 <Author>
   ```
 
 ## PR / Issue 流程
@@ -54,7 +54,3 @@ pnpm check && pnpm lint && pnpm format:check && pnpm validate && pnpm test
 - **代码**按 **[AGPL-3.0-or-later](./LICENSE)** 发布；提交 PR 即表示你同意你的贡献以此许可发布。
 - **配准标注数据**（`src/data/annotations/*.json`）以 **CC0** 发布。
 - 详见 [`README.md`](./README.md) 的「许可（分层）」一节。
-
-## 行为准则
-
-对人友善、对事认真。技术讨论对事不对人。
