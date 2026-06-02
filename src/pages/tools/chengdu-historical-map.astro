@@ -10,6 +10,95 @@ import MapViewer from "../../components/MapViewer.tsx";
   description="在现代地图上叠加经过地理配准的成都历史老地图。"
   fullBleed
 >
+  {/*
+    静态启动遮罩：随 HTML 第一帧即绘制，零 JS 依赖。解决「下载 ~1.8MB 岛屿包的
+    那 ~10s 里屏幕全白」——因为 MapViewer 是 client:only，它内部的加载动画必须等
+    整个包下载解析后才能出现。这里先用一个外观一致的静态遮罩占位，React 岛屿挂载后
+    由 MapViewer 把本节点移除，无缝接管到组件内的分阶段加载动画。
+  */}
+  <div id="map-boot-overlay" role="status" aria-busy="true">
+    <div class="boot-card">
+      <div class="boot-spinner"></div>
+      <div class="boot-status">正在初始化地图…</div>
+      <div class="boot-bar-track"><div class="boot-bar-fill"></div></div>
+    </div>
+  </div>
+
   {/* MapLibre 依赖 window，组件仅客户端渲染 */}
   <MapViewer client:only="react" />
 </BaseLayout>
+
+<style>
+  /* 与 MapLoadingOverlay 外观保持一致，使静态→React 的接管无可见跳变 */
+  #map-boot-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(245, 245, 247, 0.85);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    font: 13px/1.4 system-ui, sans-serif;
+    color: #222;
+  }
+  #map-boot-overlay .boot-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    min-width: 220px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 22px 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  }
+  #map-boot-overlay .boot-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid rgba(0, 0, 0, 0.12);
+    border-top-color: rgba(60, 60, 70, 0.85);
+    border-radius: 50%;
+    animation: boot-spin 0.8s linear infinite;
+  }
+  #map-boot-overlay .boot-status {
+    font-weight: 600;
+  }
+  #map-boot-overlay .boot-bar-track {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+  #map-boot-overlay .boot-bar-fill {
+    height: 100%;
+    width: 12%;
+    border-radius: 2px;
+    background: rgba(60, 60, 70, 0.85);
+  }
+  @keyframes boot-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #map-boot-overlay .boot-spinner {
+      animation: none;
+      border-top-color: rgba(0, 0, 0, 0.12);
+    }
+    #map-boot-overlay .boot-status {
+      animation: boot-pulse 1.6s ease-in-out infinite;
+    }
+  }
+  @keyframes boot-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
+</style>

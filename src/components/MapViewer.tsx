@@ -61,6 +61,10 @@ export default function MapViewer() {
     // 捕获稳定的图层表引用，供 cleanup 使用（避免 react-hooks 的 ref-in-cleanup 告警）。
     const layers = layersRef.current;
 
+    // 岛屿已挂载：移除 Astro 页面里的静态启动遮罩（仅在岛屿包下载期占位）。
+    // 此刻 React 的 MapLoadingOverlay 已随本次渲染入场（外观一致的 init 阶段），接管无跳变。
+    document.getElementById("map-boot-overlay")?.remove();
+
     // 加载完成判定：去重 + 兜底定时器。任何事件都不触发时，也保证加载层最终淡出，
     // 用户永不被永久遮挡。
     let done = false;
