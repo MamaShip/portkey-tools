@@ -33,6 +33,13 @@ for (const e of epochs) {
   }
 }
 
+// 2b) 首屏默认站点至多一个（多个 default:true 会让开局展示不确定）
+const defaultEpochs = epochs.filter((e) => e.default);
+if (defaultEpochs.length > 1)
+  fail(
+    `有多个 default:true 的 epoch: ${defaultEpochs.map((e) => e.id).join(", ")}`,
+  );
+
 // 3) 每张 map 的 Allmaps 标注文件必须存在，且其 target.source.id 必须等于
 //    iiifInfoUrl 去掉末尾 /info.json 的基址（拦住 SOP 附录列的「断链」常见坑：
 //    标注指向的 IIIF 基址与登记的 info.json 不一致时，浏览器取不到瓦片）。

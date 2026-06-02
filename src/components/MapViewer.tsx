@@ -29,14 +29,15 @@ const STYLE = positronStyle as unknown as maplibregl.StyleSpecification;
 const mapsById = new Map(maps.map((m) => [m.id, m]));
 const STATIONS = timelineStations(epochs); // 已按 order 升序（左旧 → 右新）
 
-// 首屏默认站点 = 最新的历史 epoch，保持 Phase 1「开局即见叠加层」体验；无历史图则退到「现今」。
-const NEWEST_HISTORICAL = [...STATIONS]
-  .reverse()
-  .find((e) => e.kind === "historical");
-const INITIAL_EPOCH_ID = NEWEST_HISTORICAL?.id ?? "present";
+// 首屏默认站点：优先显式标记 `default: true` 的 epoch；否则退到最新历史图（保持
+// Phase 1「开局即见叠加层」体验）；再无历史图则退到「现今」。
+const INITIAL_EPOCH =
+  STATIONS.find((e) => e.default) ??
+  [...STATIONS].reverse().find((e) => e.kind === "historical");
+const INITIAL_EPOCH_ID = INITIAL_EPOCH?.id ?? "present";
 const INITIAL_OPACITY =
-  (NEWEST_HISTORICAL?.mapId
-    ? mapsById.get(NEWEST_HISTORICAL.mapId)?.defaultOpacity
+  (INITIAL_EPOCH?.mapId
+    ? mapsById.get(INITIAL_EPOCH.mapId)?.defaultOpacity
     : undefined) ?? 0.7;
 
 // 键盘 ↑/↓ 每次调透明度的步长（方向键二维控制器的「古今融合」轴，见 plan §决策6）。

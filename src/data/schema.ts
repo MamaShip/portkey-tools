@@ -14,6 +14,7 @@ export const EpochSchema = z.object({
   order: z.number(), // 时间轴排序（大=新）
   kind: z.enum(["basemap", "historical"]),
   mapId: z.string().optional(), // kind=historical 时指向 maps 登记表
+  default: z.boolean().optional(), // 首屏默认站点（至多一个）；缺省则退到「最新历史图」
 });
 export type Epoch = z.infer<typeof EpochSchema>;
 
