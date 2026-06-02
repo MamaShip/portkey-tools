@@ -15,7 +15,9 @@
     "validate": "tsx scripts/validate-data.ts",
     "bake:basemap": "tsx scripts/bake-basemap.ts",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "verify": "pnpm check && pnpm lint && pnpm format:check && pnpm validate && pnpm test",
+    "fix": "prettier --write . && pnpm verify"
   },
   "dependencies": {
     "@allmaps/annotation": "1.0.0-beta.37",

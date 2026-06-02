@@ -41,11 +41,14 @@ Astro 6 + TypeScript + React 19（仅客户端 island）+ MapLibre GL 5 + Allmap
 | `pnpm test`         | Vitest 单元测试（含配准 sanity）                                    |
 | `pnpm bake:basemap` | 重新烘焙自托管底图快照（见 [`docs/basemap.md`](./docs/basemap.md)） |
 
-**每次改完代码都必须把五道闸门跑全绿**：`pnpm check && pnpm lint && pnpm format:check && pnpm validate && pnpm test`（与 CI `.github/workflows/ci.yml` 一致）。
+**每次改完（含改文档）都必须把五道闸门跑全绿**。上库前一条命令搞定：
+
+- **`pnpm fix`** — 先 `prettier --write .` 自动格式化整仓，再跑全部闸门。**日常用这条最省心**（格式问题自动修好）。
+- **`pnpm verify`** — 只读不改，原样跑全部五道闸门（`check + lint + format:check + validate + test`），**与 CI `.github/workflows/ci.yml` 完全一致**。上库前最后确认用它。
 
 > ⚠️ **铁律**：
 >
-> - 必须跑**整仓**命令（如上原样执行），**不要只挑自己改的文件跑**——CI 跑的是整仓，挑文件跑会漏报。
+> - 用上面的聚合命令跑**整仓**，**不要只挑自己改的文件跑**——CI 跑的是整仓（连 `.md` 文档都过 prettier），挑文件跑会漏报。
 > - **只要任一闸门非全绿（哪怕报错文件不是你这次改的），就不算通过**，必须当场修到全绿（如 `pnpm format` 写回格式），不得以"与本次改动无关"为由跳过或淡化。
 > - 报告结果时如实陈述：哪条命令、退出码、是否全绿；不得把失败说成通过。
 
