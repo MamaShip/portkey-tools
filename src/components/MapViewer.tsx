@@ -113,9 +113,22 @@ export default function MapViewer() {
       keyboard: false,
       // CJK 表意文字用浏览器本地字体渲染，不下载汉字字形（只需烘焙拉丁字形）。
       localIdeographFontFamily: "sans-serif",
+      // 关闭默认（展开式）署名控件，下面换成 compact：右下角默认只显示一个 ⓘ 按钮，
+      // 点击才展开版权全文，开局不占视野。
+      attributionControl: false,
     });
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl());
+    // 右下角署名控件：compact 模式呈现为一个 ⓘ 按钮，点击才展开版权全文。
+    // MapLibre 的 compact 初始却带 `maplibregl-compact-show`（即开局展开），且在
+    // resize 时会重新展开——这里主动移除该类，使其默认收起，并在 resize 后再收起。
+    map.addControl(new maplibregl.AttributionControl({ compact: true }));
+    const collapseAttribution = () =>
+      ref.current
+        ?.querySelector(".maplibregl-ctrl-attrib")
+        ?.classList.remove("maplibregl-compact-show");
+    collapseAttribution();
+    map.on("resize", collapseAttribution);
 
     // OpenFreeMap 样式可能引用其 sprite 中并不存在的 POI 图标（office/gate/atm…），
     // 会逐个刷 "Image could not be loaded" 告警。注册透明占位图消除噪声

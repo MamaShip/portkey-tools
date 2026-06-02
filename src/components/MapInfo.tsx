@@ -13,7 +13,8 @@ interface MapInfoProps {
 const panelStyle: React.CSSProperties = {
   position: "absolute",
   left: 12,
-  top: 12,
+  // 下移避让左上角的静态返回按钮（见 cd-old-map.astro 的 .map-back，约 40px 高）。
+  top: 60,
   zIndex: 1,
   maxWidth: "min(72vw, 320px)",
   background: "rgba(255,255,255,0.92)",

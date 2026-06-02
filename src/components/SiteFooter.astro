@@ -1,0 +1,43 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 MamaShip
+//
+// 内容页共享页脚（纯静态）：版权 + GitHub + 许可，一行小字。
+const REPO_URL = "https://github.com/MamaShip/portkey-tools";
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container inner">
+    <span>© {year} Portkey Tools</span>
+    <span class="dot" aria-hidden="true">·</span>
+    <a href={REPO_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
+    <span class="dot" aria-hidden="true">·</span>
+    <span>代码 AGPL-3.0</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--card-border);
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding-block: 1.25rem;
+  }
+  .site-footer a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .site-footer a:hover {
+    color: var(--accent-ink);
+  }
+  .dot {
+    opacity: 0.5;
+  }
+</style>

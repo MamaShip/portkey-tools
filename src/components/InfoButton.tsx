@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 MamaShip
 //
-// 「来源与版权」信息按钮：左下角空位（避开右上 NavigationControl、右侧 OpacityControl、
+// 「关于」信息按钮：左下角空位（避开右上 NavigationControl、右侧 OpacityControl、
 // 底部居中 Timeline、左上 MapInfo）。点击打开 SourcesModal。纯展示，状态由父级持有。
 
 interface InfoButtonProps {
@@ -31,13 +31,13 @@ export default function InfoButton({ onClick }: InfoButtonProps) {
     <button
       style={buttonStyle}
       onClick={onClick}
-      aria-label="来源与版权"
-      title="来源与版权"
+      aria-label="关于"
+      title="关于"
     >
       <span aria-hidden="true" style={{ fontSize: 15 }}>
         ⓘ
       </span>
-      来源与版权
+      关于
     </button>
   );
 }

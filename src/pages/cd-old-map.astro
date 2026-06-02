@@ -26,11 +26,67 @@ import MapViewer from "../components/MapViewer.tsx";
     </div>
   </div>
 
+  {
+    /*
+    返回首页按钮：静态 <a>，随首帧即现、零 JS（不必等 1.8MB 岛屿包下载，与上方
+    boot-overlay 同思路）。沉浸式地图页不挂全站顶栏，这是唯一的返回出口。
+    位置左上，MapInfo 已下移到其下方避让（见 MapInfo.tsx）。
+  */
+  }
+  <a id="map-back" href="/" aria-label="返回首页" title="返回首页">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M15 5l-7 7 7 7"></path>
+    </svg>
+    <span>首页</span>
+  </a>
+
   {/* MapLibre 依赖 window，组件仅客户端渲染 */}
   <MapViewer client:only="react" />
 </BaseLayout>
 
 <style>
+  /* 返回首页按钮：与地图玻璃控件（InfoButton/MapInfo）同系外观，左上角 */
+  #map-back {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    z-index: 11;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px 8px 9px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+    font:
+      13px/1 system-ui,
+      sans-serif;
+    font-weight: 600;
+    color: #222;
+    text-decoration: none;
+    transition:
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+  #map-back:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.28);
+  }
+  #map-back svg {
+    display: block;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #map-back {
+      transition: none;
+    }
+  }
+
   /* 与 MapLoadingOverlay 外观保持一致，使静态→React 的接管无可见跳变 */
   #map-boot-overlay {
     position: fixed;

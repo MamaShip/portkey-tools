@@ -4,33 +4,321 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 
 // 工具索引：网站随时间不断长出新工具，每个工具一条目。
-const tools = [
+// status: "live" 可点进；"soon" 占位卡（暗示站点持续生长，不可点击）。
+// icon: 内联 SVG 的 <path d> 列表，统一在 24×24 视框、currentColor 描边渲染。
+type Tool = {
+  href?: string;
+  title: string;
+  desc: string;
+  status: "live" | "soon";
+  paths: string[];
+};
+
+const tools: Tool[] = [
   {
     href: "/cd-old-map",
     title: "成都老地图",
-    desc: "在现代地图上叠加经过地理配准的成都历史老地图，可在时间轴上切换并淡入淡出对照。",
+    desc: "在现代地图上叠加经过锚点标定的成都历史老地图。可以切换不同时间节点，进行古今对照查看。",
+    status: "live",
+    paths: ["M9 4 3 7v13l6-3 6 3 6-3V4l-6 3-6-3z", "M9 4v13", "M15 7v13"],
+  },
+  {
+    title: "更多工具",
+    desc: "这里会持续长出新的小工具，每个工具一个独立页面。敬请期待。",
+    status: "soon",
+    paths: ["M12 5v14", "M5 12h14"],
+  },
+  {
+    title: "敬请期待",
+    desc: "有想法或建议？欢迎在 GitHub 上提 issue 一起决定下一个工具。",
+    status: "soon",
+    paths: ["M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L12 3z"],
   },
 ];
 ---
 
-<BaseLayout title="Portkey Tools" description="一个提供有趣小工具的个人网站。">
-  <h1>Portkey Tools</h1>
-  <p>一个提供有趣小工具的个人网站。</p>
+<BaseLayout
+  title="Portkey Tools"
+  description="一个提供有趣小工具的个人网站。"
+  wide
+>
+  <section class="hero">
+    <svg
+      class="hero-mark"
+      viewBox="0 0 32 32"
+      width="64"
+      height="64"
+      aria-hidden="true"
+    >
+      <rect width="32" height="32" rx="7" fill="var(--accent)"></rect>
+      <path
+        d="M16 6c-3.6 0-6.5 2.9-6.5 6.5C9.5 17.2 16 25 16 25s6.5-7.8 6.5-12.5C22.5 8.9 19.6 6 16 6z"
+        fill="#fff"></path>
+      <circle cx="16" cy="12.5" r="2.6" fill="var(--accent)"></circle>
+    </svg>
+    <h1 class="hero-title">Portkey&nbsp;Tools</h1>
+    <p class="hero-tagline">一个提供有趣小工具的个人网站</p>
+  </section>
 
-  <h2>工具</h2>
-  <ul>
-    {
-      tools.map((t) => (
-        <li>
-          <a href={t.href}>{t.title}</a>
-          <span> — {t.desc}</span>
-        </li>
-      ))
-    }
-  </ul>
-
-  <hr />
-  <p>
-    <a href="/about">关于</a>
-  </p>
+  <section aria-label="工具列表">
+    <h2 class="section-title">工具</h2>
+    <ul class="grid">
+      {
+        tools.map((t, i) => {
+          const icon = (
+            <svg
+              class="card-icon"
+              viewBox="0 0 24 24"
+              width="26"
+              height="26"
+              aria-hidden="true"
+            >
+              {t.paths.map((d) => (
+                <path
+                  d={d}
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              ))}
+            </svg>
+          );
+          const body = (
+            <>
+              <span class="card-icon-wrap">{icon}</span>
+              <span class="card-body">
+                <span class="card-head">
+                  <span class="card-title">{t.title}</span>
+                  {t.status === "soon" && <span class="badge">敬请期待</span>}
+                </span>
+                <span class="card-desc">{t.desc}</span>
+              </span>
+              {t.status === "live" && (
+                <span class="card-arrow" aria-hidden="true">
+                  →
+                </span>
+              )}
+            </>
+          );
+          return (
+            <li class="reveal" style={`--d:${i * 80}ms`}>
+              {t.status === "live" ? (
+                <a class="card card-live" href={t.href}>
+                  {body}
+                </a>
+              ) : (
+                <div class="card card-soon" aria-disabled="true">
+                  {body}
+                </div>
+              )}
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
 </BaseLayout>
+
+<style>
+  /* —— Hero —— */
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 2.5rem 0 3rem;
+    isolation: isolate;
+  }
+  /* 极淡青绿径向渐变背景，缓慢漂移（仅动 background-position，开销极低） */
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -10% -20% 0;
+    z-index: -1;
+    background:
+      radial-gradient(
+        40% 60% at 30% 20%,
+        rgba(13, 148, 136, 0.14),
+        transparent 70%
+      ),
+      radial-gradient(
+        45% 55% at 75% 30%,
+        rgba(56, 189, 172, 0.12),
+        transparent 70%
+      );
+    background-size: 180% 180%;
+    animation: drift 18s ease-in-out infinite alternate;
+  }
+  .hero-mark {
+    display: block;
+    margin: 0 auto 1rem;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(13, 148, 136, 0.25);
+    animation: float 5s ease-in-out infinite;
+  }
+  .hero-title {
+    margin: 0;
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(120deg, var(--ink), var(--accent-ink));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero-tagline {
+    margin: 0.6rem 0 0;
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+
+  /* —— 工具栅格 —— */
+  .section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 1rem;
+  }
+  .grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: 1rem;
+  }
+  .card {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    height: 100%;
+    padding: 1.15rem 1.2rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    text-decoration: none;
+    color: inherit;
+  }
+  .card-live {
+    transition:
+      transform 0.22s ease,
+      box-shadow 0.22s ease,
+      border-color 0.22s ease;
+  }
+  .card-live:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: rgba(13, 148, 136, 0.35);
+  }
+  .card-soon {
+    border-style: dashed;
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: none;
+    cursor: default;
+  }
+  .card-soon .card-icon-wrap,
+  .card-soon .card-title,
+  .card-soon .card-desc {
+    opacity: 0.65;
+  }
+  .card-icon-wrap {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    color: var(--accent);
+    background: rgba(13, 148, 136, 0.1);
+  }
+  .card-live:hover .card-icon-wrap {
+    background: rgba(13, 148, 136, 0.16);
+  }
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .card-desc {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .badge {
+    flex: none;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    color: var(--accent-ink);
+    background: rgba(13, 148, 136, 0.12);
+  }
+  .card-arrow {
+    flex: none;
+    align-self: center;
+    color: var(--accent);
+    font-size: 1.2rem;
+    transition: transform 0.22s ease;
+  }
+  .card-live:hover .card-arrow {
+    transform: translateX(4px);
+  }
+
+  /* —— 入场动画：错落淡入上浮（纯 CSS，首屏内容零 JS） —— */
+  .reveal {
+    opacity: 0;
+    animation: rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--d, 0ms);
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-7px);
+    }
+  }
+  @keyframes drift {
+    from {
+      background-position: 0% 0%;
+    }
+    to {
+      background-position: 100% 100%;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero::before,
+    .hero-mark,
+    .reveal {
+      animation: none;
+    }
+    .reveal {
+      opacity: 1;
+    }
+  }
+</style>

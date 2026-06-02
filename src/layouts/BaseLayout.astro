@@ -3,14 +3,21 @@
 // Copyright (C) 2026 MamaShip
 //
 // 共享布局：网站随时间长出更多工具，每个工具 = 一个新路由，复用此外壳。
+// 内容页（首页/about）套「轻量顶栏 + 内容容器 + 页脚」骨架；占满视口的工具页
+// （地图）传 fullBleed，直接铺满、不带顶栏/页脚（沉浸式）。
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+
 interface Props {
   title: string;
   description?: string;
-  /** 地图等需占满视口的工具页设为 true，去掉默认内容边距 */
+  /** 地图等需占满视口的工具页设为 true，去掉顶栏/页脚与内容边距 */
   fullBleed?: boolean;
+  /** 内容页用更宽的容器（首页栅格用 wide，about 阅读列用窄） */
+  wide?: boolean;
 }
 
-const { title, description, fullBleed = false } = Astro.props;
+const { title, description, fullBleed = false, wide = false } = Astro.props;
 const siteName = "Portkey Tools";
 ---
 
@@ -23,15 +30,39 @@ const siteName = "Portkey Tools";
     {description && <meta name="description" content={description} />}
     <title>{title === siteName ? title : `${title} · ${siteName}`}</title>
   </head>
-  <body class:list={[{ fullbleed: fullBleed }]}>
-    <slot />
+  <body class:list={[{ fullbleed: fullBleed, wide }]}>
+    {
+      fullBleed ? (
+        <slot />
+      ) : (
+        <>
+          <SiteHeader />
+          <main class="container site-main">
+            <slot />
+          </main>
+          <SiteFooter />
+        </>
+      )
+    }
   </body>
 </html>
 
 <style is:global>
   :root {
     color-scheme: light dark;
-    --maxw: 42rem;
+    /* —— 统一设计令牌：与地图玻璃控件（InfoButton/MapInfo）同系 —— */
+    --accent: #0d9488;
+    --accent-ink: #0a6f66;
+    --ink: #1a2024;
+    --muted: #6b7680;
+    --bg: #f7faf9;
+    --card-bg: rgba(255, 255, 255, 0.92);
+    --card-border: rgba(13, 148, 136, 0.12);
+    --card-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+    --card-shadow-hover: 0 10px 30px rgba(13, 148, 136, 0.16);
+    --radius: 12px;
+    --content-narrow: 42rem;
+    --content-wide: 62rem;
   }
   * {
     box-sizing: border-box;
@@ -50,18 +81,36 @@ const siteName = "Portkey Tools";
       "Noto Sans SC",
       sans-serif;
     line-height: 1.6;
+    color: var(--ink);
   }
-  /* 内容型页面（首页/about）的默认排版边距 */
+  /* 内容型页面（首页/about）：纵向骨架 + 极淡背景 */
   body:not(.fullbleed) {
-    max-width: var(--maxw);
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    background: var(--bg);
+  }
+  body:not(.fullbleed) .site-main {
+    flex: 1;
+  }
+  /* 共享内容容器：左右收口 + 横向内边距；宽度按页面 narrow / wide 切换 */
+  .container {
+    width: 100%;
+    max-width: var(--content-narrow);
     margin: 0 auto;
-    padding: 2rem 1.25rem 4rem;
+    padding-inline: 1.25rem;
+  }
+  body.wide .container {
+    max-width: var(--content-wide);
+  }
+  .site-main {
+    padding-block: 2.5rem 3.5rem;
   }
   /* 工具页（地图）占满视口，无边距 */
   body.fullbleed {
     overflow: hidden;
   }
   a {
-    color: #2563eb;
+    color: var(--accent-ink);
   }
 </style>

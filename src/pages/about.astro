@@ -2,15 +2,132 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 MamaShip
 import BaseLayout from "../layouts/BaseLayout.astro";
+
+const REPO_URL = "https://github.com/MamaShip/portkey-tools";
 ---
 
 <BaseLayout title="关于" description="关于 Portkey Tools。">
-  <h1>关于</h1>
-  <p>
-    Portkey Tools 是一个可持续累加的个人兴趣工具集，每个工具是一个独立页面。
-  </p>
-  <p>
-    当前第一个工具是<a href="/cd-old-map">成都老地图</a>。
-  </p>
-  <p><a href="/">← 返回首页</a></p>
+  <article class="about reveal">
+    <h1>关于</h1>
+
+    <p class="lead">
+      Portkey Tools 是一个持续累加的工具箱——每个工具都是一个独立页面，
+      随时间不断长出新的一个。
+    </p>
+
+    <p>
+      完全个人兴趣向的站点。我关注到什么就做什么。
+      但「有趣」是最低要求！
+    </p>
+
+    <h2>技术取向</h2>
+    <p>
+      站点用 Astro 多页架构搭建，重交互的部分做成按需加载的客户端 island，
+      尽量做到轻量、好看、顺手。
+    </p>
+
+    <h2>开源</h2>
+    <p>
+      代码完全开源。欢迎在 GitHub 上查看实现、提 issue
+      或建议下一个值得做的工具。
+    </p>
+
+    <a
+      class="repo-link"
+      href={REPO_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85l-.01 2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2z"
+        ></path>
+      </svg>
+      <span>在 GitHub 上查看</span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </a>
+
+    <p class="license">
+      代码以 AGPL-3.0 许可发布；地图配准标注数据以 CC0 释出。
+    </p>
+  </article>
 </BaseLayout>
+
+<style>
+  .about h1 {
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+    margin: 0 0 1rem;
+    letter-spacing: -0.5px;
+  }
+  .about h2 {
+    font-size: 1.15rem;
+    margin: 2rem 0 0.5rem;
+  }
+  .about p {
+    color: #2c353b;
+  }
+  .lead {
+    font-size: 1.12rem;
+    color: var(--ink) !important;
+  }
+  .repo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 1.75rem;
+    padding: 0.7rem 1.1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .repo-link:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: rgba(13, 148, 136, 0.35);
+  }
+  .repo-link .arrow {
+    color: var(--accent);
+    transition: transform 0.2s ease;
+  }
+  .repo-link:hover .arrow {
+    transform: translateX(4px);
+  }
+  .license {
+    margin-top: 2.5rem;
+    font-size: 0.85rem;
+    color: var(--muted) !important;
+  }
+
+  .reveal {
+    opacity: 0;
+    animation: rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      animation: none;
+      opacity: 1;
+    }
+    .repo-link {
+      transition: none;
+    }
+  }
+</style>

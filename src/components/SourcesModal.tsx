@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 MamaShip
 //
-// 来源与版权弹窗：原独立 /copyright 页内移为 map 页内的信息弹窗（见 plan）。
+// 「关于」弹窗：原独立 /copyright 页内移为 map 页内的信息弹窗（见 plan）。「来源与版权」为窗内一节。
 // 构建期遍历 maps 登记表逐图列出来源/收藏/制图者/许可，新增一张图即自动出现，无需手工维护。
 // 受控组件，open=false 时不渲染；状态由父级 MapViewer 持有。
 
@@ -92,7 +92,7 @@ export default function SourcesModal({ open, onClose }: SourcesModalProps) {
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label="来源与版权"
+      aria-label="关于"
     >
       {/* 阻止冒泡：点击卡片内部不应关闭弹窗 */}
       <div style={cardStyle} onClick={(e) => e.stopPropagation()}>
@@ -100,9 +100,11 @@ export default function SourcesModal({ open, onClose }: SourcesModalProps) {
           ×
         </button>
 
-        <h2 style={{ margin: "0 0 0.6rem", fontSize: "1.25rem" }}>
+        <h2 style={{ margin: "0 0 0.6rem", fontSize: "1.25rem" }}>关于</h2>
+
+        <h3 style={{ margin: "0.4rem 0 0.5rem", fontSize: "1rem" }}>
           来源与版权
-        </h2>
+        </h3>
         <p style={{ marginTop: 0 }}>
           本站历史地图均取自公共领域（制图者多为当时政府机构）。下方逐图列出来源、收藏机构、制图者与许可状态。
         </p>
