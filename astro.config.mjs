@@ -20,7 +20,9 @@ export default defineConfig({
             if (!id.includes("node_modules")) return;
             if (id.includes("maplibre-gl")) return "maplibre";
             if (id.includes("@allmaps")) return "allmaps";
-            if (/[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id))
+            if (
+              /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id)
+            )
               return "react";
           },
         },

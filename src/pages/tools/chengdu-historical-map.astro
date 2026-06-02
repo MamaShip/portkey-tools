@@ -10,12 +10,14 @@ import MapViewer from "../../components/MapViewer.tsx";
   description="在现代地图上叠加经过地理配准的成都历史老地图。"
   fullBleed
 >
-  {/*
+  {
+    /*
     静态启动遮罩：随 HTML 第一帧即绘制，零 JS 依赖。解决「下载 ~1.8MB 岛屿包的
     那 ~10s 里屏幕全白」——因为 MapViewer 是 client:only，它内部的加载动画必须等
     整个包下载解析后才能出现。这里先用一个外观一致的静态遮罩占位，React 岛屿挂载后
     由 MapViewer 把本节点移除，无缝接管到组件内的分阶段加载动画。
-  */}
+  */
+  }
   <div id="map-boot-overlay" role="status" aria-busy="true">
     <div class="boot-card">
       <div class="boot-spinner"></div>
@@ -40,7 +42,9 @@ import MapViewer from "../../components/MapViewer.tsx";
     background: rgba(245, 245, 247, 0.85);
     backdrop-filter: blur(2px);
     -webkit-backdrop-filter: blur(2px);
-    font: 13px/1.4 system-ui, sans-serif;
+    font:
+      13px/1.4 system-ui,
+      sans-serif;
     color: #222;
   }
   #map-boot-overlay .boot-card {

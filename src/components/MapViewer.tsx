@@ -18,6 +18,7 @@ import {
 } from "../data/basemap/extent";
 import Timeline from "./Timeline";
 import OpacityControl from "./OpacityControl";
+import MapInfo from "./MapInfo";
 import MapLoadingOverlay, { type LoadStage } from "./MapLoadingOverlay";
 
 // 自托管的 positron 矢量样式：瓦片/字形/sprite 均指向 Wasabi（见 docs/object-storage.md），
@@ -195,11 +196,10 @@ export default function MapViewer() {
         currentEpochId={currentEpochId}
         onSelect={setCurrentEpochId}
       />
+      <MapInfo title={activeMap?.title} attribution={activeMap?.attribution} />
       <OpacityControl
-        title={activeMap?.title ?? "现今"}
         value={opacity}
         onChange={setOpacity}
-        attribution={activeMap?.attribution}
         disabled={!activeMap}
       />
     </>
