@@ -4,7 +4,7 @@
 > 一个提供有趣小工具的个人网站。
 > 在线：**https://tools.portkey.click**
 
-当前第一个工具是 **成都历史地图查看器**：在现代地图上叠加经过地理配准的成都历史老地图（宣统年间 ~ 1975 年），可在时间轴上切换时间点、用透明度滑块在古今之间淡入淡出，观察街道与城市形态的演变。
+当前第一个工具是 **成都老地图**：在现代地图上叠加经过地理配准的成都历史老地图（宣统年间 ~ 1975 年），可在时间轴上切换时间点、用透明度滑块在古今之间淡入淡出，观察街道与城市形态的演变。
 
 > 状态：**Phase 0–1 已完成**——《1933年成都街市图》已端到端地理配准并上线 `tools.portkey.click`（叠加在现代成都、可用透明度滑块古今淡入淡出）；现代底图已改为自托管 Wasabi 快照（大陆免翻墙）。下一步 **Phase 2**（其余历史图 + 离散时间轴 + MapViewer 泛化 + 版权页）。
 >
@@ -36,7 +36,7 @@ sudo apt install -y default-jre libvips-tools rclone
 
 ```bash
 pnpm install
-pnpm dev          # http://localhost:4321 → /tools/chengdu-historical-map
+pnpm dev          # http://localhost:4321 → /cd-old-map
 ```
 
 常用脚本：

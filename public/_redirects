@@ -1,0 +1,4 @@
+# Cloudflare Pages 重定向规则（真 301）。
+# 旧地图页 /tools/chengdu-historical-map 已分享出去过，精简 URL 后保留跳转，避免旧链接 404。
+/tools/chengdu-historical-map   /cd-old-map   301
+/tools/chengdu-historical-map/  /cd-old-map   301

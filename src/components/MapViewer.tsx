@@ -20,6 +20,8 @@ import Timeline from "./Timeline";
 import OpacityControl from "./OpacityControl";
 import MapInfo from "./MapInfo";
 import MapLoadingOverlay, { type LoadStage } from "./MapLoadingOverlay";
+import InfoButton from "./InfoButton";
+import SourcesModal from "./SourcesModal";
 
 // 自托管的 positron 矢量样式：瓦片/字形/sprite 均指向 Wasabi（见 docs/object-storage.md），
 // 由 scripts/bake-basemap.ts 烘焙生成。原 OpenFreeMap 公共实例（tiles.openfreemap.org）
@@ -57,6 +59,18 @@ export default function MapViewer() {
   // 首屏加载层状态：init→historical→done，done 后淡出再由 dismissed 卸载。
   const [stage, setStage] = useState<LoadStage>("init");
   const [dismissed, setDismissed] = useState(false);
+  // 「来源与版权」弹窗开关。infoOpenRef 镜像供初始化 effect 里的全局键盘回调读到最新值
+  // （该 effect 依赖 [] 只跑一次，不能把 infoOpen 加入依赖——会重建地图）。
+  const [infoOpen, setInfoOpen] = useState(false);
+  const infoOpenRef = useRef(false);
+  const openInfo = () => {
+    infoOpenRef.current = true;
+    setInfoOpen(true);
+  };
+  const closeInfo = () => {
+    infoOpenRef.current = false;
+    setInfoOpen(false);
+  };
 
   // 初始化地图（仅一次）：底图 + 控件 + 首屏加载判定 + 全局方向键控制器。
   // 历史叠加层的增删/透明度交由下面的「编排」effect 按当前 epoch 驱动。
@@ -126,6 +140,14 @@ export default function MapViewer() {
     // 全局方向键二维控制器：←→ 走时间轴，↑↓ 调透明度，均 preventDefault
     // （避免页面滚动 / 与竖向滑块原生键步进重复触发）。
     const onKey = (e: KeyboardEvent) => {
+      // 弹窗打开时：Esc 关闭，其余键全部吞掉，避免操作弹窗时背后地图随方向键/空格乱动。
+      if (infoOpenRef.current) {
+        if (e.key === "Escape") {
+          infoOpenRef.current = false;
+          setInfoOpen(false);
+        }
+        return;
+      }
       switch (e.key) {
         case "ArrowRight":
           e.preventDefault();
@@ -217,6 +239,8 @@ export default function MapViewer() {
         onChange={setOpacity}
         disabled={!activeMap}
       />
+      <InfoButton onClick={openInfo} />
+      <SourcesModal open={infoOpen} onClose={closeInfo} />
     </>
   );
 }

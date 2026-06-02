@@ -110,7 +110,7 @@ export default function MapViewer() {
 import MapViewer from "../../components/MapViewer.tsx";
 ---
 <html lang="zh">
-  <head><meta charset="utf-8" /><title>成都历史地图查看器</title></head>
+  <head><meta charset="utf-8" /><title>成都老地图</title></head>
   <body style="margin:0">
     <MapViewer client:only="react" />
   </body>

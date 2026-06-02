@@ -197,7 +197,7 @@ curl -s -I -H "Origin: https://tools.portkey.click" "$BASE/info.json" \
 pnpm validate   # schema + 引用完整性（会检查 annotationPath 文件确实存在）
 pnpm test       # 配准 sanity（控制点数量/地理坐标在成都框内）+ 透明度/时间轴单测
 pnpm check && pnpm lint && pnpm format:check && pnpm build   # 类型/规范/构建
-pnpm dev        # http://localhost:4321/tools/chengdu-historical-map → 肉眼核对对齐 + 拖滑块淡入淡出
+pnpm dev        # http://localhost:4321/cd-old-map → 肉眼核对对齐 + 拖滑块淡入淡出
 ```
 
 - **配准 sanity 测试** [`tests/georef.test.ts`](../tests/georef.test.ts) 已**遍历 `maps` 登记表**（标注经 `src/lib/annotations.ts` 自动装载），断言每图控制点 ≥6、`geo` 落在成都经纬度框（lng 103.6–104.4 / lat 30.3–30.9）、像素坐标在源图尺寸内。新增图**自动获得覆盖，无需手写断言**。
