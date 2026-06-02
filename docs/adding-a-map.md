@@ -233,3 +233,19 @@ src/data/epochs.ts
 | URL 里出现中文/`%E5%9B%BE`                    | 源图用了中文文件名                           | 切片前 `cp` 成 ASCII 的 `<mapId>.jpg`（步骤 1）              |
 | `pnpm validate` 报标注文件缺失                | `maps.ts` 的 `annotationPath` 写错或文件没放 | 路径对齐 `src/data/annotations/<mapId>.json`                 |
 | 老图边角对不齐                                | 用了仿射（order 1）                          | Editor 改 TPS + 补四角控制点，重新导出（步骤 5，无需重切片） |
+
+---
+
+## 附二：多页 / 拼幅地图（方案 B）
+
+有些图源是**分成多张分别扫描**的（如《1915年成都街市图》分左右两张，尺寸还不一致：左 7936×12606、右 8134×12917）。**不要在像素层硬拼**——分别扫描的图有比例/朝向差异，`+append` 会错位且把误差永久烤进瓦片。改在**地理层**合并：每幅各自配准到底图，各自独立钉到真实经纬度，于是在底图上自然对齐相遇，接缝是「地理正确」而非「像素硬拼」。
+
+本仓库的标注是带 `items[]` 的 `AnnotationPage`，渲染器对整页 `addGeoreferenceAnnotation` 并整层 `setOpacity` ⇒ **多幅放进一个标注的 `items` 里 = 一个图层 = 时间轴一站 = 共享一个透明度滑块**。相对主流程（单图）只有这些差异：
+
+1. **切片/上传（步骤 2–4）跑 N 遍**：每幅一个 ASCII 图幅 id（`<mapId>-left` / `<mapId>-right` …），各自切片、各自传到 `.../iiif/<图幅id>`、各自验 public+CORS。
+2. **配准（步骤 5）每幅一次**：分别用各自 `info.json` 在 Editor 配准。**接缝一侧额外多打几个控制点**；若两幅有**重叠带**，在重叠带选同一批地物，把各幅那份都钉到**同一经纬度** → 接缝必然重合。各幅独立 warp 会各自吸收各次扫描的比例/朝向差。
+3. **合并标注**：把各幅导出的 Annotation 收进**一个** `src/data/annotations/<mapId>.json` 的 `items`（数组）。**主图幅放 `items[0]`**——`maps.ts` 的 `iiifInfoUrl` 填这一幅的 info.json，`validate` 用它做断链主锚点。
+4. **登记/渲染照常**：`maps.ts` + `epochs.ts` 各一行，**渲染器零改动**。
+5. **测试与数据闸门已支持多 items**：[`tests/georef.test.ts`](../tests/georef.test.ts) 遍历每一幅断言控制点数/地理框/像素尺寸；[`scripts/validate-data.ts`](../scripts/validate-data.ts) 除主锚点外，还校验其余每幅 `source.id` 都落在同一 `/iiif/` 前缀下（防某幅断链漏过 CI）。
+
+实例：`mapId=chengdu-1915`，图幅 `chengdu-1915-left` / `chengdu-1915-right`，`iiifInfoUrl` 指 `chengdu-1915-left/info.json`。

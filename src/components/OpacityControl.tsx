@@ -71,7 +71,9 @@ export default function OpacityControl({
   disabled = false,
 }: OpacityControlProps) {
   const [showHint, setShowHint] = useState(false);
-  const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
 
   // 拖动中（range onChange 持续触发）浮现提示，停止 ~2s 后淡出。
   // 触摸端无空格键，跳过提示（见 SUPPORTS_KEYBOARD_HINT）。

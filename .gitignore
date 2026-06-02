@@ -20,6 +20,10 @@ basemap-dist/
 *.tif
 *.tiff
 
+# 拼幅地图（方案 B）的分幅原始导出：合并进 src/data/annotations/<mapId>.json 后即为中转输入，不入库
+/chengdu-*-left.json
+/chengdu-*-right.json
+
 # 系统/编辑器杂项
 .DS_Store
 *.log

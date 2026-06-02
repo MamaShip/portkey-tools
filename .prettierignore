@@ -12,3 +12,7 @@ coverage/
 pnpm-lock.yaml
 tiles/
 *.jpg
+
+# 拼幅地图分幅原始导出（中转输入，不入库，见 .gitignore）
+/chengdu-*-left.json
+/chengdu-*-right.json

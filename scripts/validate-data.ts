@@ -42,15 +42,32 @@ for (const m of maps) {
     continue;
   }
   const expectedBase = m.iiifInfoUrl.replace(/\/info\.json$/, "");
+  // 同一工具下所有图幅共享的 IIIF 前缀（截到 .../iiif/，含末尾斜杠）。
+  const iiifPrefix = expectedBase.replace(/[^/]+$/, "");
   try {
     const ann = JSON.parse(readFileSync(m.annotationPath, "utf8")) as {
       items?: { target?: { source?: { id?: string } } }[];
     };
-    const sourceId = ann.items?.[0]?.target?.source?.id;
-    if (sourceId !== expectedBase)
+    const items = ann.items ?? [];
+    if (items.length === 0) {
+      fail(`map ${m.id} 标注无 items`);
+      continue;
+    }
+    // items[0] 是登记的主图幅：其 source.id 必须等于 iiifInfoUrl 基址（断链主锚点）。
+    const primaryId = items[0]?.target?.source?.id;
+    if (primaryId !== expectedBase)
       fail(
-        `map ${m.id} 标注 target.source.id (${sourceId}) ≠ iiifInfoUrl 基址 (${expectedBase})`,
+        `map ${m.id} 标注 items[0] source.id (${primaryId}) ≠ iiifInfoUrl 基址 (${expectedBase})`,
       );
+    // 拼幅图（多 items，如 1915 左右两半）：其余每幅 source.id 也须指向同一 /iiif/ 前缀，
+    // 防止某一幅断链（指错桶/拼错 id）悄悄漏过 CI。
+    items.forEach((it, i) => {
+      const sid = it?.target?.source?.id;
+      if (typeof sid !== "string" || !sid.startsWith(iiifPrefix))
+        fail(
+          `map ${m.id} 标注 items[${i}] source.id (${sid}) 不在 IIIF 前缀 ${iiifPrefix} 下`,
+        );
+    });
   } catch (e) {
     fail(`map ${m.id} 标注 JSON 解析失败: ${m.annotationPath}（${String(e)}）`);
   }

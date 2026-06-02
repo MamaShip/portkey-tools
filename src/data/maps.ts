@@ -26,6 +26,24 @@ export const maps: HistoricalMap[] = [
     attribution: "《宣统三年成都街市图》· 傅崇渠绘（1911 / 公共领域）",
   },
   {
+    id: "chengdu-1915",
+    title: "1915年成都街市图",
+    year: 1915,
+    // 拼幅图：左右两幅各自切片配准，合并为一个双 items 标注。iiifInfoUrl 指主图幅（左/西半）。
+    iiifInfoUrl:
+      "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1915-left/info.json",
+    annotationPath: "src/data/annotations/chengdu-1915.json",
+    defaultOpacity: 0.7,
+    provenance: {
+      source: "四川陆军测量局（中华民国四年 / 1915）",
+      author: "四川陆军测量局",
+      license: "Public Domain",
+      notes:
+        "中华民国四年（1915）测图、七月制版；制图者为四川陆军测量局（当时政府测绘机构），视为公共领域。图分左右两幅分别扫描，经 Allmaps 各自配准后在地理上拼合（左=城西、右=城东）。",
+    },
+    attribution: "《1915年成都街市图》· 四川陆军测量局制（公共领域）",
+  },
+  {
     id: "chengdu-1933",
     title: "1933年成都街市图",
     year: 1933,

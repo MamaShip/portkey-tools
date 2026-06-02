@@ -25,40 +25,44 @@ describe("历史地图配准 sanity", () => {
   describe.each(maps)("$id（$title）", (m) => {
     const annotation = getAnnotation(m.id);
 
-    it("标注存在且解析出恰好一张地图", () => {
+    it("标注存在且至少解析出一张地图", () => {
       expect(annotation, `缺少 ${m.id} 的标注`).toBeDefined();
-      expect(parseAnnotation(annotation).length).toBe(1);
+      // 单幅图 1 项；拼幅图（如 1915 左右两半）多项——遍历每一幅断言，故只要 ≥1。
+      expect(parseAnnotation(annotation).length).toBeGreaterThanOrEqual(1);
     });
 
-    it("控制点数量达标（≥6，分布均匀以利扭合）", () => {
-      const [parsed] = parseAnnotation(annotation);
-      expect(parsed.gcps.length).toBeGreaterThanOrEqual(6);
-    });
-
-    it("所有控制点的地理坐标落在成都范围内", () => {
-      const [parsed] = parseAnnotation(annotation);
-      for (const { geo } of parsed.gcps) {
-        const [lng, lat] = geo;
-        expect(lng).toBeGreaterThanOrEqual(LNG[0]);
-        expect(lng).toBeLessThanOrEqual(LNG[1]);
-        expect(lat).toBeGreaterThanOrEqual(LAT[0]);
-        expect(lat).toBeLessThanOrEqual(LAT[1]);
+    it("每幅图的控制点数量达标（≥6，分布均匀以利扭合）", () => {
+      for (const parsed of parseAnnotation(annotation)) {
+        expect(parsed.gcps.length).toBeGreaterThanOrEqual(6);
       }
     });
 
-    it("控制点的像素坐标落在源图尺寸内", () => {
-      const [parsed] = parseAnnotation(annotation);
-      // 源图尺寸在标注里应有值；一并断言其存在（同时得到非 undefined 的 number）。
-      const width = parsed.resource.width ?? 0;
-      const height = parsed.resource.height ?? 0;
-      expect(width).toBeGreaterThan(0);
-      expect(height).toBeGreaterThan(0);
-      for (const { resource } of parsed.gcps) {
-        const [x, y] = resource;
-        expect(x).toBeGreaterThanOrEqual(0);
-        expect(x).toBeLessThanOrEqual(width);
-        expect(y).toBeGreaterThanOrEqual(0);
-        expect(y).toBeLessThanOrEqual(height);
+    it("所有控制点的地理坐标落在成都范围内", () => {
+      for (const parsed of parseAnnotation(annotation)) {
+        for (const { geo } of parsed.gcps) {
+          const [lng, lat] = geo;
+          expect(lng).toBeGreaterThanOrEqual(LNG[0]);
+          expect(lng).toBeLessThanOrEqual(LNG[1]);
+          expect(lat).toBeGreaterThanOrEqual(LAT[0]);
+          expect(lat).toBeLessThanOrEqual(LAT[1]);
+        }
+      }
+    });
+
+    it("每幅图控制点的像素坐标落在该幅源图尺寸内", () => {
+      for (const parsed of parseAnnotation(annotation)) {
+        // 源图尺寸在标注里应有值；一并断言其存在（同时得到非 undefined 的 number）。
+        const width = parsed.resource.width ?? 0;
+        const height = parsed.resource.height ?? 0;
+        expect(width).toBeGreaterThan(0);
+        expect(height).toBeGreaterThan(0);
+        for (const { resource } of parsed.gcps) {
+          const [x, y] = resource;
+          expect(x).toBeGreaterThanOrEqual(0);
+          expect(x).toBeLessThanOrEqual(width);
+          expect(y).toBeGreaterThanOrEqual(0);
+          expect(y).toBeLessThanOrEqual(height);
+        }
       }
     });
   });
