@@ -246,7 +246,7 @@ export default function MapViewer() {
         currentEpochId={currentEpochId}
         onSelect={setCurrentEpochId}
       />
-      <MapInfo title={activeMap?.title} attribution={activeMap?.attribution} />
+      <MapInfo title={activeMap?.title} />
       <OpacityControl
         value={opacity}
         onChange={setOpacity}

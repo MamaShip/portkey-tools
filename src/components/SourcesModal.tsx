@@ -134,7 +134,7 @@ export default function SourcesModal({ open, onClose }: SourcesModalProps) {
                 gap: "0.25rem 0.75rem",
               }}
             >
-              <dt style={dtStyle}>来源 / 收藏</dt>
+              <dt style={dtStyle}>来源</dt>
               <dd style={ddStyle}>{m.provenance.source}</dd>
               {m.provenance.author && (
                 <>
