@@ -9,6 +9,13 @@ import type { Epoch } from "./schema";
 export const epochs: Epoch[] = [
   { id: "present", label: "现今", order: 100, kind: "basemap" },
   {
+    id: "1911",
+    label: "1911",
+    order: 40,
+    kind: "historical",
+    mapId: "chengdu-1911",
+  },
+  {
     id: "1933",
     label: "1933",
     order: 50,
