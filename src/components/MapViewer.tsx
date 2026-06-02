@@ -51,6 +51,8 @@ export default function MapViewer() {
   const [mapReady, setMapReady] = useState(false);
   const [currentEpochId, setCurrentEpochId] = useState(INITIAL_EPOCH_ID);
   const [opacity, setOpacity] = useState(INITIAL_OPACITY);
+  // 「速看」：按住空格临时隐藏老图直接看底图，抬起即恢复（不改动 opacity 状态）。
+  const [peeking, setPeeking] = useState(false);
   // 首屏加载层状态：init→historical→done，done 后淡出再由 dismissed 卸载。
   const [stage, setStage] = useState<LoadStage>("init");
   const [dismissed, setDismissed] = useState(false);
@@ -140,15 +142,26 @@ export default function MapViewer() {
           e.preventDefault();
           setOpacity((o) => clampOpacity(o - OPACITY_STEP));
           break;
+        // 空格速看：按住临时隐藏老图看底图（preventDefault 避免页面滚动/误触焦点元素）；
+        // e.repeat 守卫使长按时只在首次按下生效，抬起由 onKeyUp 复位。
+        case " ":
+          e.preventDefault();
+          if (!e.repeat) setPeeking(true);
+          break;
       }
     };
+    const onKeyUp = (e: KeyboardEvent) => {
+      if (e.key === " ") setPeeking(false);
+    };
     window.addEventListener("keydown", onKey);
+    window.addEventListener("keyup", onKeyUp);
 
     return () => {
       done = true;
       clearTimeout(safetyTimer);
       clearTimeout(dismissTimer);
       window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keyup", onKeyUp);
       layers.clear();
       mapRef.current = null;
       map.remove();
@@ -180,9 +193,10 @@ export default function MapViewer() {
     }
 
     for (const [id, layer] of layersRef.current) {
-      layer.setOpacity(id === mapId ? clampOpacity(opacity) : 0);
+      // peeking（按住空格速看）时活动图层也置 0，呈现纯底图；松开后本 effect 重跑恢复。
+      layer.setOpacity(id === mapId && !peeking ? clampOpacity(opacity) : 0);
     }
-  }, [currentEpochId, opacity, mapReady]);
+  }, [currentEpochId, opacity, mapReady, peeking]);
 
   const overlay = resolveOverlay(epochs, currentEpochId);
   const activeMap = overlay.mapId ? mapsById.get(overlay.mapId) : undefined;
