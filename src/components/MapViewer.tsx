@@ -193,17 +193,19 @@ export default function MapViewer() {
     const q = new URLSearchParams(window.location.search);
     const GEO_DEBUG = q.get("geodebug") === "1";
     const geoHighAccuracy = q.get("ha") !== "0"; // 默认高精度；仅 ?ha=0 时转低精度
+    const GEO_TIMEOUT = 10000; // 单一来源：positionOptions 与下方 geodebug 读数共用
     // 定位控件：排在缩放/指南针之后 → 右上角叠在其下方（即「加在它们之后」）。点击才
     // 请求浏览器定位权限，不点不请求、不留标记（可选、按需授权）。蓝点+精度圈是 HTML
     // Marker，自动浮在底图与老图栅格之上（最上层）。trackUserLocation 持续跟踪，关页即停
     // （geolocation watch 由 map.remove() 在卸载时清理）。
     // enableHighAccuracy 默认 true（用 GPS）：国行 Chrome 的「网络定位」走被 GFW 阻断的
     // Google 服务（googleapis.com）必超时，唯有裸 GPS（室外）可绕开，故按国内现实优先 GPS。
-    // timeout 给到 25s（GPS 冷启动常需 20s+）；maximumAge 复用 30s 内的现成位置，秒回不重打。
+    // timeout 10s 平衡：多数热启动/辅助 GPS 数秒内返回；室内则约 10s 失败给提示、不再干等
+    // （MapLibre 控件等待期有 spinner 反馈）；maximumAge 复用 30s 内的现成位置，秒回不重打。
     const geolocate = new maplibregl.GeolocateControl({
       positionOptions: {
         enableHighAccuracy: geoHighAccuracy,
-        timeout: 25000,
+        timeout: GEO_TIMEOUT,
         maximumAge: 30000,
       },
       trackUserLocation: true,
@@ -219,7 +221,7 @@ export default function MapViewer() {
         // 调试：常驻显示原始 code+message，供手机截图坐实病因（如 GFW 阻断 Google 网络定位）。
         console.error("[geo] error", e.code, e.message);
         showNotice(
-          `定位失败 code=${e.code}\n${e.message || "(无 message)"}\n[ha=${geoHighAccuracy} t=25s]`,
+          `定位失败 code=${e.code}\n${e.message || "(无 message)"}\n[ha=${geoHighAccuracy} t=${GEO_TIMEOUT / 1000}s]`,
           true,
         );
         return;
