@@ -97,16 +97,18 @@ export default function MapViewer() {
     setInfoOpen(false);
   };
 
-  // 定位反馈轻提示（3 秒自动消失）。useState 的 setter 引用稳定，可在只跑一次的
-  // 初始化 effect 里安全调用；showNotice 用 useCallback([]) 固化，作为该 effect 的稳定依赖。
+  // 定位反馈轻提示（默认 3 秒自动消失；sticky 时常驻，供调试从容截图）。useState 的 setter
+  // 引用稳定，可在只跑一次的初始化 effect 里安全调用；showNotice 用 useCallback([]) 固化，
+  // 作为该 effect 的稳定依赖。
   const [notice, setNotice] = useState<string | null>(null);
   const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
-  const showNotice = useCallback((msg: string) => {
+  const showNotice = useCallback((msg: string, sticky = false) => {
     setNotice(msg);
     clearTimeout(noticeTimerRef.current);
-    noticeTimerRef.current = setTimeout(() => setNotice(null), 3000);
+    if (!sticky)
+      noticeTimerRef.current = setTimeout(() => setNotice(null), 3000);
   }, []);
 
   // 把当前视图（epoch + 视野 + 透明度）写回 URL hash，用 replaceState 不污染后退栈。
@@ -186,18 +188,22 @@ export default function MapViewer() {
     });
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl());
+    // 定位调试开关（走 URL query，不与 hash 深链接冲突）：?geodebug=1 常驻显示原始
+    // code+message 供手机截图排障；?ha=0 强制低精度、?ha=1 强制高精度，便于一套部署里对比。
+    const q = new URLSearchParams(window.location.search);
+    const GEO_DEBUG = q.get("geodebug") === "1";
+    const geoHighAccuracy = q.get("ha") !== "0"; // 默认高精度；仅 ?ha=0 时转低精度
     // 定位控件：排在缩放/指南针之后 → 右上角叠在其下方（即「加在它们之后」）。点击才
     // 请求浏览器定位权限，不点不请求、不留标记（可选、按需授权）。蓝点+精度圈是 HTML
     // Marker，自动浮在底图与老图栅格之上（最上层）。trackUserLocation 持续跟踪，关页即停
     // （geolocation watch 由 map.remove() 在卸载时清理）。
-    // 定位参数取「网络定位优先」：enableHighAccuracy:false 走 WiFi/基站/IP（精度几十米，
-    // 对城市级老图叠加足够），快速可靠；不死等 GPS——高精度 GPS 在手机/室内冷启动常十几秒
-    // 拿不到 fix 而超时失败（desktop 因无 GPS 始终走网络定位，故只在移动端暴露）。
-    // maximumAge:30000 允许复用 30s 内的现成位置，秒回不重打；timeout 给到 15s 兜底。
+    // enableHighAccuracy 默认 true（用 GPS）：国行 Chrome 的「网络定位」走被 GFW 阻断的
+    // Google 服务（googleapis.com）必超时，唯有裸 GPS（室外）可绕开，故按国内现实优先 GPS。
+    // timeout 给到 25s（GPS 冷启动常需 20s+）；maximumAge 复用 30s 内的现成位置，秒回不重打。
     const geolocate = new maplibregl.GeolocateControl({
       positionOptions: {
-        enableHighAccuracy: false,
-        timeout: 15000,
+        enableHighAccuracy: geoHighAccuracy,
+        timeout: 25000,
         maximumAge: 30000,
       },
       trackUserLocation: true,
@@ -209,15 +215,35 @@ export default function MapViewer() {
       showNotice("您当前不在成都范围内，无法在本图上显示定位"),
     );
     geolocate.on("error", (e: GeolocationPositionError) => {
-      // code 1=权限被拒，2=位置不可用（系统定位关/无信号），3=超时。分开提示便于自诊断与引导。
+      if (GEO_DEBUG) {
+        // 调试：常驻显示原始 code+message，供手机截图坐实病因（如 GFW 阻断 Google 网络定位）。
+        console.error("[geo] error", e.code, e.message);
+        showNotice(
+          `定位失败 code=${e.code}\n${e.message || "(无 message)"}\n[ha=${geoHighAccuracy} t=25s]`,
+          true,
+        );
+        return;
+      }
+      // code 1=权限被拒，2=位置不可用（系统定位关/无信号），3=超时。按国内 Chrome 现实给可操作引导。
       const msg =
         e.code === 1
           ? "已拒绝定位权限"
           : e.code === 3
-            ? "定位超时，请到室外或检查定位服务后重试"
-            : "无法获取位置，请确认系统定位已开启";
+            ? "定位超时：Chrome 在国内常无法联网定位，请到室外用 GPS 重试，或改用系统浏览器/微信打开"
+            : "无法获取位置：请确认系统定位已开启（Chrome 国内联网定位可能受限，可改用系统浏览器）";
       showNotice(msg);
     });
+    if (GEO_DEBUG) {
+      // 调试：定位成功时常驻显示精度与坐标，确认精度来源（GPS 几米 vs 网络几百米）。
+      geolocate.on("geolocate", (pos: GeolocationPosition) => {
+        const { longitude, latitude, accuracy } = pos.coords;
+        console.log("[geo] ok", accuracy, longitude, latitude);
+        showNotice(
+          `定位成功 acc=${Math.round(accuracy)}m\n(${longitude.toFixed(5)}, ${latitude.toFixed(5)})`,
+          true,
+        );
+      });
+    }
     // 右下角署名控件：compact 模式呈现为一个 ⓘ 按钮，点击才展开版权全文。
     // MapLibre 的 compact 初始却带 `maplibregl-compact-show`（即开局展开），且在
     // resize 时会重新展开——这里主动移除该类，使其默认收起，并在 resize 后再收起。

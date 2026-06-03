@@ -17,6 +17,7 @@ const style: React.CSSProperties = {
   font: "13px/1.4 system-ui, sans-serif",
   color: "#222",
   textAlign: "center",
+  whiteSpace: "pre-line", // 支持调试读数的多行（\n）
   pointerEvents: "none",
 };
 
