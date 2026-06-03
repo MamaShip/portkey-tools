@@ -5,9 +5,9 @@ Copyright (C) 2026 MamaShip
 
 # 开发指南（上手 + 架构）
 
-> 让新开发者**从 0 跑起来、看懂架构、知道改哪里**。
-> 分工：本文 = **怎么干活**；[`plan.md`](../plan.md) = **为什么这么选**（决策与备选）；[`CLAUDE.md`](../CLAUDE.md) = 状态速览 + 索引。
-> 专题深入：底图 [`basemap.md`](./basemap.md)、对象存储约定 [`object-storage.md`](./object-storage.md)、新增一张图 [`adding-a-map.md`](./adding-a-map.md)。
+## 技术栈
+
+Astro · TypeScript · React · MapLibre GL JS · Allmaps（@allmaps/maplibre, @allmaps/annotation）· IIIF · OpenFreeMap / OpenStreetMap · Cloudflare Pages · Wasabi（S3 兼容对象存储）
 
 ---
 

@@ -4,11 +4,6 @@
 > 批发门钥匙，带你去有趣的地方。
 > 入口：**https://tools.portkey.click**
 
-
-## 技术栈
-
-Astro · TypeScript · React · MapLibre GL JS · Allmaps（@allmaps/maplibre, @allmaps/annotation）· IIIF · OpenFreeMap / OpenStreetMap · Cloudflare Pages · Wasabi（S3 兼容对象存储）
-
 ## 本地开发
 
 前置（Ubuntu 示例；详见 `docs/archive/phase-0-1-guide.md`）：
