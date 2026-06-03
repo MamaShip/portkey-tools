@@ -1,12 +1,54 @@
+<div align="center">
+
+<img src="public/portkey-logo.webp" alt="Portkey Tools" width="180" />
 
 # Portkey Tools · 门钥匙集散中心
 
 > 批发门钥匙，带你去有趣的地方。
-> 入口：**https://tools.portkey.click**
+
+[![CI](https://github.com/MamaShip/portkey-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/MamaShip/portkey-tools/actions/workflows/ci.yml)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](./LICENSE)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Ftools.portkey.click&label=tools.portkey.click)](https://tools.portkey.click)
+[![Last commit](https://img.shields.io/github/last-commit/MamaShip/portkey-tools)](https://github.com/MamaShip/portkey-tools/commits)
+
+[![Astro](https://img.shields.io/badge/Astro-BC52EE?logo=astro&logoColor=white)](https://astro.build)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![MapLibre GL](https://img.shields.io/badge/MapLibre%20GL-396CB2?logo=maplibre&logoColor=white)](https://maplibre.org)
+
+**入口 → [tools.portkey.click](https://tools.portkey.click)**
+
+</div>
+
+
+## 工具#1：成都老地图
+
+在现代地图上叠加经过地理配准的成都历史老地图，可在时间轴上切换时间点、用透明度滑块在古今之间淡入淡出，观察街道与城市形态的演变。
+
+
+### 它是怎么工作的
+
+- **现代底图**：[OpenFreeMap](https://openfreemap.org) positron（基于 OpenStreetMap 的矢量瓦片）的成都范围**快照，自托管在 Wasabi**（避开被 GFW 阻断的公共服务，大陆免翻墙可用），由 [MapLibre GL JS](https://maplibre.org) 渲染。全程 WGS-84 坐标系。机制与更新指南见 [`docs/basemap.md`](./docs/basemap.md)。
+- **历史地图**：每张老地图切成静态 [IIIF](https://iiif.io) 瓦片托管在对象存储；用 [Allmaps](https://allmaps.org) 在浏览器内按控制点实时扭合（warp）叠加到现代底图上。配准产物是一份开放标准的 Georeference Annotation（JSON）。
+- **站点**：[Astro](https://astro.build) + TypeScript（islands 架构），地图工具是一个仅客户端渲染的 React island。
+- **托管**：应用在 Cloudflare Pages；历史图瓦片在对象存储（Wasabi），不入库。
+
+
+### 新增一张历史地图
+
+**完整 SOP（含确切命令与踩坑速查）见 [`docs/adding-a-map.md`](./docs/adding-a-map.md)**，可独立照做。概要：
+
+1. 预处理扫描图（裁切、纠斜）。
+2. 切静态 IIIF 瓦片：`java -jar iiif-tiler.jar <map>.jpg -version 3 -output ./tiles`。
+3. 上传瓦片到对象存储（`rclone copy ...`）——key 目录约定见 [`docs/object-storage.md`](./docs/object-storage.md)，资产放在 `tools/<toolId>/iiif/<mapId>/`。
+4. 在 [Allmaps Editor](https://editor.allmaps.org) 对照现代底图打控制点 → 导出 Georeference Annotation 到 `src/data/annotations/<id>.json`。
+5. 在 `src/data/maps.ts` 与 `src/data/epochs.ts` 登记该图。
+6. `pnpm validate && pnpm test` 通过后提交 PR，在预览 URL 上肉眼确认对齐。
+
+**大文件政策**：IIIF 瓦片（及可选的 PMTiles 底图）体量大、极少变动，**不进 Git**——它们存于对象存储，仓库内只保存其 URL 与几 KB 的标注 JSON。`tiles/` 为本地中转目录，已在 `.gitignore` 内。
 
 ## 本地开发
 
-前置（Ubuntu 示例；详见 `docs/archive/phase-0-1-guide.md`）：
+前置（Ubuntu 示例）：
 
 ```bash
 # Node 22（Active LTS）+ pnpm
@@ -35,31 +77,6 @@ pnpm dev          # http://localhost:4321 → /cd-old-map
 
 CI 由 GitHub Actions 跑上述质量闸门（见 `.github/workflows/ci.yml`）；部署与每个 PR 的预览 URL 由 Cloudflare Pages 原生 Git 集成负责。
 
-## 工具#1：成都老地图
-
-在现代地图上叠加经过地理配准的成都历史老地图，可在时间轴上切换时间点、用透明度滑块在古今之间淡入淡出，观察街道与城市形态的演变。
-
-
-### 它是怎么工作的
-
-- **现代底图**：[OpenFreeMap](https://openfreemap.org) positron（基于 OpenStreetMap 的矢量瓦片）的成都范围**快照，自托管在 Wasabi**（避开被 GFW 阻断的公共服务，大陆免翻墙可用），由 [MapLibre GL JS](https://maplibre.org) 渲染。全程 WGS-84 坐标系。机制与更新指南见 [`docs/basemap.md`](./docs/basemap.md)。
-- **历史地图**：每张老地图切成静态 [IIIF](https://iiif.io) 瓦片托管在对象存储；用 [Allmaps](https://allmaps.org) 在浏览器内按控制点实时扭合（warp）叠加到现代底图上。配准产物是一份开放标准的 Georeference Annotation（JSON）。
-- **站点**：[Astro](https://astro.build) + TypeScript（islands 架构），地图工具是一个仅客户端渲染的 React island。
-- **托管**：应用在 Cloudflare Pages；历史图瓦片在对象存储（Wasabi），不入库。
-
-
-### 新增一张历史地图
-
-**完整 SOP（含确切命令与踩坑速查）见 [`docs/adding-a-map.md`](./docs/adding-a-map.md)**，可独立照做。概要：
-
-1. 预处理扫描图（裁切、纠斜）。
-2. 切静态 IIIF 瓦片：`java -jar iiif-tiler.jar <map>.jpg -version 3 -output ./tiles`。
-3. 上传瓦片到对象存储（`rclone copy ...`）——key 目录约定见 [`docs/object-storage.md`](./docs/object-storage.md)，资产放在 `tools/<toolId>/iiif/<mapId>/`。
-4. 在 [Allmaps Editor](https://editor.allmaps.org) 对照现代底图打控制点 → 导出 Georeference Annotation 到 `src/data/annotations/<id>.json`。
-5. 在 `src/data/maps.ts` 与 `src/data/epochs.ts` 登记该图。
-6. `pnpm validate && pnpm test` 通过后提交 PR，在预览 URL 上肉眼确认对齐。
-
-**大文件政策**：IIIF 瓦片（及可选的 PMTiles 底图）体量大、极少变动，**不进 Git**——它们存于对象存储，仓库内只保存其 URL 与几 KB 的标注 JSON。`tiles/` 为本地中转目录，已在 `.gitignore` 内。
 
 ## 许可（分层）
 
