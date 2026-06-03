@@ -78,6 +78,8 @@ export default function MapViewer() {
   const opacityRef = useRef(initialOpacity);
   // 「速看」：按住空格临时隐藏老图直接看底图，抬起即恢复（不改动 opacity 状态）。
   const [peeking, setPeeking] = useState(false);
+  // 「隐/显」持久开关：触屏端等价于空格速看，但点按切换、状态可保持（与瞬时 peeking 正交）。
+  const [hidden, setHidden] = useState(false);
   // 首屏加载层状态：init→historical→done，done 后淡出再由 dismissed 卸载。
   const [stage, setStage] = useState<LoadStage>("init");
   const [dismissed, setDismissed] = useState(false);
@@ -219,18 +221,22 @@ export default function MapViewer() {
       switch (e.key) {
         case "ArrowRight":
           e.preventDefault();
+          setHidden(false); // 切换时间点应展示其老图，不延续上一站的隐藏态
           setCurrentEpochId((id) => stepEpoch(epochs, id, 1));
           break;
         case "ArrowLeft":
           e.preventDefault();
+          setHidden(false);
           setCurrentEpochId((id) => stepEpoch(epochs, id, -1));
           break;
         case "ArrowUp":
           e.preventDefault();
+          setHidden(false); // 调透明度即取消持久隐藏，避免「调了却看不到变化」
           setOpacity((o) => clampOpacity(o + OPACITY_STEP));
           break;
         case "ArrowDown":
           e.preventDefault();
+          setHidden(false);
           setOpacity((o) => clampOpacity(o - OPACITY_STEP));
           break;
         // 空格速看：按住临时隐藏老图看底图（preventDefault 避免页面滚动/误触焦点元素）；
@@ -285,10 +291,13 @@ export default function MapViewer() {
     }
 
     for (const [id, layer] of layersRef.current) {
-      // peeking（按住空格速看）时活动图层也置 0，呈现纯底图；松开后本 effect 重跑恢复。
-      layer.setOpacity(id === mapId && !peeking ? clampOpacity(opacity) : 0);
+      // peeking（按住空格速看）或 hidden（隐/显按钮持久隐藏）时活动图层置 0，呈现纯底图；
+      // 二者解除后本 effect 重跑恢复。
+      layer.setOpacity(
+        id === mapId && !peeking && !hidden ? clampOpacity(opacity) : 0,
+      );
     }
-  }, [currentEpochId, opacity, mapReady, peeking]);
+  }, [currentEpochId, opacity, mapReady, peeking, hidden]);
 
   // 把最新 epoch / 透明度镜像进 ref 供 writeHash（moveend 回调）读取，并在二者变化时
   // 同步写回 hash（视野变化由 moveend 防抖写回；首屏 ready 时写一次，使无 hash 进入的
@@ -309,13 +318,23 @@ export default function MapViewer() {
       <Timeline
         stations={STATIONS}
         currentEpochId={currentEpochId}
-        onSelect={setCurrentEpochId}
+        // 切换时间点应展示其老图，不延续上一站的隐藏态。
+        onSelect={(id) => {
+          setHidden(false);
+          setCurrentEpochId(id);
+        }}
       />
       <MapInfo title={activeMap?.title} />
       <OpacityControl
         value={opacity}
-        onChange={setOpacity}
+        // 拖动滑块即取消持久隐藏，避免「已隐藏时拖滑块看不到变化」的困惑。
+        onChange={(v) => {
+          setHidden(false);
+          setOpacity(v);
+        }}
         disabled={!activeMap}
+        hidden={hidden}
+        onToggleHidden={() => setHidden((h) => !h)}
       />
       <InfoButton onClick={openInfo} />
       <SourcesModal open={infoOpen} onClose={closeInfo} />

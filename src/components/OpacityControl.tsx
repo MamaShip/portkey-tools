@@ -16,14 +16,27 @@ interface OpacityControlProps {
   value: number; // 0–1
   onChange: (value: number) => void;
   disabled?: boolean; // 当前无历史叠加层时置灰
+  hidden: boolean; // 老图是否被「隐/显」按钮持久隐藏（true=已隐藏）
+  onToggleHidden: () => void; // 翻转隐藏状态
 }
 
-const panelStyle: React.CSSProperties = {
+// 外层居中容器：接管绝对定位与垂直居中，使药丸与下方圆按钮作为 flex column 两个子项
+// 自然上下排列、整体居中（药丸高度可变，故由容器统一居中而非各自定位）。
+const wrapperStyle: React.CSSProperties = {
   position: "absolute",
   right: 12,
   top: "50%",
   transform: "translateY(-50%)",
   zIndex: 1,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 8,
+};
+
+const panelStyle: React.CSSProperties = {
+  // 保留 relative：键盘提示 hintStyle 的 right:"100%" 仍锚定在本药丸上，位置不变。
+  position: "relative",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -34,6 +47,28 @@ const panelStyle: React.CSSProperties = {
   boxShadow: "0 1px 6px rgba(0,0,0,0.25)",
   font: "12px/1 system-ui, sans-serif",
   color: "#444",
+};
+
+// 「隐/显」圆按钮：默认（显示中，标「隐」）低调白底；已隐藏（标「显」）填充强调蓝引导恢复。
+// 用 alignSelf:stretch 让宽度跟随药丸（容器最宽子项即药丸），aspect-ratio:1 保持正圆——
+// 直径始终等于药丸宽度，无需写死像素。
+const hideBtnStyle: React.CSSProperties = {
+  alignSelf: "stretch",
+  aspectRatio: "1 / 1",
+  borderRadius: 999,
+  border: "none",
+  background: "rgba(255,255,255,0.92)",
+  color: "#444",
+  boxShadow: "0 1px 6px rgba(0,0,0,0.25)",
+  font: "600 15px/1 system-ui, sans-serif",
+  cursor: "pointer",
+  transition: "background .15s, color .15s",
+};
+
+const hideBtnActiveStyle: React.CSSProperties = {
+  ...hideBtnStyle,
+  background: "#1f6feb",
+  color: "#fff",
 };
 
 const hintStyle: React.CSSProperties = {
@@ -67,6 +102,8 @@ export default function OpacityControl({
   value,
   onChange,
   disabled = false,
+  hidden,
+  onToggleHidden,
 }: OpacityControlProps) {
   const [showHint, setShowHint] = useState(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
@@ -89,40 +126,57 @@ export default function OpacityControl({
   useEffect(() => () => clearTimeout(hideTimer.current), []);
 
   return (
-    <div style={{ ...panelStyle, opacity: disabled ? 0.5 : 1 }}>
-      {/* 键盘提示：贴在滑块面板左外侧，淡入淡出，不拦截指针。两行——↑↓ 调透明度、空格速看 */}
-      <div style={{ ...hintStyle, opacity: showHint ? 1 : 0 }}>
-        <div>
-          <kbd style={kbdStyle}>↑</kbd> <kbd style={kbdStyle}>↓</kbd> 调透明度
+    <div style={{ ...wrapperStyle, opacity: disabled ? 0.5 : 1 }}>
+      <div style={panelStyle}>
+        {/* 键盘提示：贴在滑块面板左外侧，淡入淡出，不拦截指针。两行——↑↓ 调透明度、空格速看 */}
+        <div style={{ ...hintStyle, opacity: showHint ? 1 : 0 }}>
+          <div>
+            <kbd style={kbdStyle}>↑</kbd> <kbd style={kbdStyle}>↓</kbd> 调透明度
+          </div>
+          <div>
+            按住 <kbd style={kbdStyle}>空格</kbd> 隐藏图层
+          </div>
         </div>
-        <div>
-          按住 <kbd style={kbdStyle}>空格</kbd> 隐藏图层
+        {/* 顶部 = 古（历史，↑），底部 = 今（现今，↓） */}
+        <div aria-hidden="true" style={{ fontWeight: 600 }}>
+          古
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          value={value}
+          disabled={disabled}
+          aria-label="历史图透明度（↑ 看历史，↓ 看现今）"
+          onChange={(e) => handleChange(Number(e.target.value))}
+          // writing-mode 竖排：拉到顶 = 1（古/历史），拉到底 = 0（今/现今）。
+          style={{
+            writingMode: "vertical-lr",
+            direction: "rtl",
+            height: sliderHeight,
+            cursor: disabled ? "not-allowed" : "pointer",
+          }}
+        />
+        <div aria-hidden="true" style={{ fontWeight: 600 }}>
+          今
         </div>
       </div>
-      {/* 顶部 = 古（历史，↑），底部 = 今（现今，↓） */}
-      <div aria-hidden="true" style={{ fontWeight: 600 }}>
-        古
-      </div>
-      <input
-        type="range"
-        min={0}
-        max={1}
-        step={0.01}
-        value={value}
+      {/* 「隐/显」圆按钮：触屏端等价于按住空格速看，但点按切换、状态可保持。
+          文字 = 即将执行的动作：显示中→「隐」，已隐藏→「显」。 */}
+      <button
+        type="button"
+        aria-label={hidden ? "显示历史图层" : "隐藏历史图层"}
+        aria-pressed={hidden}
         disabled={disabled}
-        aria-label="历史图透明度（↑ 看历史，↓ 看现今）"
-        onChange={(e) => handleChange(Number(e.target.value))}
-        // writing-mode 竖排：拉到顶 = 1（古/历史），拉到底 = 0（今/现今）。
+        onClick={onToggleHidden}
         style={{
-          writingMode: "vertical-lr",
-          direction: "rtl",
-          height: sliderHeight,
+          ...(hidden ? hideBtnActiveStyle : hideBtnStyle),
           cursor: disabled ? "not-allowed" : "pointer",
         }}
-      />
-      <div aria-hidden="true" style={{ fontWeight: 600 }}>
-        今
-      </div>
+      >
+        {hidden ? "显" : "隐"}
+      </button>
     </div>
   );
 }
