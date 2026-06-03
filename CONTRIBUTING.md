@@ -48,9 +48,11 @@ pnpm check && pnpm lint && pnpm format:check && pnpm validate && pnpm test
 
 - 瓦片与源扫描图体量大、**永不进 Git**——它们存于对象存储（Wasabi），仓库内只提交几 KB 的 Allmaps 配准标注 JSON 与登记表改动。
 - 历史地图须为**公共领域**（多为当时政府机构所制）；在 `src/data/maps.ts` 的 `provenance` 里如实填写来源/收藏/制图者，会自动出现在「来源与版权」弹窗。
+- **不会写代码也能帮忙优化配准**：在 Allmaps 网页编辑器里加载现有图、校正控制点后导出标注，开 issue 提交即可——附各图 `info.json` 地址、变换方式科普与提交规范，见 **[`src/data/annotations/README.md`](./src/data/annotations/README.md)**。
+- 你也可以直接在 Github Issue 内提交一份地图文件给我们，将开发流程交给 AI……
 
 ## 许可
 
 - **代码**按 **[AGPL-3.0-or-later](./LICENSE)** 发布；提交 PR 即表示你同意你的贡献以此许可发布。
-- **配准标注数据**（`src/data/annotations/*.json`）以 **CC0** 发布。
+- **配准标注数据**（`src/data/annotations/*.json`）以 **CC0** 发布；许可全文与说明见 **[`src/data/annotations/README.md`](./src/data/annotations/README.md)**。
 - 详见 [`README.md`](./README.md) 的「许可（分层）」一节。
