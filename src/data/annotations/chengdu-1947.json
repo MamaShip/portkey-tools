@@ -1,0 +1,149 @@
+{
+  "type": "AnnotationPage",
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "items": [
+    {
+      "id": "https://annotations.allmaps.org/maps/5f8cec2db69ece7f",
+      "type": "Annotation",
+      "@context": [
+        "http://iiif.io/api/extension/georef/1/context.json",
+        "http://iiif.io/api/presentation/3/context.json"
+      ],
+      "motivation": "georeferencing",
+      "target": {
+        "type": "SpecificResource",
+        "source": {
+          "id": "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1947",
+          "type": "ImageService3",
+          "height": 10521,
+          "width": 13011
+        },
+        "selector": {
+          "type": "SvgSelector",
+          "value": "<svg width=\"13011\" height=\"10521\"><polygon points=\"0,0 0,10521 13011,10521 13011,0\" /></svg>"
+        }
+      },
+      "body": {
+        "type": "FeatureCollection",
+        "transformation": {
+          "type": "polynomial",
+          "options": {
+            "order": 1
+          }
+        },
+        "features": [
+          {
+            "type": "Feature",
+            "properties": {
+              "resourceCoords": [5692, 4344]
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [104.05794722052264, 30.669309270040557]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "resourceCoords": [6827, 4327]
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [104.06819103015157, 30.669516539863736]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "resourceCoords": [5702, 5711]
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [104.05834269062916, 30.658789923009603]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "resourceCoords": [6855, 5713]
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [104.06856351513387, 30.658922731034025]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "resourceCoords": [5579, 7002]
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [104.05739932700017, 30.648804596895364]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "resourceCoords": [8311, 7546]
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [104.08123389298208, 30.645182270623405]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "resourceCoords": [5410, 3581]
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [104.05535980419091, 30.675154289569193]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "resourceCoords": [4551, 4900]
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [104.04805669088438, 30.664831836277205]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "resourceCoords": [3683, 4858]
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [104.04104201644452, 30.663174493440323]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "resourceCoords": [7579, 3516]
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [104.07463053513817, 30.675938284746422]
+            }
+          },
+          {
+            "type": "Feature",
+            "properties": {
+              "resourceCoords": [8885, 4651]
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [104.08635610131529, 30.66730410260445]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

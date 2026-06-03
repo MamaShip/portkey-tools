@@ -76,4 +76,22 @@ export const maps: HistoricalMap[] = [
     },
     attribution: "《成都市郊外地图》· 成都新中国工程行承印（1944 / 公共领域）",
   },
+  {
+    id: "chengdu-1947",
+    title: "1947年成都市郊图",
+    year: 1947,
+    iiifInfoUrl:
+      "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1947/info.json",
+    annotationPath: "src/data/annotations/chengdu-1947.json",
+    defaultOpacity: 0.7,
+    provenance: {
+      source: "内政部图书馆 藏",
+      author: "国防部测量局测量第五队",
+      license: "Public Domain",
+      notes:
+        "中华民国三十六年（1947）测图；国防部测量局测量第五队测制；内政部图书馆藏。年代久远，视为公共领域。",
+    },
+    attribution:
+      "《1947年成都市郊图》· 国防部测量局测量第五队测制（1947 / 公共领域）",
+  },
 ];
