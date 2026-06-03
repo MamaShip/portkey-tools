@@ -3,14 +3,19 @@
 // Copyright (C) 2026 MamaShip
 import BaseLayout from "../layouts/BaseLayout.astro";
 
+const REPO_URL = "https://github.com/MamaShip/portkey-tools";
+
 // 工具索引：网站随时间不断长出新工具，每个工具一条目。
-// status: "live" 可点进；"soon" 占位卡（暗示站点持续生长，不可点击）。
+// status: "live" 可点进工具页；"cta" 行动卡（虚线样式但可点击，跳外链，如提需求）；
+//         "soon" 占位卡（暗示站点持续生长，不可点击）。
+// external: true → 用新标签页打开（外部链接，如 GitHub）。
 // icon: 内联 SVG 的 <path d> 列表，统一在 24×24 视框、currentColor 描边渲染。
 type Tool = {
   href?: string;
+  external?: boolean;
   title: string;
   desc: string;
-  status: "live" | "soon";
+  status: "live" | "cta" | "soon";
   paths: string[];
 };
 
@@ -24,22 +29,28 @@ const tools: Tool[] = [
   },
   {
     title: "更多工具",
-    desc: "这里会持续长出新的小工具，每个工具一个独立页面。敬请期待。",
+    desc: "这里会持续长出新的小工具。敬请期待。",
     status: "soon",
     paths: ["M12 5v14", "M5 12h14"],
   },
   {
-    title: "敬请期待",
-    desc: "有想法或建议？欢迎在 GitHub 上提 issue 一起决定下一个工具。",
-    status: "soon",
-    paths: ["M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5L12 3z"],
+    href: `${REPO_URL}/issues/new?template=tool-request.yml`,
+    external: true,
+    title: "许愿池",
+    desc: "有想法或建议？去 GitHub 上提一个 issue，一起决定下一个做什么。",
+    status: "cta",
+    paths: [
+      "M9 18h6",
+      "M10 22h4",
+      "M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z",
+    ],
   },
 ];
 ---
 
 <BaseLayout
-  title="Portkey Tools"
-  description="一个提供有趣小工具的个人网站。"
+  title="门钥匙集散中心"
+  description="批发门钥匙，带你去有趣的地方。"
   wide
 >
   <section class="hero">
@@ -56,8 +67,8 @@ const tools: Tool[] = [
         fill="#fff"></path>
       <circle cx="16" cy="12.5" r="2.6" fill="var(--accent)"></circle>
     </svg>
-    <h1 class="hero-title">Portkey&nbsp;Tools</h1>
-    <p class="hero-tagline">一个提供有趣小工具的个人网站</p>
+    <h1 class="hero-title">门钥匙集散中心</h1>
+    <p class="hero-tagline">批发门钥匙，带你去有趣的地方。</p>
   </section>
 
   <section aria-label="工具列表">
@@ -85,6 +96,7 @@ const tools: Tool[] = [
               ))}
             </svg>
           );
+          const clickable = t.status === "live" || t.status === "cta";
           const body = (
             <>
               <span class="card-icon-wrap">{icon}</span>
@@ -95,7 +107,7 @@ const tools: Tool[] = [
                 </span>
                 <span class="card-desc">{t.desc}</span>
               </span>
-              {t.status === "live" && (
+              {clickable && (
                 <span class="card-arrow" aria-hidden="true">
                   →
                 </span>
@@ -104,8 +116,14 @@ const tools: Tool[] = [
           );
           return (
             <li class="reveal" style={`--d:${i * 80}ms`}>
-              {t.status === "live" ? (
-                <a class="card card-live" href={t.href}>
+              {clickable ? (
+                <a
+                  class={`card ${t.status === "live" ? "card-live" : "card-cta"}`}
+                  href={t.href}
+                  {...(t.external
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                >
                   {body}
                 </a>
               ) : (
@@ -224,6 +242,23 @@ const tools: Tool[] = [
   .card-soon .card-desc {
     opacity: 0.65;
   }
+  /* 行动卡：虚线边框暗示「未来 / 共建」，但可点击跳转（提需求） */
+  .card-cta {
+    border-style: dashed;
+    box-shadow: none;
+    transition:
+      transform 0.22s ease,
+      box-shadow 0.22s ease,
+      border-color 0.22s ease;
+  }
+  .card-cta:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: rgba(13, 148, 136, 0.45);
+  }
+  .card-cta:hover .card-icon-wrap {
+    background: rgba(13, 148, 136, 0.16);
+  }
   .card-icon-wrap {
     flex: none;
     display: grid;
@@ -274,7 +309,8 @@ const tools: Tool[] = [
     font-size: 1.2rem;
     transition: transform 0.22s ease;
   }
-  .card-live:hover .card-arrow {
+  .card-live:hover .card-arrow,
+  .card-cta:hover .card-arrow {
     transform: translateX(4px);
   }
 

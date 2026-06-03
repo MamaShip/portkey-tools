@@ -1,0 +1,47 @@
+name: 💡 提个新工具需求
+description: 提议一个想加进本站的小工具或想法
+title: "工具需求："
+labels: ["tool-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢你的想法！本站是一个会持续长出新工具的个人工具集，每个工具一个独立页面。
+        欢迎提议下一个该做什么——把使用场景讲清楚，比单说「做个 X」更容易落地。
+  - type: input
+    id: name
+    attributes:
+      label: 工具名 / 一句话概括
+      placeholder: 例：实时汇率换算器
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 想解决什么问题 / 使用场景
+      description: 你在什么情况下会用到它？现在是怎么凑合着解决的？
+      placeholder: 例：经常要把外币报价折算成人民币，但每次都得去搜汇率……
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: 期望的功能 / 大致设想（可选）
+      description: 它大概长什么样、能做什么。有参考的站点 / 工具也可贴链接。
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 对你而言的重要程度（可选）
+      options:
+        - 只是随手一提
+        - 有了会挺好
+        - 挺需要，会经常用
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认
+      options:
+        - label: 我已大致看过现有 issue，没有重复的需求。
+          required: true
