@@ -188,11 +188,18 @@ export default function MapViewer() {
     map.addControl(new maplibregl.NavigationControl());
     // 定位控件：排在缩放/指南针之后 → 右上角叠在其下方（即「加在它们之后」）。点击才
     // 请求浏览器定位权限，不点不请求、不留标记（可选、按需授权）。蓝点+精度圈是 HTML
-    // Marker，自动浮在底图与老图栅格之上（最上层）。enableHighAccuracy 优先 GPS，无 GPS
-    // 时浏览器自动回退 WiFi/IP 粗定位。trackUserLocation 持续跟踪，关页即停（geolocation
-    // watch 由 map.remove() 在卸载时清理）。
+    // Marker，自动浮在底图与老图栅格之上（最上层）。trackUserLocation 持续跟踪，关页即停
+    // （geolocation watch 由 map.remove() 在卸载时清理）。
+    // 定位参数取「网络定位优先」：enableHighAccuracy:false 走 WiFi/基站/IP（精度几十米，
+    // 对城市级老图叠加足够），快速可靠；不死等 GPS——高精度 GPS 在手机/室内冷启动常十几秒
+    // 拿不到 fix 而超时失败（desktop 因无 GPS 始终走网络定位，故只在移动端暴露）。
+    // maximumAge:30000 允许复用 30s 内的现成位置，秒回不重打；timeout 给到 15s 兜底。
     const geolocate = new maplibregl.GeolocateControl({
-      positionOptions: { enableHighAccuracy: true, timeout: 10000 },
+      positionOptions: {
+        enableHighAccuracy: false,
+        timeout: 15000,
+        maximumAge: 30000,
+      },
       trackUserLocation: true,
     });
     map.addControl(geolocate);
@@ -201,9 +208,16 @@ export default function MapViewer() {
     geolocate.on("outofmaxbounds", () =>
       showNotice("您当前不在成都范围内，无法在本图上显示定位"),
     );
-    geolocate.on("error", (e: GeolocationPositionError) =>
-      showNotice(e.code === 1 ? "已拒绝定位权限" : "暂时无法获取您的位置"),
-    );
+    geolocate.on("error", (e: GeolocationPositionError) => {
+      // code 1=权限被拒，2=位置不可用（系统定位关/无信号），3=超时。分开提示便于自诊断与引导。
+      const msg =
+        e.code === 1
+          ? "已拒绝定位权限"
+          : e.code === 3
+            ? "定位超时，请到室外或检查定位服务后重试"
+            : "无法获取位置，请确认系统定位已开启";
+      showNotice(msg);
+    });
     // 右下角署名控件：compact 模式呈现为一个 ⓘ 按钮，点击才展开版权全文。
     // MapLibre 的 compact 初始却带 `maplibregl-compact-show`（即开局展开），且在
     // resize 时会重新展开——这里主动移除该类，使其默认收起，并在 resize 后再收起。
