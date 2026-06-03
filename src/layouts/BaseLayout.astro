@@ -15,10 +15,19 @@ interface Props {
   fullBleed?: boolean;
   /** 内容页用更宽的容器（首页栅格用 wide，about 阅读列用窄） */
   wide?: boolean;
+  /** 页签图标：默认皮靴品牌图标；老地图页传旧的青绿地图针 svg（更贴该页主题） */
+  favicon?: string;
 }
 
-const { title, description, fullBleed = false, wide = false } = Astro.props;
+const {
+  title,
+  description,
+  fullBleed = false,
+  wide = false,
+  favicon = "/portkey-icon.png",
+} = Astro.props;
 const siteName = "Portkey Tools";
+const faviconType = favicon.endsWith(".svg") ? "image/svg+xml" : "image/png";
 ---
 
 <!doctype html>
@@ -26,7 +35,8 @@ const siteName = "Portkey Tools";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={favicon} type={faviconType} />
+    {!fullBleed && <link rel="apple-touch-icon" href="/apple-touch-icon.png" />}
     {description && <meta name="description" content={description} />}
     <title>{title === siteName ? title : `${title} · ${siteName}`}</title>
   </head>
@@ -50,16 +60,17 @@ const siteName = "Portkey Tools";
 <style is:global>
   :root {
     color-scheme: light dark;
-    /* —— 统一设计令牌：与地图玻璃控件（InfoButton/MapInfo）同系 —— */
-    --accent: #0d9488;
-    --accent-ink: #0a6f66;
-    --ink: #1a2024;
-    --muted: #6b7680;
-    --bg: #f7faf9;
+    /* —— 统一设计令牌：暖色系（呼应皮靴 logo），珊瑚暖橙主色保持年轻活泼。
+       仅内容页（首页/about/顶栏/页脚）消费；地图页为自带中性白玻璃，不受影响 —— */
+    --accent: #ec7a45;
+    --accent-ink: #a8481a;
+    --ink: #221c18;
+    --muted: #7c6f66;
+    --bg: #faf7f3;
     --card-bg: rgba(255, 255, 255, 0.92);
-    --card-border: rgba(13, 148, 136, 0.12);
+    --card-border: rgba(236, 122, 69, 0.16);
     --card-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
-    --card-shadow-hover: 0 10px 30px rgba(13, 148, 136, 0.16);
+    --card-shadow-hover: 0 10px 30px rgba(236, 122, 69, 0.2);
     --radius: 12px;
     --content-narrow: 42rem;
     --content-wide: 62rem;
@@ -89,6 +100,9 @@ const siteName = "Portkey Tools";
     flex-direction: column;
     min-height: 100%;
     background: var(--bg);
+    /* 允许 hero 背景用 100vw 横向满铺而不触发横向滚动条；
+       clip（非 hidden）不创建滚动容器，sticky 顶栏不受影响 */
+    overflow-x: clip;
   }
   body:not(.fullbleed) .site-main {
     flex: 1;

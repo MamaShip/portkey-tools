@@ -54,19 +54,13 @@ const tools: Tool[] = [
   wide
 >
   <section class="hero">
-    <svg
+    <img
       class="hero-mark"
-      viewBox="0 0 32 32"
-      width="64"
-      height="64"
-      aria-hidden="true"
-    >
-      <rect width="32" height="32" rx="7" fill="var(--accent)"></rect>
-      <path
-        d="M16 6c-3.6 0-6.5 2.9-6.5 6.5C9.5 17.2 16 25 16 25s6.5-7.8 6.5-12.5C22.5 8.9 19.6 6 16 6z"
-        fill="#fff"></path>
-      <circle cx="16" cy="12.5" r="2.6" fill="var(--accent)"></circle>
-    </svg>
+      src="/portkey-logo.webp"
+      width="176"
+      height="176"
+      alt="Portkey Tools"
+    />
     <h1 class="hero-title">门钥匙集散中心</h1>
     <p class="hero-tagline">批发门钥匙，带你去有趣的地方。</p>
   </section>
@@ -147,31 +141,37 @@ const tools: Tool[] = [
     padding: 2.5rem 0 3rem;
     isolation: isolate;
   }
-  /* 极淡青绿径向渐变背景，缓慢漂移（仅动 background-position，开销极低） */
+  /* 暖褐/皮革径向渐变背景（取自皮靴色，呼应 logo），缓慢漂移。
+     横向铺满整个视口（挣脱居中容器），左右无可见边界。 */
   .hero::before {
     content: "";
     position: absolute;
-    inset: -10% -20% 0;
+    top: -10%;
+    bottom: 0;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
     z-index: -1;
     background:
       radial-gradient(
-        40% 60% at 30% 20%,
-        rgba(13, 148, 136, 0.14),
-        transparent 70%
+        50% 70% at 22% 25%,
+        rgba(168, 134, 98, 0.24),
+        transparent 72%
       ),
       radial-gradient(
-        45% 55% at 75% 30%,
-        rgba(56, 189, 172, 0.12),
-        transparent 70%
+        55% 65% at 78% 30%,
+        rgba(140, 98, 60, 0.18),
+        transparent 72%
       );
-    background-size: 180% 180%;
+    background-size: 160% 160%;
     animation: drift 18s ease-in-out infinite alternate;
   }
   .hero-mark {
     display: block;
+    width: clamp(132px, 26vw, 192px);
+    height: auto;
     margin: 0 auto 1rem;
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(13, 148, 136, 0.25);
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.22));
     animation: float 5s ease-in-out infinite;
   }
   .hero-title {
@@ -229,7 +229,7 @@ const tools: Tool[] = [
   .card-live:hover {
     transform: translateY(-4px);
     box-shadow: var(--card-shadow-hover);
-    border-color: rgba(13, 148, 136, 0.35);
+    border-color: rgba(236, 122, 69, 0.35);
   }
   .card-soon {
     border-style: dashed;
@@ -254,10 +254,10 @@ const tools: Tool[] = [
   .card-cta:hover {
     transform: translateY(-4px);
     box-shadow: var(--card-shadow-hover);
-    border-color: rgba(13, 148, 136, 0.45);
+    border-color: rgba(236, 122, 69, 0.45);
   }
   .card-cta:hover .card-icon-wrap {
-    background: rgba(13, 148, 136, 0.16);
+    background: rgba(236, 122, 69, 0.16);
   }
   .card-icon-wrap {
     flex: none;
@@ -267,10 +267,10 @@ const tools: Tool[] = [
     height: 44px;
     border-radius: 11px;
     color: var(--accent);
-    background: rgba(13, 148, 136, 0.1);
+    background: rgba(236, 122, 69, 0.1);
   }
   .card-live:hover .card-icon-wrap {
-    background: rgba(13, 148, 136, 0.16);
+    background: rgba(236, 122, 69, 0.16);
   }
   .card-body {
     display: flex;
@@ -300,7 +300,7 @@ const tools: Tool[] = [
     padding: 0.1rem 0.45rem;
     border-radius: 999px;
     color: var(--accent-ink);
-    background: rgba(13, 148, 136, 0.12);
+    background: rgba(236, 122, 69, 0.12);
   }
   .card-arrow {
     flex: none;

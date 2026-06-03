@@ -14,19 +14,14 @@ const isAbout = path === "/about";
 <header class="site-header">
   <div class="container bar">
     <a class="brand" href="/" aria-label="Portkey Tools 首页">
-      <svg
+      <img
         class="brand-mark"
-        viewBox="0 0 32 32"
-        width="26"
-        height="26"
+        src="/portkey-logo.webp"
+        width="32"
+        height="32"
+        alt=""
         aria-hidden="true"
-      >
-        <rect width="32" height="32" rx="7" fill="var(--accent)"></rect>
-        <path
-          d="M16 6c-3.6 0-6.5 2.9-6.5 6.5C9.5 17.2 16 25 16 25s6.5-7.8 6.5-12.5C22.5 8.9 19.6 6 16 6z"
-          fill="#fff"></path>
-        <circle cx="16" cy="12.5" r="2.6" fill="var(--accent)"></circle>
-      </svg>
+      />
       <span class="brand-name">Portkey Tools</span>
     </a>
 
@@ -66,7 +61,7 @@ const isAbout = path === "/about";
     position: sticky;
     top: 0;
     z-index: 20;
-    background: rgba(247, 250, 249, 0.78);
+    background: rgba(250, 247, 243, 0.8);
     backdrop-filter: saturate(1.4) blur(10px);
     -webkit-backdrop-filter: saturate(1.4) blur(10px);
     border-bottom: 1px solid var(--card-border);
@@ -91,7 +86,6 @@ const isAbout = path === "/about";
   }
   .brand-mark {
     display: block;
-    border-radius: 7px;
     transition: transform 0.25s ease;
   }
   .brand:hover .brand-mark {
@@ -117,12 +111,12 @@ const isAbout = path === "/about";
   }
   .nav a:hover {
     color: var(--accent-ink);
-    background: rgba(13, 148, 136, 0.08);
+    background: rgba(236, 122, 69, 0.08);
   }
   .nav a[aria-current="page"] {
     color: var(--accent-ink);
     font-weight: 600;
-    background: rgba(13, 148, 136, 0.1);
+    background: rgba(236, 122, 69, 0.1);
   }
   .ext-icon {
     opacity: 0.7;
