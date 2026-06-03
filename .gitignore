@@ -4,6 +4,11 @@ dist/
 .astro/
 coverage/
 
+# Playwright E2E 产物（本地 / CI 临时，勿入库）
+test-results/
+playwright-report/
+.playwright/
+
 # 环境变量与密钥（绝不入库）
 .env
 .env.*

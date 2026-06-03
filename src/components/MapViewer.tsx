@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 MamaShip
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { WarpedMapLayer } from "@allmaps/maplibre";
@@ -9,6 +9,7 @@ import { epochs } from "../data/epochs";
 import { getAnnotation } from "../lib/annotations";
 import { resolveOverlay, stepEpoch, timelineStations } from "../lib/timeline";
 import { clampOpacity } from "../lib/opacity";
+import { parseView, serializeView, type View } from "../lib/deeplink";
 import positronStyle from "../data/basemap/positron.json";
 import {
   CHENGDU_BOUNDS,
@@ -30,6 +31,7 @@ const STYLE = positronStyle as unknown as maplibregl.StyleSpecification;
 
 const mapsById = new Map(maps.map((m) => [m.id, m]));
 const STATIONS = timelineStations(epochs); // 已按 order 升序（左旧 → 右新）
+const EPOCH_IDS = epochs.map((e) => e.id); // 深链接里校验 hash 中的 epoch 是否合法
 
 // 首屏默认站点：优先显式标记 `default: true` 的 epoch；否则退到最新历史图（保持
 // Phase 1「开局即见叠加层」体验）；再无历史图则退到「现今」。
@@ -37,10 +39,13 @@ const INITIAL_EPOCH =
   STATIONS.find((e) => e.default) ??
   [...STATIONS].reverse().find((e) => e.kind === "historical");
 const INITIAL_EPOCH_ID = INITIAL_EPOCH?.id ?? "present";
-const INITIAL_OPACITY =
-  (INITIAL_EPOCH?.mapId
-    ? mapsById.get(INITIAL_EPOCH.mapId)?.defaultOpacity
-    : undefined) ?? 0.7;
+
+// 某 epoch 的默认透明度：取其历史图登记的 defaultOpacity；基底/未知 epoch 退到 0.7。
+// 深链接带 epoch 但未带 opacity 时，用它给出合理初值。
+function defaultOpacityForEpoch(epochId: string): number {
+  const { mapId } = resolveOverlay(epochs, epochId);
+  return (mapId ? mapsById.get(mapId)?.defaultOpacity : undefined) ?? 0.7;
+}
 
 // 键盘 ↑/↓ 每次调透明度的步长（方向键二维控制器的「古今融合」轴，见 plan §决策6）。
 const OPACITY_STEP = 0.05;
@@ -51,9 +56,26 @@ export default function MapViewer() {
   // mapId → 该图的 WarpedMapLayer。首次切到某历史 epoch 时才懒建（未访问的图永不拉瓦片）。
   const layersRef = useRef<Map<string, WarpedMapLayer>>(new Map());
 
+  // 深链接初值：组件挂载时一次性解析 URL hash（epoch / 经纬度 / zoom / 透明度）。
+  // 用惰性 useState 初始化器固化（只在挂载时算一次）；非法/越界字段已在 parseView 内丢弃。
+  const [initialView] = useState<Partial<View>>(() =>
+    typeof window !== "undefined"
+      ? parseView(window.location.hash, { validEpochIds: EPOCH_IDS })
+      : {},
+  );
+  const initialEpochId = initialView.epochId ?? INITIAL_EPOCH_ID;
+  const initialOpacity =
+    initialView.opacity ?? defaultOpacityForEpoch(initialEpochId);
+
   const [mapReady, setMapReady] = useState(false);
-  const [currentEpochId, setCurrentEpochId] = useState(INITIAL_EPOCH_ID);
-  const [opacity, setOpacity] = useState(INITIAL_OPACITY);
+  const [currentEpochId, setCurrentEpochId] = useState(initialEpochId);
+  const [opacity, setOpacity] = useState(initialOpacity);
+
+  // 写回 hash 需读「最新的 epoch / 透明度」，但 moveend 回调注册在只跑一次的初始化
+  // effect 里（闭包会定格旧值）。故把两者镜像进 ref（在下方 effect 里同步更新），
+  // 由稳定的 writeHash 读取——避免在渲染期读写 ref（react-hooks/refs 规则）。
+  const epochIdRef = useRef(initialEpochId);
+  const opacityRef = useRef(initialOpacity);
   // 「速看」：按住空格临时隐藏老图直接看底图，抬起即恢复（不改动 opacity 状态）。
   const [peeking, setPeeking] = useState(false);
   // 首屏加载层状态：init→historical→done，done 后淡出再由 dismissed 卸载。
@@ -71,6 +93,27 @@ export default function MapViewer() {
     infoOpenRef.current = false;
     setInfoOpen(false);
   };
+
+  // 把当前视图（epoch + 视野 + 透明度）写回 URL hash，用 replaceState 不污染后退栈。
+  // 稳定引用（useCallback []）：读 ref 中的最新 epoch/opacity + 地图当前视野；
+  // peeking（空格速看）是临时态，不在此写入（opacity state 未变，hash 保持真实值）。
+  const writeHash = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const center = map.getCenter();
+    const hash = serializeView({
+      epochId: epochIdRef.current,
+      lng: center.lng,
+      lat: center.lat,
+      zoom: map.getZoom(),
+      opacity: opacityRef.current,
+    });
+    window.history.replaceState(
+      null,
+      "",
+      hash ? `#${hash}` : window.location.pathname + window.location.search,
+    );
+  }, []);
 
   // 初始化地图（仅一次）：底图 + 控件 + 首屏加载判定 + 全局方向键控制器。
   // 历史叠加层的增删/透明度交由下面的「编排」effect 按当前 epoch 驱动。
@@ -96,13 +139,17 @@ export default function MapViewer() {
     };
     const safetyTimer = setTimeout(markDone, 20000);
 
+    // 深链接带完整视野（经纬度+zoom）时用 center+zoom 还原；否则维持开局 fitBounds
+    // 到 1933 老图覆盖的中心城区（留少量内边距），而非更大的成都全域，避免老图缩成一小块。
+    const hv = parseView(window.location.hash, { validEpochIds: EPOCH_IDS });
+    const hasHashView =
+      hv.lng !== undefined && hv.lat !== undefined && hv.zoom !== undefined;
     const map = new maplibregl.Map({
       container: ref.current,
       style: STYLE,
-      // 开局 fitBounds 到 1933 老图覆盖的中心城区（留少量内边距），而非更大的成都全域，
-      // 避免老图开局缩成一小块。
-      bounds: HISTORICAL_MAP_BOUNDS,
-      fitBoundsOptions: { padding: 24 },
+      ...(hasHashView
+        ? { center: [hv.lng, hv.lat] as [number, number], zoom: hv.zoom }
+        : { bounds: HISTORICAL_MAP_BOUNDS, fitBoundsOptions: { padding: 24 } }),
       minZoom: MIN_ZOOM,
       maxZoom: MAX_ZOOM,
       // 把拖拽/缩放锁在成都包围盒内：① 范围外烘焙快照里没有瓦片；
@@ -129,6 +176,14 @@ export default function MapViewer() {
         ?.classList.remove("maplibregl-compact-show");
     collapseAttribution();
     map.on("resize", collapseAttribution);
+
+    // 拖动/缩放结束后（防抖 300ms）把视野写回 hash，使地址栏始终是可分享的深链接。
+    let moveHashTimer: ReturnType<typeof setTimeout> | undefined;
+    const onMoveEnd = () => {
+      clearTimeout(moveHashTimer);
+      moveHashTimer = setTimeout(writeHash, 300);
+    };
+    map.on("moveend", onMoveEnd);
 
     // OpenFreeMap 样式可能引用其 sprite 中并不存在的 POI 图标（office/gate/atm…），
     // 会逐个刷 "Image could not be loaded" 告警。注册透明占位图消除噪声
@@ -196,13 +251,14 @@ export default function MapViewer() {
       done = true;
       clearTimeout(safetyTimer);
       clearTimeout(dismissTimer);
+      clearTimeout(moveHashTimer);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("keyup", onKeyUp);
       layers.clear();
       mapRef.current = null;
       map.remove();
     };
-  }, []);
+  }, [writeHash]);
 
   // 编排：当前 epoch / 透明度 → 各历史图层的存在性与透明度。
   // 活动历史图：懒建（首访才拉瓦片）并设为当前透明度；其余已建图层置 0（瞬时 A/B，不重拉）。
@@ -233,6 +289,15 @@ export default function MapViewer() {
       layer.setOpacity(id === mapId && !peeking ? clampOpacity(opacity) : 0);
     }
   }, [currentEpochId, opacity, mapReady, peeking]);
+
+  // 把最新 epoch / 透明度镜像进 ref 供 writeHash（moveend 回调）读取，并在二者变化时
+  // 同步写回 hash（视野变化由 moveend 防抖写回；首屏 ready 时写一次，使无 hash 进入的
+  // 地址栏立刻变成可分享深链接）。
+  useEffect(() => {
+    epochIdRef.current = currentEpochId;
+    opacityRef.current = opacity;
+    if (mapReady) writeHash();
+  }, [currentEpochId, opacity, mapReady, writeHash]);
 
   const overlay = resolveOverlay(epochs, currentEpochId);
   const activeMap = overlay.mapId ? mapsById.get(overlay.mapId) : undefined;

@@ -9,6 +9,8 @@
 // 拖动滑块时在其左侧浮现「按住空格速看底图」提示，停止拖动约 2s 后淡出（提示自包含于本组件）。
 
 import { useEffect, useRef, useState } from "react";
+import { SUPPORTS_KEYBOARD_HINT } from "../lib/device";
+import { useMediaQuery } from "./useMediaQuery";
 
 interface OpacityControlProps {
   value: number; // 0–1
@@ -44,9 +46,12 @@ const hintStyle: React.CSSProperties = {
   background: "rgba(0,0,0,0.78)",
   color: "#fff",
   borderRadius: 6,
-  padding: "5px 9px",
+  padding: "6px 9px",
   fontSize: 12,
   lineHeight: 1,
+  display: "flex",
+  flexDirection: "column",
+  gap: 6,
   pointerEvents: "none",
   transition: "opacity 0.25s",
 };
@@ -58,13 +63,6 @@ const kbdStyle: React.CSSProperties = {
   fontFamily: "inherit",
 };
 
-// 仅在有精确指针 + 悬停能力的设备（≈ 桌面端，有物理键盘）上提示空格快捷键；
-// 触摸端（手机/平板）无空格键，拖动滑块时不显示该提示。本组件为 client:only，运行在浏览器。
-const SUPPORTS_KEYBOARD_HINT =
-  typeof window !== "undefined" &&
-  typeof window.matchMedia === "function" &&
-  window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-
 export default function OpacityControl({
   value,
   onChange,
@@ -74,6 +72,9 @@ export default function OpacityControl({
   const hideTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
+  // 矮屏（横屏手机）缩短滑块，避免竖向滑块顶到上下边或盖住其他控件。
+  const shortViewport = useMediaQuery("(max-height: 520px)");
+  const sliderHeight = shortViewport ? 110 : 150;
 
   // 拖动中（range onChange 持续触发）浮现提示，停止 ~2s 后淡出。
   // 触摸端无空格键，跳过提示（见 SUPPORTS_KEYBOARD_HINT）。
@@ -89,9 +90,14 @@ export default function OpacityControl({
 
   return (
     <div style={{ ...panelStyle, opacity: disabled ? 0.5 : 1 }}>
-      {/* 空格速看提示：贴在滑块面板左外侧，淡入淡出，不拦截指针 */}
+      {/* 键盘提示：贴在滑块面板左外侧，淡入淡出，不拦截指针。两行——↑↓ 调透明度、空格速看 */}
       <div style={{ ...hintStyle, opacity: showHint ? 1 : 0 }}>
-        按住 <kbd style={kbdStyle}>空格</kbd> 隐藏图层
+        <div>
+          <kbd style={kbdStyle}>↑</kbd> <kbd style={kbdStyle}>↓</kbd> 调透明度
+        </div>
+        <div>
+          按住 <kbd style={kbdStyle}>空格</kbd> 隐藏图层
+        </div>
       </div>
       {/* 顶部 = 古（历史，↑），底部 = 今（现今，↓） */}
       <div aria-hidden="true" style={{ fontWeight: 600 }}>
@@ -110,7 +116,7 @@ export default function OpacityControl({
         style={{
           writingMode: "vertical-lr",
           direction: "rtl",
-          height: 150,
+          height: sliderHeight,
           cursor: disabled ? "not-allowed" : "pointer",
         }}
       />
