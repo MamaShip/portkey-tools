@@ -26,7 +26,10 @@
       "body": {
         "type": "FeatureCollection",
         "transformation": {
-          "type": "thinPlateSpline"
+          "type": "polynomial",
+          "options": {
+            "order": 1
+          }
         },
         "features": [
           {
@@ -92,7 +95,7 @@
           {
             "type": "Feature",
             "properties": {
-              "resourceCoords": [2399, 3142]
+              "resourceCoords": [2406, 3097]
             },
             "geometry": {
               "type": "Point",
@@ -112,11 +115,11 @@
           {
             "type": "Feature",
             "properties": {
-              "resourceCoords": [1947, 2713]
+              "resourceCoords": [2135, 2809]
             },
             "geometry": {
               "type": "Point",
-              "coordinates": [104.06935900863373, 30.680704424094102]
+              "coordinates": [104.07616482573955, 30.678159357451804]
             }
           },
           {
@@ -177,16 +180,6 @@
             "geometry": {
               "type": "Point",
               "coordinates": [104.05371239449374, 30.66544152673032]
-            }
-          },
-          {
-            "type": "Feature",
-            "properties": {
-              "resourceCoords": [883, 3169]
-            },
-            "geometry": {
-              "type": "Point",
-              "coordinates": [104.02655031368016, 30.6618349319113]
             }
           }
         ]
