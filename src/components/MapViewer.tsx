@@ -23,6 +23,7 @@ import MapInfo from "./MapInfo";
 import MapLoadingOverlay, { type LoadStage } from "./MapLoadingOverlay";
 import InfoButton from "./InfoButton";
 import SourcesModal from "./SourcesModal";
+import MapNotice from "./MapNotice";
 
 // 自托管的 positron 矢量样式：瓦片/字形/sprite 均指向 Wasabi（见 docs/object-storage.md），
 // 由 scripts/bake-basemap.ts 烘焙生成。原 OpenFreeMap 公共实例（tiles.openfreemap.org）
@@ -96,6 +97,18 @@ export default function MapViewer() {
     setInfoOpen(false);
   };
 
+  // 定位反馈轻提示（3 秒自动消失）。useState 的 setter 引用稳定，可在只跑一次的
+  // 初始化 effect 里安全调用；showNotice 用 useCallback([]) 固化，作为该 effect 的稳定依赖。
+  const [notice, setNotice] = useState<string | null>(null);
+  const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  const showNotice = useCallback((msg: string) => {
+    setNotice(msg);
+    clearTimeout(noticeTimerRef.current);
+    noticeTimerRef.current = setTimeout(() => setNotice(null), 3000);
+  }, []);
+
   // 把当前视图（epoch + 视野 + 透明度）写回 URL hash，用 replaceState 不污染后退栈。
   // 稳定引用（useCallback []）：读 ref 中的最新 epoch/opacity + 地图当前视野；
   // peeking（空格速看）是临时态，不在此写入（opacity state 未变，hash 保持真实值）。
@@ -165,9 +178,32 @@ export default function MapViewer() {
       // 关闭默认（展开式）署名控件，下面换成 compact：右下角默认只显示一个 ⓘ 按钮，
       // 点击才展开版权全文，开局不占视野。
       attributionControl: false,
+      // 定位控件按钮的中文文案（仅覆盖这两个键，其余沿用 MapLibre 默认）。
+      locale: {
+        "GeolocateControl.FindMyLocation": "定位到我的位置",
+        "GeolocateControl.LocationNotAvailable": "当前设备不支持定位",
+      },
     });
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl());
+    // 定位控件：排在缩放/指南针之后 → 右上角叠在其下方（即「加在它们之后」）。点击才
+    // 请求浏览器定位权限，不点不请求、不留标记（可选、按需授权）。蓝点+精度圈是 HTML
+    // Marker，自动浮在底图与老图栅格之上（最上层）。enableHighAccuracy 优先 GPS，无 GPS
+    // 时浏览器自动回退 WiFi/IP 粗定位。trackUserLocation 持续跟踪，关页即停（geolocation
+    // watch 由 map.remove() 在卸载时清理）。
+    const geolocate = new maplibregl.GeolocateControl({
+      positionOptions: { enableHighAccuracy: true, timeout: 10000 },
+      trackUserLocation: true,
+    });
+    map.addControl(geolocate);
+    // 定位被拒/不可用、或定位成功但在成都 maxBounds 之外时，给一条会自动消失的轻提示，
+    // 避免「点了没反应」。outofmaxbounds 在位置超出 map.maxBounds 时触发。
+    geolocate.on("outofmaxbounds", () =>
+      showNotice("您当前不在成都范围内，无法在本图上显示定位"),
+    );
+    geolocate.on("error", (e: GeolocationPositionError) =>
+      showNotice(e.code === 1 ? "已拒绝定位权限" : "暂时无法获取您的位置"),
+    );
     // 右下角署名控件：compact 模式呈现为一个 ⓘ 按钮，点击才展开版权全文。
     // MapLibre 的 compact 初始却带 `maplibregl-compact-show`（即开局展开），且在
     // resize 时会重新展开——这里主动移除该类，使其默认收起，并在 resize 后再收起。
@@ -258,13 +294,14 @@ export default function MapViewer() {
       clearTimeout(safetyTimer);
       clearTimeout(dismissTimer);
       clearTimeout(moveHashTimer);
+      clearTimeout(noticeTimerRef.current);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("keyup", onKeyUp);
       layers.clear();
       mapRef.current = null;
       map.remove();
     };
-  }, [writeHash]);
+  }, [writeHash, showNotice]);
 
   // 编排：当前 epoch / 透明度 → 各历史图层的存在性与透明度。
   // 活动历史图：懒建（首访才拉瓦片）并设为当前透明度；其余已建图层置 0（瞬时 A/B，不重拉）。
@@ -338,6 +375,7 @@ export default function MapViewer() {
       />
       <InfoButton onClick={openInfo} />
       <SourcesModal open={infoOpen} onClose={closeInfo} />
+      {notice && <MapNotice text={notice} />}
     </>
   );
 }

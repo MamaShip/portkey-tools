@@ -58,35 +58,35 @@ src/data/maps.ts     ┘
 - **纯逻辑与副作用分离**：所有「该显示哪张图、时间轴顺序、键盘步进、透明度钳制」都在 [`src/lib/`](../src/lib/) 的纯函数里（不依赖 DOM/MapLibre），是单元测试主战场；`MapViewer` 只做副作用编排。
 - **底图自托管**：交互底图是 OpenFreeMap positron 在成都包围盒的快照，托管在 Wasabi（公共实例被 GFW 阻断）。范围由 [`src/data/basemap/extent.ts`](../src/data/basemap/extent.ts) **单一来源**定义（`MapViewer` 与烘焙脚本共用，永不漂移），改写后的样式在 [`src/data/basemap/positron.json`](../src/data/basemap/positron.json)（入库可评审）。机制见 [`basemap.md`](./basemap.md)。
 
-**交互模型**（在 `MapViewer` 的全局 keydown 里实现）：方向键二维控制 ——`←/→` 走时间轴、`↑/↓` 调透明度；**空格「速看」**按住临时把当前老图置 0（直接看底图）、抬起恢复。地图自带方向键平移已关闭（`keyboard: false`），平移用鼠标/触控、缩放用 `NavigationControl`。
+**交互模型**（在 `MapViewer` 的全局 keydown 里实现）：方向键二维控制 ——`←/→` 走时间轴、`↑/↓` 调透明度；**空格「速看」**按住临时把当前老图置 0（直接看底图）、抬起恢复。地图自带方向键平移已关闭（`keyboard: false`），平移用鼠标/触控、缩放用 `NavigationControl`、定位用 `GeolocateControl`（排在缩放控件之后；点击才请求浏览器定位、蓝点持续跟踪，不在成都范围由 `MapNotice` 提示）。
 
 ---
 
 ## 3. 目录速查表（改哪里）
 
-| 路径                                | 是什么 / 何时改它                                                                                                                                                                           |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/data/epochs.ts`                | 时间轴站点。加图时加一行；`default: true` 定首屏默认站点（至多一个）。                                                                                                                      |
-| `src/data/maps.ts`                  | 历史图登记表（URL + provenance + 默认透明度）。加图时加一项。                                                                                                                               |
-| `src/data/annotations/<mapId>.json` | 该图的 Allmaps 配准标注（控制点）。从 Allmaps Editor 导出，唯一入库的配准产物。                                                                                                             |
-| `src/data/schema.ts`                | `Epoch`/`HistoricalMap` 的 zod schema + 类型。改字段先动这里。                                                                                                                              |
-| `src/data/basemap/`                 | 自托管底图：`extent.ts`（范围单一来源）、`positron.json`（改写后样式）。                                                                                                                    |
-| `src/lib/timeline.ts`               | 时间轴纯逻辑。改「该显示哪张图 / 键盘步进 / 站点顺序」的规则。                                                                                                                              |
-| `src/lib/annotations.ts`            | 标注自动装载。一般不用动（约定即接口）。                                                                                                                                                    |
-| `src/lib/opacity.ts`                | 透明度钳制（0–1）。                                                                                                                                                                         |
-| `src/lib/deeplink.ts`               | URL hash 深链接的序列化/解析（纯函数，往返单测）。`epoch+经纬度+zoom+透明度` ↔ hash。                                                                                                       |
-| `src/lib/device.ts`                 | 键盘提示能力探测（`(hover:hover) and (pointer:fine)`）：触摸端不显示键盘快捷键提示。                                                                                                        |
-| `src/components/MapViewer.tsx`      | island 主体：地图初始化 + 图层编排 + 键盘控制 + 加载层。大改交互在这里。                                                                                                                    |
-| `src/components/*.tsx`              | 子控件：`Timeline`/`OpacityControl`/`MapInfo`/`MapLoadingOverlay`/`InfoButton`/`SourcesModal`（状态由 `MapViewer` 持有）；`useMediaQuery.ts`（按视口切换内联样式的小 hook，移动端适配用）。 |
-| `src/pages/*.astro`                 | 路由：`index`（工具索引）、`about`、`cd-old-map`（地图工具）。加工具=加路由。                                                                                                               |
-| `src/layouts/BaseLayout.astro`      | 共享外壳。`fullBleed` 给地图页占满视口。                                                                                                                                                    |
-| `scripts/validate-data.ts`          | `pnpm validate` 的实现（CI 数据闸门）。                                                                                                                                                     |
-| `scripts/bake-basemap.ts`           | `pnpm bake:basemap` 的实现（烘焙底图快照）。                                                                                                                                                |
-| `tests/`                            | Vitest：`georef.test.ts`（配准 sanity）、`timeline.test.ts`、`opacity.test.ts`、`deeplink.test.ts`（hash 往返）。                                                                           |
-| `e2e/` + `playwright.config.ts`     | Playwright DOM 级冒烟（`pnpm test:e2e`）：canvas 挂载、深链接还原、移动视口控件可见。                                                                                                       |
-| `astro.config.mjs`                  | 站点 URL、React 集成、`manualChunks`（按厂商分块）。                                                                                                                                        |
-| `public/_redirects`                 | Cloudflare Pages 301 跳转（旧地图路由 → `/cd-old-map`）。                                                                                                                                   |
-| `.github/workflows/ci.yml`          | CI 质量闸门（无 secrets，fork PR 也跑）。                                                                                                                                                   |
+| 路径                                | 是什么 / 何时改它                                                                                                                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/data/epochs.ts`                | 时间轴站点。加图时加一行；`default: true` 定首屏默认站点（至多一个）。                                                                                                                                  |
+| `src/data/maps.ts`                  | 历史图登记表（URL + provenance + 默认透明度）。加图时加一项。                                                                                                                                           |
+| `src/data/annotations/<mapId>.json` | 该图的 Allmaps 配准标注（控制点）。从 Allmaps Editor 导出，唯一入库的配准产物。                                                                                                                         |
+| `src/data/schema.ts`                | `Epoch`/`HistoricalMap` 的 zod schema + 类型。改字段先动这里。                                                                                                                                          |
+| `src/data/basemap/`                 | 自托管底图：`extent.ts`（范围单一来源）、`positron.json`（改写后样式）。                                                                                                                                |
+| `src/lib/timeline.ts`               | 时间轴纯逻辑。改「该显示哪张图 / 键盘步进 / 站点顺序」的规则。                                                                                                                                          |
+| `src/lib/annotations.ts`            | 标注自动装载。一般不用动（约定即接口）。                                                                                                                                                                |
+| `src/lib/opacity.ts`                | 透明度钳制（0–1）。                                                                                                                                                                                     |
+| `src/lib/deeplink.ts`               | URL hash 深链接的序列化/解析（纯函数，往返单测）。`epoch+经纬度+zoom+透明度` ↔ hash。                                                                                                                   |
+| `src/lib/device.ts`                 | 键盘提示能力探测（`(hover:hover) and (pointer:fine)`）：触摸端不显示键盘快捷键提示。                                                                                                                    |
+| `src/components/MapViewer.tsx`      | island 主体：地图初始化 + 图层编排 + 键盘控制 + 加载层。大改交互在这里。                                                                                                                                |
+| `src/components/*.tsx`              | 子控件：`Timeline`/`OpacityControl`/`MapInfo`/`MapLoadingOverlay`/`InfoButton`/`SourcesModal`/`MapNotice`（状态由 `MapViewer` 持有）；`useMediaQuery.ts`（按视口切换内联样式的小 hook，移动端适配用）。 |
+| `src/pages/*.astro`                 | 路由：`index`（工具索引）、`about`、`cd-old-map`（地图工具）。加工具=加路由。                                                                                                                           |
+| `src/layouts/BaseLayout.astro`      | 共享外壳。`fullBleed` 给地图页占满视口。                                                                                                                                                                |
+| `scripts/validate-data.ts`          | `pnpm validate` 的实现（CI 数据闸门）。                                                                                                                                                                 |
+| `scripts/bake-basemap.ts`           | `pnpm bake:basemap` 的实现（烘焙底图快照）。                                                                                                                                                            |
+| `tests/`                            | Vitest：`georef.test.ts`（配准 sanity）、`timeline.test.ts`、`opacity.test.ts`、`deeplink.test.ts`（hash 往返）。                                                                                       |
+| `e2e/` + `playwright.config.ts`     | Playwright DOM 级冒烟（`pnpm test:e2e`）：canvas 挂载、深链接还原、移动视口控件可见。                                                                                                                   |
+| `astro.config.mjs`                  | 站点 URL、React 集成、`manualChunks`（按厂商分块）。                                                                                                                                                    |
+| `public/_redirects`                 | Cloudflare Pages 301 跳转（旧地图路由 → `/cd-old-map`）。                                                                                                                                               |
+| `.github/workflows/ci.yml`          | CI 质量闸门（无 secrets，fork PR 也跑）。                                                                                                                                                               |
 
 ---
 
@@ -140,15 +140,15 @@ pnpm check && pnpm lint && pnpm format:check && pnpm validate && pnpm test
 
 ## 6. 路线图与状态
 
-| 阶段                           | 状态                                                                                                                                           |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| Phase 0 脚手架 + 底图          | ✅ 完成                                                                                                                                        |
-| Phase 1 端到端一张图           | ✅ 完成（1933 垂直切片，先啃最硬的未知）                                                                                                       |
-| Phase 2 时间轴 + 全部图 + 合规 | ✅ **工程完成**（5 图 + 时间轴 + 来源弹窗 + 闸门）；增图为持续内容工作                                                                         |
-| Phase 3 体验增强               | 🟡 **大部完成**：✅ URL hash 深链接、✅ 移动端适配、✅ e2e 冒烟闸门、✅ 键盘提示；island 懒加载已用静态 boot 遮罩覆盖；卷帘/swipe 对照**暂缓** |
-| Phase 4 标注层                 | ⬜ 架构已按 plan §5 预留（`currentEpochId` 同时驱动栅格层与未来 GeoJSON 层）                                                                   |
+| 阶段                           | 状态                                                                                                                                                        |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Phase 0 脚手架 + 底图          | ✅ 完成                                                                                                                                                     |
+| Phase 1 端到端一张图           | ✅ 完成（1933 垂直切片，先啃最硬的未知）                                                                                                                    |
+| Phase 2 时间轴 + 全部图 + 合规 | ✅ **工程完成**（5 图 + 时间轴 + 来源弹窗 + 闸门）；增图为持续内容工作                                                                                      |
+| Phase 3 体验增强               | 🟡 **大部完成**：✅ URL hash 深链接、✅ 移动端适配、✅ e2e 冒烟闸门、✅ 键盘提示、✅ 当前定位；island 懒加载已用静态 boot 遮罩覆盖；卷帘/swipe 对照**暂缓** |
+| Phase 4 标注层                 | ⬜ 架构已按 plan §5 预留（`currentEpochId` 同时驱动栅格层与未来 GeoJSON 层）                                                                                |
 
-Phase 3 的 URL hash 深链接**已落地**：把 `epoch + 经纬度 + zoom + 透明度`（可序列化设计）写进 hash，`replaceState` 不污染后退栈；纯逻辑在 [`src/lib/deeplink.ts`](../src/lib/deeplink.ts) + **往返单元测试** [`tests/deeplink.test.ts`](../tests/deeplink.test.ts)（plan §8），集成在 [`MapViewer.tsx`](../src/components/MapViewer.tsx)。E2E 冒烟见 [`e2e/`](../e2e/) + [`playwright.config.ts`](../playwright.config.ts)（`pnpm test:e2e`）。卷帘/swipe 对照暂缓——现有「空格速看」已提供轻量 A/B 对照。
+Phase 3 的 URL hash 深链接**已落地**：把 `epoch + 经纬度 + zoom + 透明度`（可序列化设计）写进 hash，`replaceState` 不污染后退栈；纯逻辑在 [`src/lib/deeplink.ts`](../src/lib/deeplink.ts) + **往返单元测试** [`tests/deeplink.test.ts`](../tests/deeplink.test.ts)（plan §8），集成在 [`MapViewer.tsx`](../src/components/MapViewer.tsx)。E2E 冒烟见 [`e2e/`](../e2e/) + [`playwright.config.ts`](../playwright.config.ts)（`pnpm test:e2e`）。**当前定位**复用 MapLibre 自带 `GeolocateControl`（在 [`MapViewer.tsx`](../src/components/MapViewer.tsx) 里 `NavigationControl` 之后挂载，故落在右上角缩放控件下方）：点击才请求浏览器定位权限（不点零授权、零标记），蓝点/精度圈是 HTML `Marker` 天然浮在老图栅格之上，`trackUserLocation` 持续跟踪、`enableHighAccuracy` 优先 GPS 无则回退 WiFi/IP；定位失败或不在成都 `maxBounds` 内由 [`MapNotice`](../src/components/MapNotice.tsx) 轻提示，避免「点了没反应」。卷帘/swipe 对照暂缓——现有「空格速看」已提供轻量 A/B 对照。
 
 ---
 
