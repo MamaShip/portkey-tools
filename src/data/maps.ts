@@ -8,6 +8,23 @@ import type { HistoricalMap } from "./schema";
 
 export const maps: HistoricalMap[] = [
   {
+    id: "chengdu-1903",
+    title: "1903年四川省城街道图",
+    year: 1903,
+    iiifInfoUrl:
+      "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1903/info.json",
+    annotationPath: "src/data/annotations/chengdu-1903.json",
+    defaultOpacity: 0.7,
+    provenance: {
+      source: "四川大学图书馆 藏",
+      author: "吕兰",
+      license: "Public Domain",
+      notes:
+        "光绪 29 年天彭（今四川彭州市）人氏吕兰，为四川新任总督岑春煊（1861-1933）了解省城情况而实地测绘的地图。本图采用计里画方法绘制，按“每方六十丈，三方得一里”的比例尺绘制，其精度较好，配色美观艳丽，是清末新政过程中一幅非常宝贵的成都古地图。",
+    },
+    attribution: "《1903年四川省城街道图》· 吕兰绘（1903 / 公共领域）",
+  },
+  {
     id: "chengdu-1911",
     title: "宣统三年成都街市图",
     year: 1911,
@@ -93,5 +110,24 @@ export const maps: HistoricalMap[] = [
     },
     attribution:
       "《1947年成都市郊图》· 国防部测量局测量第五队测制（1947 / 公共领域）",
+  },
+  {
+    id: "chengdu-1989",
+    title: "1989年成都地图",
+    year: 1989,
+    iiifInfoUrl:
+      "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1989/info.json",
+    annotationPath: "src/data/annotations/chengdu-1989.json",
+    defaultOpacity: 0.7,
+    provenance: {
+      source:
+        "Perry-Castañeda Library Map Collection, University of Texas at Austin（德克萨斯大学奥斯汀分校 PCL 地图收藏）",
+      author: "美国中央情报局（U.S. Central Intelligence Agency, CIA）",
+      license: "Public Domain",
+      notes:
+        "1989 年美国中央情报局（CIA）绘制；来源：德克萨斯大学奥斯汀分校 Perry-Castañeda 图书馆地图收藏（PCL Map Collection）。依《美国法典》第 17 编第 105 条（17 U.S.C. §105），美国联邦政府机构职务范围内制作的作品不受版权保护，自动进入公有领域。",
+    },
+    attribution:
+      "《1989年成都地图》· 美国中央情报局（CIA）制（1989 / 公共领域）",
   },
 ];

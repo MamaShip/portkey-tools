@@ -35,12 +35,14 @@
 
 | 地图 ID（年代）           | IIIF `info.json`                                                                                         |
 | ------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `chengdu-1903`（1903）    | <https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1903/info.json> |
 | `chengdu-1911`（1911）    | <https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1911/info.json> |
 | `chengdu-1915`（1915，左幅/城西） | <https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1915-left/info.json> |
 | `chengdu-1915`（1915，右幅/城东） | <https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1915-right/info.json> |
 | `chengdu-1933`（1933）    | <https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1933/info.json> |
 | `chengdu-1944`（1944）    | <https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1944/info.json> |
 | `chengdu-1947`（1947）    | <https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1947/info.json> |
+| `chengdu-1989`（1989）    | <https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1989/info.json> |
 
 > **关于 1915 拼幅图**：这张图原件分左右两幅，分别扫描、各自配准后在地理上拼合（左=城西、右=城东）。修正它时请**分别加载左、右两个 `info.json`**，每幅单独配准；在 issue 里注明你改的是哪一幅。
 

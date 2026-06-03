@@ -19,7 +19,7 @@ Copyright (C) 2026 MamaShip
 ## 当前状态（2026-06）
 
 - **Phase 0–2 工程完成、Phase 3 大部完成、已上线、全部质量闸门绿灯。**
-- 已配准 **5 张**历史图：`chengdu-1911` / `chengdu-1915`（左右拼幅）/ `chengdu-1933`（首屏默认）/ `chengdu-1944` / `chengdu-1947`。
+- 已配准 **7 张**历史图：`chengdu-1903`（清末手绘四川省城街道图）/ `chengdu-1911` / `chengdu-1915`（左右拼幅）/ `chengdu-1933`（首屏默认）/ `chengdu-1944` / `chengdu-1947` / `chengdu-1989`（首张 1949 后地图，美国 CIA 制、PCL 收藏）。
 - `MapViewer` 已**泛化**为「遍历 `epochs`/`maps` 登记表 + 时间轴驱动」：**新增一张图无需改渲染代码**（流程见 [`docs/adding-a-map.md`](./docs/adding-a-map.md)）。
 - **Phase 3 体验增强**已落地：URL hash 深链接（`src/lib/deeplink.ts`，可分享视图）、移动端适配、Playwright e2e 冒烟闸门（`e2e/`）、键盘提示增强、当前定位（`GeolocateControl`，点击才授权、蓝点持续跟踪）；island 懒加载以静态 boot 遮罩覆盖；**卷帘/swipe 对照暂缓**。Phase 4 = 标注层（架构已按 plan §5 预留）。
 - **开放的内容工作**：向 plan §1 的 5–8 张目标增图（尤其缺 1950s–1975 时段），只待源扫描图——架构已支持「丢一张图自动上轴」。
