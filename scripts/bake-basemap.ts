@@ -27,7 +27,8 @@ const OUT = "basemap-dist/openfreemap-positron";
 const WASABI_KEY = "portkey/basemaps/openfreemap-positron";
 const WASABI_BASE = `https://s3.ap-southeast-1.wasabisys.com/${WASABI_KEY}`;
 // 拉丁 / 符号 / 数字字形；CJK 由 MapLibre localIdeographFontFamily 本地渲染，无需烘焙。
-const GLYPH_RANGES = ["0-255", "256-511"];
+// 8192-8447 = General Punctuation（含弯引号 U+2018/U+2019），底图拉丁地名会用到。
+const GLYPH_RANGES = ["0-255", "256-511", "8192-8447"];
 const CONCURRENCY = 16;
 
 interface StyleJson {

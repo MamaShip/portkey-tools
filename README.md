@@ -78,7 +78,7 @@ pnpm dev          # http://localhost:4321 → /cd-old-map
 CI 由 GitHub Actions 跑上述质量闸门（见 `.github/workflows/ci.yml`）；部署与每个 PR 的预览 URL 由 Cloudflare Pages 原生 Git 集成负责。
 
 
-## 许可（分层）
+## 许可
 
 本项目综合使用多种许可开源：
 
