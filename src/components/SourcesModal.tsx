@@ -154,9 +154,7 @@ export default function SourcesModal({ open, onClose }: SourcesModalProps) {
           </section>
         ))}
 
-        <p>
-          现代底图 © OpenStreetMap 贡献者 / OpenFreeMap。
-        </p>
+        <p>现代底图 © OpenStreetMap 贡献者 / OpenFreeMap。</p>
         <p>
           配准标注（控制点）数据以 <strong>CC0</strong> 协议发布；站点代码以
           AGPL-3.0-or-later 协议开源。
