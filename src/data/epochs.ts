@@ -52,6 +52,13 @@ export const epochs: Epoch[] = [
     mapId: "chengdu-1947",
   },
   {
+    id: "1979",
+    label: "1979",
+    order: 58,
+    kind: "historical",
+    mapId: "chengdu-1979",
+  },
+  {
     id: "1989",
     label: "1989",
     order: 60,

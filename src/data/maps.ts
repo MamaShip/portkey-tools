@@ -112,8 +112,25 @@ export const maps: HistoricalMap[] = [
       "《1947年成都市郊图》· 国防部测量局测量第五队测制（1947 / 公共领域）",
   },
   {
+    id: "chengdu-1979",
+    title: "1979年成都军用地图（苏联）",
+    year: 1979,
+    iiifInfoUrl:
+      "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1979/info.json",
+    annotationPath: "src/data/annotations/chengdu-1979.json",
+    defaultOpacity: 0.7,
+    provenance: {
+      source: "美国国会图书馆（Library of Congress）藏",
+      author: "苏联总参谋部军事地形局",
+      license: "Public Domain",
+      notes:
+        "苏联总参谋部“城市计划”（Soviet City Plans）系列，1:10,000 比例尺；依据 1974 年资料测编、1979 年出版的机密军用地形图。苏联解体后大量此类地图流出，原件由美国国会图书馆收藏并数字化共享。",
+    },
+    attribution: "《成都》· 苏联总参谋部制（1979 / 公共领域）",
+  },
+  {
     id: "chengdu-1989",
-    title: "1989年成都地图",
+    title: "1989年成都地图（美国）",
     year: 1989,
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1989/info.json",
