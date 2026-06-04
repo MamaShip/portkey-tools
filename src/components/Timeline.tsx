@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 MamaShip
 //
-// 底部站点横条：离散时间轴（左旧 → 右新，最右通常是「现今」）。状态由父级（MapViewer）
+// 底部站点横条：离散时间轴（左旧 → 右新，每个站点对应一张历史图）。状态由父级（MapViewer）
 // 持有；点击站点切换；键盘 ←/→ 由 MapViewer 的全局处理器统一驱动（方向键二维控制器的
 // 「时间轴」轴，见 plan §决策6），本组件不各自绑键。点击站点时浮现一个短时提示，
 // 告知桌面端用户可用 ← → 键切换（仅在有键盘的设备上，见 SUPPORTS_KEYBOARD_HINT）。
@@ -95,10 +95,10 @@ export default function Timeline({
   };
   const responsivePanel: React.CSSProperties = {
     padding: narrow ? "7px 10px" : "10px 18px",
-    font: `${narrow ? 12 : 13}px/1.2 system-ui, sans-serif`,
+    font: `${narrow ? 11 : 13}px/1.2 system-ui, sans-serif`,
   };
   const responsiveStation: React.CSSProperties = {
-    padding: narrow ? "2px 7px" : "2px 10px",
+    padding: narrow ? "2px 6px" : "2px 10px",
   };
 
   // 点击切换站点：照常通知父级；桌面端（有键盘）再浮现 ~2s 的「← → 切换」提示。

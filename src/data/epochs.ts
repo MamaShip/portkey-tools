@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 MamaShip
 //
-// 时间轴站点登记表。Phase 1 有两个站点：`present`（仅现代底图）与 `1933`
-// （叠加《1933年成都街市图》）。Phase 2 配准其余各图后在此继续追加。
+// 时间轴站点登记表：每个站点对应一张已配准的历史图（按 order 升序，左旧 → 右新）。
+// 「纯现代底图」不再设独立站点（原 `present`/「现今」已移除），改由地图上的「隐/显」
+// 按钮与按住空格速看获取。Phase 2 起配准新图后在此继续追加。
 
 import type { Epoch } from "./schema";
 
 export const epochs: Epoch[] = [
-  { id: "present", label: "现今", order: 100, kind: "basemap" },
   {
     id: "1903",
     label: "1903",
