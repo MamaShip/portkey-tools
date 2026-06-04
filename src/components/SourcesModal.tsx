@@ -106,7 +106,7 @@ export default function SourcesModal({ open, onClose }: SourcesModalProps) {
           来源与版权
         </h3>
         <p style={{ marginTop: 0 }}>
-          本站历史地图均取自公共领域（制图者多为当时政府机构）。下方逐图列出来源、收藏机构、制图者与许可状态。
+          本站历史地图均取自公共领域。下方逐图列出来源、作者与许可状态。
         </p>
 
         {ordered.map((m) => (
@@ -155,11 +155,11 @@ export default function SourcesModal({ open, onClose }: SourcesModalProps) {
         ))}
 
         <p>
-          现代底图 © OpenStreetMap 贡献者 / OpenFreeMap（地图角标自动署名）。
+          现代底图 © OpenStreetMap 贡献者 / OpenFreeMap。
         </p>
         <p>
-          配准标注（控制点）数据以 <strong>CC0</strong> 发布；站点代码以
-          AGPL-3.0-or-later 授权。
+          配准标注（控制点）数据以 <strong>CC0</strong> 协议发布；站点代码以
+          AGPL-3.0-or-later 协议开源。
         </p>
 
         <h3 style={{ margin: "1.2rem 0 0.5rem", fontSize: "1rem" }}>

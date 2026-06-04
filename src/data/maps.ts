@@ -20,7 +20,7 @@ export const maps: HistoricalMap[] = [
       author: "吕兰",
       license: "Public Domain",
       notes:
-        "光绪 29 年天彭（今四川彭州市）人氏吕兰，为四川新任总督岑春煊（1861-1933）了解省城情况而实地测绘的地图。本图采用计里画方法绘制，按“每方六十丈，三方得一里”的比例尺绘制，其精度较好，配色美观艳丽，是清末新政过程中一幅非常宝贵的成都古地图。",
+        "光绪 29 年，天彭（今四川彭州市）人氏吕兰，为四川新任总督岑春煊（1861-1933）了解省城情况而实地测绘的地图。本图采用计里画方法绘制，按“每方六十丈，三方得一里”的比例尺绘制，其精度较好，配色美观艳丽，是清末新政过程中一幅非常宝贵的成都古地图。",
     },
     attribution: "《1903年四川省城街道图》· 吕兰绘（1903 / 公共领域）",
   },
@@ -38,7 +38,7 @@ export const maps: HistoricalMap[] = [
       author: "傅崇渠",
       license: "Public Domain",
       notes:
-        "清宣统三年（1911）傅崇渠绘制；来源：Office of Military Attaché, American Legation, Peking。年代久远，视为公共领域。",
+        "清宣统三年（1911）傅崇渠绘制；来源：Office of Military Attaché, American Legation, Peking。",
     },
     attribution: "《宣统三年成都街市图》· 傅崇渠绘（1911 / 公共领域）",
   },
@@ -52,11 +52,11 @@ export const maps: HistoricalMap[] = [
     annotationPath: "src/data/annotations/chengdu-1915.json",
     defaultOpacity: 0.7,
     provenance: {
-      source: "四川陆军测量局（中华民国四年 / 1915）",
+      source: "中央研究院（台湾）",
       author: "四川陆军测量局",
       license: "Public Domain",
       notes:
-        "中华民国四年（1915）测图、七月制版；制图者为四川陆军测量局（当时政府测绘机构），视为公共领域。图分左右两幅分别扫描，经 Allmaps 各自配准后在地理上拼合（左=城西、右=城东）。",
+        "中华民国四年（1915）测图、七月制版。图分左右两幅分别扫描，经 Allmaps 各自配准后在地理上拼合（左=城西、右=城东）。",
     },
     attribution: "《1915年成都街市图》· 四川陆军测量局制（公共领域）",
   },
@@ -69,17 +69,17 @@ export const maps: HistoricalMap[] = [
     annotationPath: "src/data/annotations/chengdu-1933.json",
     defaultOpacity: 0.7,
     provenance: {
-      source: "参谋本部 四川陆地测量局（中华民国二十二年 / 1933）",
+      source: "中央研究院（台湾）",
       author: "参谋本部 四川陆地测量局",
       license: "Public Domain",
       notes:
-        "中华民国二十二年（1933）参谋本部四川陆地测量局测制：5 月测图、12 月制版；制图者为当时政府测绘机构，视为公共领域。",
+        "中华民国二十二年（1933）参谋本部四川陆地测量局测制：5 月测图、12 月制版。",
     },
     attribution: "《1933年成都街市图》· 参谋本部四川陆地测量局制（公共领域）",
   },
   {
     id: "chengdu-1944",
-    title: "成都市郊外地图",
+    title: "1944年成都市郊外地图",
     year: 1944,
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1944/info.json",
@@ -89,7 +89,7 @@ export const maps: HistoricalMap[] = [
       source: "内政部图书馆 藏",
       license: "Public Domain",
       notes:
-        "中华民国三十三年九月（1944）出版；成都西御街新中国工程行承印；内政部图书馆藏。年代久远，视为公共领域。",
+        "中华民国三十三年九月（1944）出版；成都西御街新中国工程行承印；内政部图书馆藏。",
     },
     attribution: "《成都市郊外地图》· 成都新中国工程行承印（1944 / 公共领域）",
   },
@@ -106,14 +106,14 @@ export const maps: HistoricalMap[] = [
       author: "国防部测量局测量第五队",
       license: "Public Domain",
       notes:
-        "中华民国三十六年（1947）测图；国防部测量局测量第五队测制；内政部图书馆藏。年代久远，视为公共领域。",
+        "中华民国三十六年（1947）测图；国防部测量局测量第五队测制；内政部图书馆藏。",
     },
     attribution:
       "《1947年成都市郊图》· 国防部测量局测量第五队测制（1947 / 公共领域）",
   },
   {
     id: "chengdu-1979",
-    title: "1979年成都军用地图（苏联）",
+    title: "1979年成都（苏联）",
     year: 1979,
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1979/info.json",
