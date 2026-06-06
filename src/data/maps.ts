@@ -8,6 +8,23 @@ import type { HistoricalMap } from "./schema";
 
 export const maps: HistoricalMap[] = [
   {
+    id: "chengdu-1894",
+    title: "1894年四川省城街道图",
+    year: 1894,
+    iiifInfoUrl:
+      "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1894/info.json",
+    annotationPath: "src/data/annotations/chengdu-1894.json",
+    defaultOpacity: 0.7,
+    provenance: {
+      source: "成都市档案馆 藏（未考证）",
+      author: "吴绍伯",
+      license: "Public Domain",
+      notes:
+        "光绪二十年（1894）吴绍伯绘制。吴绍伯（1839—1918），字焯夫，贵阳人，长于画像与制图，以最早在成都引进照相和石印技术闻名。本图绘制方式规范、图上信息完整翔实，是现存成都古旧城市图系统里较有代表性的一幅；此后绘制的成都地图逐渐具有了近代地图的特征。",
+    },
+    attribution: "《1894年四川省城街道图》· 吴绍伯绘（1894 / 公共领域）",
+  },
+  {
     id: "chengdu-1903",
     title: "1903年四川省城街道图",
     year: 1903,
