@@ -44,13 +44,14 @@ export const epochs: Epoch[] = [
     mapId: "chengdu-1933",
     default: true, // 首屏默认：1933 街市图分辨率好；1944 分辨率偏低，不作开局展示
   },
-  {
-    id: "1944",
-    label: "1944",
-    order: 55,
-    kind: "historical",
-    mapId: "chengdu-1944",
-  },
+  // 1944 图质量不佳，暂时下架（保留登记以备将来恢复）：
+  // {
+  //   id: "1944",
+  //   label: "1944",
+  //   order: 55,
+  //   kind: "historical",
+  //   mapId: "chengdu-1944",
+  // },
   {
     id: "1947",
     label: "1947",

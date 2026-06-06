@@ -94,22 +94,23 @@ export const maps: HistoricalMap[] = [
     },
     attribution: "《1933年成都街市图》· 参谋本部四川陆地测量局制（公共领域）",
   },
-  {
-    id: "chengdu-1944",
-    title: "1944年成都市郊外地图",
-    year: 1944,
-    iiifInfoUrl:
-      "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1944/info.json",
-    annotationPath: "src/data/annotations/chengdu-1944.json",
-    defaultOpacity: 0.7,
-    provenance: {
-      source: "内政部图书馆 藏",
-      license: "Public Domain",
-      notes:
-        "中华民国三十三年九月（1944）出版；成都西御街新中国工程行承印；内政部图书馆藏。",
-    },
-    attribution: "《成都市郊外地图》· 成都新中国工程行承印（1944 / 公共领域）",
-  },
+  // 1944 图质量不佳，暂时下架（保留登记以备将来恢复）：
+  // {
+  //   id: "chengdu-1944",
+  //   title: "1944年成都市郊外地图",
+  //   year: 1944,
+  //   iiifInfoUrl:
+  //     "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1944/info.json",
+  //   annotationPath: "src/data/annotations/chengdu-1944.json",
+  //   defaultOpacity: 0.7,
+  //   provenance: {
+  //     source: "内政部图书馆 藏",
+  //     license: "Public Domain",
+  //     notes:
+  //       "中华民国三十三年九月（1944）出版；成都西御街新中国工程行承印；内政部图书馆藏。",
+  //   },
+  //   attribution: "《成都市郊外地图》· 成都新中国工程行承印（1944 / 公共领域）",
+  // },
   {
     id: "chengdu-1947",
     title: "1947年成都市郊图",
