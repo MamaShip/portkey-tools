@@ -29,9 +29,9 @@ test("地图挂载且无未捕获异常", async ({ page }) => {
 });
 
 test("深链接还原指定 epoch", async ({ page }) => {
-  // 进入带 hash 的深链接：1944 站点应被选中（DOM 级，不验像素位置）。
-  await page.goto("/cd-old-map#epoch=1944&c=30.66,104.06&z=13&o=0.6");
-  await expect(page.getByRole("radio", { name: "1944" })).toHaveAttribute(
+  // 进入带 hash 的深链接：1947 站点应被选中（DOM 级，不验像素位置）。
+  await page.goto("/cd-old-map#epoch=1947&c=30.66,104.06&z=13&o=0.6");
+  await expect(page.getByRole("radio", { name: "1947" })).toHaveAttribute(
     "aria-checked",
     "true",
   );
