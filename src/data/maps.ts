@@ -52,12 +52,12 @@ export const maps: HistoricalMap[] = [
     provenance: {
       source:
         "美国驻华使馆武官处（Office of Military Attaché, American Legation, Peking）",
-      author: "傅崇渠",
+      author: "傅崇榘",
       license: "Public Domain",
       notes:
-        "清宣统三年（1911）傅崇渠绘制；来源：Office of Military Attaché, American Legation, Peking。",
+        "清宣统三年（1911）绘制发行的四川成都详细地图。四川近代报刊、出版界的先驱傅崇榘（1875-1917年）编著。单色中文地图，有手写英文标注，应该是收藏者所加。",
     },
-    attribution: "《宣统三年成都街市图》· 傅崇渠绘（1911 / 公共领域）",
+    attribution: "《宣统三年成都街市图》· 傅崇榘绘（1911 / 公共领域）",
   },
   {
     id: "chengdu-1915",
@@ -120,7 +120,7 @@ export const maps: HistoricalMap[] = [
     annotationPath: "src/data/annotations/chengdu-1947.json",
     defaultOpacity: 0.7,
     provenance: {
-      source: "内政部图书馆 藏",
+      source: "内政部图书馆（台湾）",
       author: "国防部测量局测量第五队",
       license: "Public Domain",
       notes:
@@ -148,7 +148,7 @@ export const maps: HistoricalMap[] = [
   },
   {
     id: "chengdu-1989",
-    title: "1989年成都地图（美国）",
+    title: "1989年成都（美国）",
     year: 1989,
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1989/info.json",
