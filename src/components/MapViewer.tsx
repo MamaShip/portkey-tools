@@ -247,15 +247,20 @@ export default function MapViewer() {
       });
     }
     // 右下角署名控件：compact 模式呈现为一个 ⓘ 按钮，点击才展开版权全文。
-    // MapLibre 的 compact 初始却带 `maplibregl-compact-show`（即开局展开），且在
-    // resize 时会重新展开——这里主动移除该类，使其默认收起，并在 resize 后再收起。
+    // MapLibre 在署名文本「首次异步填充」时才会加上 maplibregl-compact + maplibregl-compact-show
+    // （开局展开），因此 addControl 后同步移除无效。这里监听填充事件，待 compact 类就绪后移除
+    // 一次展开态即自我解绑——此后 MapLibre 不会再自动加回该类，也不影响用户点击展开。
     map.addControl(new maplibregl.AttributionControl({ compact: true }));
-    const collapseAttribution = () =>
-      ref.current
-        ?.querySelector(".maplibregl-ctrl-attrib")
-        ?.classList.remove("maplibregl-compact-show");
-    collapseAttribution();
-    map.on("resize", collapseAttribution);
+    const collapseAttributionOnce = () => {
+      const el = ref.current?.querySelector(".maplibregl-ctrl-attrib");
+      if (!el?.classList.contains("maplibregl-compact")) return; // 文本尚未填充，等下次事件
+      el.classList.remove("maplibregl-compact-show");
+      map.off("styledata", collapseAttributionOnce);
+      map.off("sourcedata", collapseAttributionOnce);
+    };
+    map.on("styledata", collapseAttributionOnce);
+    map.on("sourcedata", collapseAttributionOnce);
+    collapseAttributionOnce(); // 兜底：极少数情况下文本已同步就绪
 
     // 拖动/缩放结束后（防抖 300ms）把视野写回 hash，使地址栏始终是可分享的深链接。
     let moveHashTimer: ReturnType<typeof setTimeout> | undefined;
