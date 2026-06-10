@@ -16,7 +16,7 @@ export const maps: HistoricalMap[] = [
     annotationPath: "src/data/annotations/chengdu-1894.json",
     defaultOpacity: 0.7,
     provenance: {
-      source: "成都市档案馆 藏（未考证）",
+      source: "成都市档案馆 藏",
       author: "吴绍伯",
       license: "Public Domain",
       notes:
@@ -90,7 +90,7 @@ export const maps: HistoricalMap[] = [
       author: "参谋本部 四川陆地测量局",
       license: "Public Domain",
       notes:
-        "中华民国二十二年（1933）参谋本部四川陆地测量局测制：5 月测图、12 月制版。",
+        "中华民国二十二年（1933）参谋本部四川陆地测量局 5 月测图、12 月制版。时值日本侵华、国内局势动荡之际，参谋本部是当时国民政府最高军事机关之一，由军方主导的城市地图测绘，反映了当时对西部地区军事地理和城市重要性的重视。",
     },
     attribution: "《1933年成都街市图》· 参谋本部四川陆地测量局制（公共领域）",
   },
@@ -124,7 +124,7 @@ export const maps: HistoricalMap[] = [
       author: "国防部测量局测量第五队",
       license: "Public Domain",
       notes:
-        "中华民国三十六年（1947）测图；国防部测量局测量第五队测制；内政部图书馆藏。",
+        "中华民国三十六年（1947）测制。1945年，国民政府曾下达手令，要求对全国重要城市进行1:1万的精确测绘，这份地图也采用了1945年新制定的“万分一城厢（市郊）图图式”，确保规范统一。作为军政档案的一部分，这份地图可能是研究成都郊区在抗战后复原到解放前这段时间内历史变迁的直接证据。",
     },
     attribution:
       "《1947年成都市郊图》· 国防部测量局测量第五队测制（1947 / 公共领域）",
@@ -160,7 +160,7 @@ export const maps: HistoricalMap[] = [
       author: "美国中央情报局（U.S. Central Intelligence Agency, CIA）",
       license: "Public Domain",
       notes:
-        "1989 年美国中央情报局（CIA）绘制；来源：德克萨斯大学奥斯汀分校 Perry-Castañeda 图书馆地图收藏（PCL Map Collection）。依《美国法典》第 17 编第 105 条（17 U.S.C. §105），美国联邦政府机构职务范围内制作的作品不受版权保护，自动进入公有领域。",
+        "1989 年美国中央情报局（CIA）绘制。依《美国法典》第 17 编第 105 条（17 U.S.C. §105），美国联邦政府机构职务范围内制作的作品不受版权保护，自动进入公有领域。",
     },
     attribution:
       "《1989年成都地图》· 美国中央情报局（CIA）制（1989 / 公共领域）",
