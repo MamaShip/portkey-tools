@@ -157,15 +157,14 @@ export default function SourcesModal({ open, onClose }: SourcesModalProps) {
         <p>现代底图 © OpenStreetMap 贡献者 / OpenFreeMap。</p>
         <p>
           配准标注（控制点）数据以 <strong>CC0</strong> 协议发布；站点代码以
-          AGPL-3.0-or-later 协议开源。
+          <strong>AGPL-3.0-or-later</strong> 协议开源。
         </p>
 
         <h3 style={{ margin: "1.2rem 0 0.5rem", fontSize: "1rem" }}>
           反馈与贡献
         </h3>
         <p style={{ marginTop: 0 }}>
-          欢迎到 GitHub 提交 issue：报告
-          bug、提供新的老地图，或贡献更准确的配准数据。
+          欢迎到 GitHub 提交 issue：
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           {ISSUE_LINKS.map((l) => (
