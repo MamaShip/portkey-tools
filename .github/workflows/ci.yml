@@ -75,7 +75,9 @@ jobs:
   # 不做像素 diff（WebGL 在无头 CI 里像素结果不稳定）。见 playwright.config.ts 与 e2e/。
   e2e:
     name: E2E 冒烟（Playwright）
-    runs-on: ubuntu-latest
+    # 固定 24.04：ubuntu-latest 已指向 26.04，而 Playwright 1.60 不支持在 26.04 上
+    # 安装浏览器（install --with-deps 直接失败）。以后升级 Playwright 并确认支持后再改回。
+    runs-on: ubuntu-24.04
     needs: quality
     steps:
       - uses: actions/checkout@v4
