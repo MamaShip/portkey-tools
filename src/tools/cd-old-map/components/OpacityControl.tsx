@@ -10,7 +10,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SUPPORTS_KEYBOARD_HINT } from "../lib/device";
-import { useMediaQuery } from "./useMediaQuery";
+import { useMediaQuery } from "../../../shared/useMediaQuery";
 
 interface OpacityControlProps {
   value: number; // 0–1

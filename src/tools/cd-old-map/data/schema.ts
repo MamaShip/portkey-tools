@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 MamaShip
 //
-// 数据登记表的 schema（zod）。被 scripts/validate-data.ts（CI 数据闸门）与
+// 数据登记表的 schema（zod）。被 scripts/cd-old-map/validate-data.ts（CI 数据闸门）与
 // 应用代码共用：epochs（时间轴站点）与 maps（历史地图）都以此校验。
 // 设计见 plan.md §5：以「时间(epoch)」为中心驱动一切状态。
 
@@ -24,7 +24,7 @@ export const HistoricalMapSchema = z.object({
   title: z.string(), // 图名
   year: z.number().int(), // 或起始年
   iiifInfoUrl: z.url(), // 对象存储(Wasabi)上 IIIF info.json 的 URL
-  annotationPath: z.string(), // src/data/annotations/<id>.json（Allmaps 标注）
+  annotationPath: z.string(), // src/tools/cd-old-map/data/annotations/<id>.json（Allmaps 标注）
   defaultOpacity: z.number().min(0).max(1),
   minZoom: z.number().optional(),
   maxZoom: z.number().optional(),

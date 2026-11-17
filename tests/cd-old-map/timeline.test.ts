@@ -8,8 +8,8 @@ import {
   resolveOverlay,
   timelineStations,
   stepEpoch,
-} from "../src/lib/timeline";
-import type { Epoch } from "../src/data/schema";
+} from "../../src/tools/cd-old-map/lib/timeline";
+import type { Epoch } from "../../src/tools/cd-old-map/data/schema";
 
 const sample: Epoch[] = [
   { id: "present", label: "现今", order: 100, kind: "basemap" },

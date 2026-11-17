@@ -2,7 +2,11 @@
 // Copyright (C) 2026 MamaShip
 
 import { describe, it, expect } from "vitest";
-import { serializeView, parseView, type View } from "../src/lib/deeplink";
+import {
+  serializeView,
+  parseView,
+  type View,
+} from "../../src/tools/cd-old-map/lib/deeplink";
 
 const VALID = ["present", "1911", "1933", "1944"] as const;
 

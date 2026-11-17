@@ -7,7 +7,7 @@
 每个文件是一份 [IIIF Georeference Annotation](https://iiif.io/api/extension/georef/)（Allmaps 导出的开放标准 JSON）：记录该历史图扫描件上的控制点（像素坐标 ↔ WGS-84 经纬度）与变换信息，供 `@allmaps/maplibre` 在浏览器里实时把老图扭合贴到现代底图上。
 
 - 体量只有几 KB，是本仓库内**唯一入库的配准产物**（瓦片与源扫描图存于对象存储，不进 Git）。
-- 由 `src/lib/annotations.ts` 经 `import.meta.glob` 自动装载——**新增一张图只需在此放一份 JSON 并在登记表登记**，不碰渲染代码（流程见 [`docs/adding-a-map.md`](../../../docs/adding-a-map.md)）。
+- 由 `src/tools/cd-old-map/lib/annotations.ts` 经 `import.meta.glob` 自动装载——**新增一张图只需在此放一份 JSON 并在登记表登记**，不碰渲染代码（流程见 [`docs/adding-a-map.md`](../../../../../docs/adding-a-map.md)）。
 
 ## 帮忙修正 / 优化配准（不用写代码，欢迎历史 & 地理爱好者）
 
@@ -54,7 +54,7 @@
 
 ## 与仓库其他许可的关系（务必区分）
 
-本目录的 CC0 **不等于**仓库根目录的 [`LICENSE`](../../../LICENSE)。本项目刻意分层授权：
+本目录的 CC0 **不等于**仓库根目录的 [`LICENSE`](../../../../../LICENSE)。本项目刻意分层授权：
 
 | 对象                                | 许可                          |
 | ----------------------------------- | ----------------------------- |
@@ -63,4 +63,4 @@
 | **历史地图图像**                    | 公共领域（不在本仓库，逐图标注出处） |
 | **现代底图**                        | © OpenStreetMap / OpenFreeMap，需保留署名 |
 
-详见仓库根 [`README.md`](../../../README.md) 的「许可（分层）」一节。
+详见仓库根 [`README.md`](../../../../../README.md) 的「许可（分层）」一节。

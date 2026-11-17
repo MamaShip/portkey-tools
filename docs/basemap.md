@@ -42,18 +42,18 @@ OpenFreeMap 本就是基于 OpenStreetMap 的开放数据、**鼓励自托管**�
    └───────────────┬──────────────────────────────────────────────────┘
                    │  浏览器直接取图（大陆可达）
                    ▼
-   src/data/basemap/positron.json  ──►  MapLibre GL（MapViewer.tsx 渲染）
+   src/tools/cd-old-map/data/basemap/positron.json  ──►  MapLibre GL（MapViewer.tsx 渲染）
    （样式：把上面这些 Wasabi URL 写死进去）
 ```
 
 ### 关键文件一览
 
-| 文件                                                                | 作用                                                                                    |
-| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| [src/data/basemap/extent.ts](../src/data/basemap/extent.ts)         | **单一事实来源**：成都包围盒 bbox、缩放上下限。MapViewer 和烘焙脚本都读它，**永不漂移** |
-| [scripts/bake-basemap.ts](../scripts/bake-basemap.ts)               | 烘焙脚本：从 OpenFreeMap 下载范围内的瓦片/字形/sprite，gzip 后落到 `basemap-dist/`      |
-| [src/data/basemap/positron.json](../src/data/basemap/positron.json) | 改写后的 MapLibre 样式：把瓦片/字形/sprite 的地址全部指向 Wasabi。提交入库、可评审      |
-| [src/components/MapViewer.tsx](../src/components/MapViewer.tsx)     | 地图组件：`import` 上面的样式来渲染，并按 extent 限制拖拽/缩放范围                      |
+| 文件                                                                                                  | 作用                                                                                    |
+| ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| [src/tools/cd-old-map/data/basemap/extent.ts](../src/tools/cd-old-map/data/basemap/extent.ts)         | **单一事实来源**：成都包围盒 bbox、缩放上下限。MapViewer 和烘焙脚本都读它，**永不漂移** |
+| [scripts/cd-old-map/bake-basemap.ts](../scripts/cd-old-map/bake-basemap.ts)                           | 烘焙脚本：从 OpenFreeMap 下载范围内的瓦片/字形/sprite，gzip 后落到 `basemap-dist/`      |
+| [src/tools/cd-old-map/data/basemap/positron.json](../src/tools/cd-old-map/data/basemap/positron.json) | 改写后的 MapLibre 样式：把瓦片/字形/sprite 的地址全部指向 Wasabi。提交入库、可评审      |
+| [src/tools/cd-old-map/components/MapViewer.tsx](../src/tools/cd-old-map/components/MapViewer.tsx)     | 地图组件：`import` 上面的样式来渲染，并按 extent 限制拖拽/缩放范围                      |
 
 ### 四个要记住的设计点
 
@@ -129,7 +129,7 @@ pnpm bake:basemap
 
 ```bash
 pnpm format
-git add src/data/basemap/positron.json
+git add src/tools/cd-old-map/data/basemap/positron.json
 git commit -m "刷新现代底图快照"     # 若该文件无变化，跳过这步即可（很正常）
 ```
 
@@ -193,7 +193,7 @@ rclone copy basemap-dist/openfreemap-positron/sprites wasabi:portkey/basemaps/op
 
 ## 六、想改「覆盖范围 / 缩放级别」
 
-范围和缩放都集中在 [src/data/basemap/extent.ts](../src/data/basemap/extent.ts) 一个文件里
+范围和缩放都集中在 [src/tools/cd-old-map/data/basemap/extent.ts](../src/tools/cd-old-map/data/basemap/extent.ts) 一个文件里
 （MapViewer 和烘焙脚本共用，改一处即可，不会两边对不上）：
 
 | 常量             | 含义                                              |

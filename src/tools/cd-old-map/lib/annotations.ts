@@ -2,7 +2,7 @@
 // Copyright (C) 2026 MamaShip
 //
 // 标注按约定自动装载（决定「零代码新增一张图」）。用 Vite import.meta.glob 把
-// src/data/annotations/*.json 全部收成 Record<mapId, annotation>，键 = 文件名去扩展名 = mapId
+// src/tools/cd-old-map/data/annotations/*.json 全部收成 Record<mapId, annotation>，键 = 文件名去扩展名 = mapId
 // （与 maps.ts 的 id、object-storage 的目录约定同源）。MapViewer 与测试都从这里取，
 // 不再各自静态 import；新增一张图只要丢一个 <mapId>.json 就被自动纳入。
 

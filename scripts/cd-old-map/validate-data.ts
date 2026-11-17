@@ -7,10 +7,13 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { z } from "zod";
-import { EpochSchema, HistoricalMapSchema } from "../src/data/schema";
-import { epochs } from "../src/data/epochs";
-import { maps } from "../src/data/maps";
-import positronStyle from "../src/data/basemap/positron.json";
+import {
+  EpochSchema,
+  HistoricalMapSchema,
+} from "../../src/tools/cd-old-map/data/schema";
+import { epochs } from "../../src/tools/cd-old-map/data/epochs";
+import { maps } from "../../src/tools/cd-old-map/data/maps";
+import positronStyle from "../../src/tools/cd-old-map/data/basemap/positron.json";
 
 let ok = true;
 const fail = (m: string) => {

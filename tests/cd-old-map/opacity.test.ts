@@ -2,7 +2,7 @@
 // Copyright (C) 2026 MamaShip
 
 import { describe, it, expect } from "vitest";
-import { clampOpacity } from "../src/lib/opacity";
+import { clampOpacity } from "../../src/tools/cd-old-map/lib/opacity";
 
 describe("clampOpacity", () => {
   it("区间内原样返回", () => {

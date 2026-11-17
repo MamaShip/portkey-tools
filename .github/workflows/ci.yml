@@ -7,7 +7,7 @@
 #   "check":     astro check            # 类型检查（Astro + TS）
 #   "lint":      eslint .
 #   "format:check": prettier --check .
-#   "validate":  tsx scripts/validate-data.ts   # 用 zod 校验 epochs/maps/标注 + 引用完整性
+#   "validate":  tsx scripts/cd-old-map/validate-data.ts   # 用 zod 校验 epochs/maps/标注 + 引用完整性
 #   "test":      vitest run             # 单元测试（含配准 sanity）
 #   "build":     astro build
 #   "test:e2e":  playwright test        # 可选，DOM 级冒烟

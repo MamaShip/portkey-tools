@@ -9,7 +9,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Epoch } from "../data/schema";
 import { SUPPORTS_KEYBOARD_HINT } from "../lib/device";
-import { useMediaQuery } from "./useMediaQuery";
+import { useMediaQuery } from "../../../shared/useMediaQuery";
 
 interface TimelineProps {
   stations: readonly Epoch[]; // 已按 order 升序（timelineStations）

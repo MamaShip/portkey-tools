@@ -5,13 +5,13 @@
 // 地理坐标都落在成都框内、数量达标、像素坐标在源图尺寸内。配准是否「像素级贴得准」
 // 无法在此断言（靠预览 URL 肉眼看）；这里只做廉价的代理校验。
 //
-// 遍历 maps 登记表（标注经 src/lib/annotations.ts 自动装载）——新增一张图自动获得覆盖，
+// 遍历 maps 登记表（标注经 src/tools/cd-old-map/lib/annotations.ts 自动装载）——新增一张图自动获得覆盖，
 // 无需在此手写断言。
 
 import { describe, it, expect } from "vitest";
 import { parseAnnotation } from "@allmaps/annotation";
-import { maps } from "../src/data/maps";
-import { getAnnotation } from "../src/lib/annotations";
+import { maps } from "../../src/tools/cd-old-map/data/maps";
+import { getAnnotation } from "../../src/tools/cd-old-map/lib/annotations";
 
 // 成都大致范围（宽松，仅用于「是否在成都」判断）。
 const LNG = [103.6, 104.4] as const;

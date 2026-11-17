@@ -26,7 +26,7 @@ import SourcesModal from "./SourcesModal";
 import MapNotice from "./MapNotice";
 
 // 自托管的 positron 矢量样式：瓦片/字形/sprite 均指向 Wasabi（见 docs/object-storage.md），
-// 由 scripts/bake-basemap.ts 烘焙生成。原 OpenFreeMap 公共实例（tiles.openfreemap.org）
+// 由 scripts/cd-old-map/bake-basemap.ts 烘焙生成。原 OpenFreeMap 公共实例（tiles.openfreemap.org）
 // 被 GFW 阻断，大陆未翻墙会黑屏；改自托管后大陆免翻墙可用，且零坐标改动（OSM/WGS-84）。
 const STYLE = positronStyle as unknown as maplibregl.StyleSpecification;
 
@@ -370,7 +370,9 @@ export default function MapViewer() {
         }
         layersRef.current.set(mapId, layer);
       } else {
-        console.error(`缺少 ${mapId} 的配准标注（src/data/annotations/）`);
+        console.error(
+          `缺少 ${mapId} 的配准标注（src/tools/cd-old-map/data/annotations/）`,
+        );
       }
     }
 

@@ -58,7 +58,7 @@
 
 ### 4.2 现代底图
 
-**v1 现状：自托管 OpenFreeMap positron 快照（Wasabi）。** 起初直连 OpenFreeMap 公共实例（`tiles.openfreemap.org`，无 key、零基础设施），但该域名被 **GFW 阻断**，大陆未翻墙整页黑屏。遂改为**构建期把 positron 样式在成都包围盒（z10–14）范围内的矢量瓦片/字形/sprite 快照下来、自托管到 Wasabi**，运行时浏览器直连 Wasabi（已验证大陆可达）。OpenFreeMap 基于 OSM 开放数据、鼓励自托管，保留署名即合规；WGS-84 原生，**老图配准零改动**。实现：烘焙脚本 `scripts/bake-basemap.ts`、范围单一来源 `src/data/basemap/extent.ts`、改写后样式 `src/data/basemap/positron.json`（入库可评审）；CJK 汉字用浏览器本地字体渲染（`localIdeographFontFamily`），不烘焙汉字字形。**完整机制与更新指南见 `docs/basemap.md`。**
+**v1 现状：自托管 OpenFreeMap positron 快照（Wasabi）。** 起初直连 OpenFreeMap 公共实例（`tiles.openfreemap.org`，无 key、零基础设施），但该域名被 **GFW 阻断**，大陆未翻墙整页黑屏。遂改为**构建期把 positron 样式在成都包围盒（z10–14）范围内的矢量瓦片/字形/sprite 快照下来、自托管到 Wasabi**，运行时浏览器直连 Wasabi（已验证大陆可达）。OpenFreeMap 基于 OSM 开放数据、鼓励自托管，保留署名即合规；WGS-84 原生，**老图配准零改动**。实现：烘焙脚本 `scripts/cd-old-map/bake-basemap.ts`、范围单一来源 `src/tools/cd-old-map/data/basemap/extent.ts`、改写后样式 `src/tools/cd-old-map/data/basemap/positron.json`（入库可评审）；CJK 汉字用浏览器本地字体渲染（`localIdeographFontFamily`），不烘焙汉字字形。**完整机制与更新指南见 `docs/basemap.md`。**
 
 **升级路径（学习价值高 / 想拥有自己的底图）：Protomaps PMTiles，单文件直读。**
 - 思路：把成都/四川局部矢量底图打包成**单个 `.pmtiles` 文件**，MapLibre 通过 `pmtiles://` 协议（`@protomaps/basemaps` 提供样式）读取。
@@ -77,7 +77,7 @@
 工作流（开发阶段离线做一次，详见 §6）：
 1. 用 `allmaps/iiif-tiler` 把每张扫描图切成**静态 IIIF 瓦片**（一个含 `info.json` + 瓦片的文件夹），上传到 **Wasabi**（公开桶）。
 2. 打开 **Allmaps Editor**（`editor.allmaps.org`，纯静态网页），输入该图的 IIIF `info.json` URL，对照现代底图打控制点，选择变换方式（形变大的老图选 **TPS**）。
-3. 导出 **Georeference Annotation**（一份微型 JSON，开放标准、数据以 CC0 发布），存进本仓库 `src/data/annotations/<mapId>.json`。
+3. 导出 **Georeference Annotation**（一份微型 JSON，开放标准、数据以 CC0 发布），存进本仓库 `src/tools/cd-old-map/data/annotations/<mapId>.json`。
 4. 应用里用 **`@allmaps/maplibre`** 的 `WarpedMapLayer` 加载该标注，浏览器端从 Wasabi 的 IIIF 瓦片实时扭合渲染叠加层。
 
 为什么选它：配准产物是**几 KB 的 JSON**，重配只需在 Editor 里改点、替换 JSON，**无需重新切片**；纯静态；无需学 QGIS；输出开放标准、无锁定。Allmaps 还内置一个 **Tile Server 代理**，能把标注转成 XYZ 瓦片层，方便日后在 QGIS 或其他系统里复用同一份配准结果。
@@ -90,7 +90,7 @@ QGIS Georeferencer 打 GCP（选 TPS）→ 导出 EPSG:3857 的扭合 GeoTIFF �
 - **时间轴**：5–8 张图跨 1909→1975 是**稀疏快照**而非连续胶片，故用**离散步进式时间轴**（带命名站点），而非连续年份滑块。每个站点对应一张历史图，站点示例：`宣统(1909–1911)` → `民国 XX` → `1975`。**不设独立「现今」站点**——纯现代底图由地图上的「隐/显」按钮与按住空格速看获取（避免站点变多后时间轴拥挤）。
 - **古今对照**：v1 用**透明度滑块**控制当前历史叠加层的不透明度（在老图与现代图间淡入淡出），实现最简单且稳健。
 - **卷帘/swipe 对照**（增强项，**暂缓**）：在现代图与某历史图之间做左右滑动对比，可用 MapLibre 的 `maplibre-gl-compare` 模式（双图同步）或对叠加层 canvas 做 `clip-path`。Phase 3 暂未实现——`@allmaps` 的 `WarpedMapLayer` 是与底图共用单 canvas 的自定义层，独立裁剪成本高；现有「空格速看」已提供轻量 A/B 对照替代。
-- **可分享的深链接**（**已落地**，Phase 3）：把 `epoch + 经纬度 + zoom + 透明度` 序列化进 URL hash（`replaceState` 不污染后退栈），便于分享"某条街 1949 vs 现今"。纯逻辑 `src/lib/deeplink.ts` + 往返单测；集成在 `MapViewer`。
+- **可分享的深链接**（**已落地**，Phase 3）：把 `epoch + 经纬度 + zoom + 透明度` 序列化进 URL hash（`replaceState` 不污染后退栈），便于分享"某条街 1949 vs 现今"。纯逻辑 `src/tools/cd-old-map/lib/deeplink.ts` + 往返单测；集成在 `MapViewer`。
 - **当前定位**（**已落地**，Phase 3）：**复用 MapLibre 自带 `GeolocateControl`**（零新依赖、与右上角 `NavigationControl` 风格一致），而非自写按钮/标记/定位逻辑——这是「尽量简单、不增复杂度」的最优解。可选语义靠控件天性满足：**点击才**请求浏览器定位（不点零授权、零标记）；蓝点+精度圈是 HTML `Marker`，天然浮在老图栅格之上（最上层）；`trackUserLocation` 持续跟踪（移动端「边走边对照」）；**定位源取高精度优先**（`enableHighAccuracy:true`，`timeout` 10s（平衡室外可达与室内快速失败） + `maximumAge` 复用近期位置）——国行 Chrome 的 W3C「网络定位」走被 GFW 阻断的 Google 服务（`googleapis.com`）会超时，唯有裸 GPS（室外）能绕开，故按国内现实优先 GPS；室内 Chrome 受限属环境墙（系统浏览器走国内定位 SDK 故正常），由提示引导改用系统浏览器/到室外。定位点超出成都 `maxBounds` 时由 `outofmaxbounds` 事件触发轻提示（`MapNotice`），而非默默无反应。
 
 ### 4.5 站点框架与工程
@@ -123,7 +123,7 @@ QGIS Georeferencer 打 GCP（选 TPS）→ 导出 EPSG:3857 的扭合 GeoTIFF �
 
 ### 5.1 时间轴站点（epochs registry）
 ```ts
-// src/data/epochs.ts
+// src/tools/cd-old-map/data/epochs.ts
 interface Epoch {
   id: string;            // 'present' | 'minguo-1935' | 'xuantong' ...
   label: string;         // 显示名，如 '宣统 (1909–1911)'
@@ -135,13 +135,13 @@ interface Epoch {
 
 ### 5.2 历史地图登记表（maps registry，含来源与版权元数据）
 ```ts
-// src/data/maps.ts
+// src/tools/cd-old-map/data/maps.ts
 interface HistoricalMap {
   id: string;
   title: string;            // 图名
   year: number;             // 或起止年
   iiifInfoUrl: string;      // 对象存储（Wasabi）上 IIIF info.json 的 URL
-  annotationPath: string;   // src/data/annotations/<id>.json（Allmaps 标注）
+  annotationPath: string;   // src/tools/cd-old-map/data/annotations/<id>.json（Allmaps 标注）
   defaultOpacity: number;   // 默认透明度
   minZoom?: number; maxZoom?: number;
   provenance: {             // 用于"版权/来源"页与合规
@@ -156,7 +156,7 @@ interface HistoricalMap {
 
 ### 5.3 标注要素（annotations，GeoJSON，v1 可为空或放少量示例）
 ```ts
-// src/data/annotations-features.geojson —— FeatureCollection
+// src/tools/cd-old-map/data/annotations-features.geojson —— FeatureCollection
 // 每个 Feature 的 properties：
 interface AnnotationProps {
   name: string;             // 例：'大城东门 / 迎晖门'
@@ -178,7 +178,7 @@ MapLibre 用 `filter` 表达式按当前 epoch 的年份过滤显示哪些要素
 1. **预处理扫描图**：高分辨率；在任意图像编辑器里裁切、纠斜（deskew）；导出为适合切片的格式。
 2. **切 IIIF 瓦片**：运行 `allmaps/iiif-tiler` → 得到 `<mapId>/`（含 `info.json` + 瓦片）→ 上传到 Wasabi 公开桶；上传时设对 Content-Type（`info.json`→`application/json`，瓦片→`image/jpeg`/`png`）。首张上传后在浏览器控制台 `fetch` 一个瓦片确认 public + CORS 正常。
 3. **配准**：打开 Allmaps Editor，输入 `info.json` URL；在历史图与现代底图上成对打控制点（城门、河口、稳定路口等可靠地物）；形变大的老图选 **TPS**。控制点尽量多且分布均匀。
-4. **导出标注**：保存 Georeference Annotation JSON 到 `src/data/annotations/<mapId>.json`，并在 `maps.ts`、`epochs.ts` 登记该图。
+4. **导出标注**：保存 Georeference Annotation JSON 到 `src/tools/cd-old-map/data/annotations/<mapId>.json`，并在 `maps.ts`、`epochs.ts` 登记该图。
 5. **应用渲染**：`@allmaps/maplibre` 的 `WarpedMapLayer` 读取该标注，从 Wasabi 的 IIIF 瓦片实时扭合叠加。
 6. **重配/微调**：日后只需在 Editor 里改点、替换 JSON 即可，**无需重新切片**（除非更换了源图）。
 
@@ -229,7 +229,7 @@ MapLibre 用 `filter` 表达式按当前 epoch 的年份过滤显示哪些要素
 ```
 > 瓦片（IIIF 瓦片、可选 PMTiles）与底图快照存于 **Wasabi**，**不进 git**；仓库里只存 URL 与几 KB 的标注 JSON。`tiles/`、`basemap-dist/` 为本地中转目录，由脚本生成并同步到桶。
 > **已落地（Phase 3）**：`e2e/`（Playwright DOM 级冒烟）+ `playwright.config.ts`，ci.yml 的 e2e job 已启用。
-> **未来（架构已预留，尚未落地）**：`src/data/annotations-features.geojson`（Phase 4 标注层，见 §5.3）。
+> **未来（架构已预留，尚未落地）**：`src/tools/cd-old-map/data/annotations-features.geojson`（Phase 4 标注层，见 §5.3）。
 
 ---
 

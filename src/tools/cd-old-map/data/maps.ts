@@ -13,7 +13,7 @@ export const maps: HistoricalMap[] = [
     year: 1894,
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1894/info.json",
-    annotationPath: "src/data/annotations/chengdu-1894.json",
+    annotationPath: "src/tools/cd-old-map/data/annotations/chengdu-1894.json",
     defaultOpacity: 0.7,
     provenance: {
       source: "成都市档案馆 藏",
@@ -30,7 +30,7 @@ export const maps: HistoricalMap[] = [
     year: 1903,
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1903/info.json",
-    annotationPath: "src/data/annotations/chengdu-1903.json",
+    annotationPath: "src/tools/cd-old-map/data/annotations/chengdu-1903.json",
     defaultOpacity: 0.7,
     provenance: {
       source: "四川大学图书馆 藏",
@@ -47,7 +47,7 @@ export const maps: HistoricalMap[] = [
     year: 1911,
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1911/info.json",
-    annotationPath: "src/data/annotations/chengdu-1911.json",
+    annotationPath: "src/tools/cd-old-map/data/annotations/chengdu-1911.json",
     defaultOpacity: 0.7,
     provenance: {
       source:
@@ -66,7 +66,7 @@ export const maps: HistoricalMap[] = [
     // 拼幅图：左右两幅各自切片配准，合并为一个双 items 标注。iiifInfoUrl 指主图幅（左/西半）。
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1915-left/info.json",
-    annotationPath: "src/data/annotations/chengdu-1915.json",
+    annotationPath: "src/tools/cd-old-map/data/annotations/chengdu-1915.json",
     defaultOpacity: 0.7,
     provenance: {
       source: "中央研究院（台湾）",
@@ -83,7 +83,7 @@ export const maps: HistoricalMap[] = [
     year: 1933,
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1933/info.json",
-    annotationPath: "src/data/annotations/chengdu-1933.json",
+    annotationPath: "src/tools/cd-old-map/data/annotations/chengdu-1933.json",
     defaultOpacity: 0.7,
     provenance: {
       source: "中央研究院（台湾）",
@@ -101,7 +101,7 @@ export const maps: HistoricalMap[] = [
   //   year: 1944,
   //   iiifInfoUrl:
   //     "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1944/info.json",
-  //   annotationPath: "src/data/annotations/chengdu-1944.json",
+  //   annotationPath: "src/tools/cd-old-map/data/annotations/chengdu-1944.json",
   //   defaultOpacity: 0.7,
   //   provenance: {
   //     source: "内政部图书馆 藏",
@@ -117,7 +117,7 @@ export const maps: HistoricalMap[] = [
     year: 1947,
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1947/info.json",
-    annotationPath: "src/data/annotations/chengdu-1947.json",
+    annotationPath: "src/tools/cd-old-map/data/annotations/chengdu-1947.json",
     defaultOpacity: 0.7,
     provenance: {
       source: "内政部图书馆（台湾）",
@@ -135,7 +135,7 @@ export const maps: HistoricalMap[] = [
     year: 1979,
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1979/info.json",
-    annotationPath: "src/data/annotations/chengdu-1979.json",
+    annotationPath: "src/tools/cd-old-map/data/annotations/chengdu-1979.json",
     defaultOpacity: 0.7,
     provenance: {
       source: "美国国会图书馆（Library of Congress）藏",
@@ -152,7 +152,7 @@ export const maps: HistoricalMap[] = [
     year: 1989,
     iiifInfoUrl:
       "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1989/info.json",
-    annotationPath: "src/data/annotations/chengdu-1989.json",
+    annotationPath: "src/tools/cd-old-map/data/annotations/chengdu-1989.json",
     defaultOpacity: 0.7,
     provenance: {
       source:

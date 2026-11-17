@@ -19,7 +19,7 @@ import {
   CHENGDU_BOUNDS,
   MIN_ZOOM,
   SOURCE_MAXZOOM,
-} from "../src/data/basemap/extent";
+} from "../../src/tools/cd-old-map/data/basemap/extent";
 
 const UPSTREAM = "https://tiles.openfreemap.org";
 const STYLE_URL = `${UPSTREAM}/styles/positron`;
@@ -165,10 +165,12 @@ async function main() {
 
   // 4) 改写 style → 仓库（可评审、运行时由 MapViewer import）
   await writeFile(
-    "src/data/basemap/positron.json",
+    "src/tools/cd-old-map/data/basemap/positron.json",
     JSON.stringify(buildStyle(style, planet), null, 2) + "\n",
   );
-  console.log("已更新 src/data/basemap/positron.json（请随后跑 pnpm format）");
+  console.log(
+    "已更新 src/tools/cd-old-map/data/basemap/positron.json（请随后跑 pnpm format）",
+  );
 
   // 5) 打印上传命令
   console.log(

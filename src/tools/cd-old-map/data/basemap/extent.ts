@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 MamaShip
 //
-// 底图快照的共享地理范围 / 缩放约束。MapViewer（运行时）与 scripts/bake-basemap.ts
+// 底图快照的共享地理范围 / 缩放约束。MapViewer（运行时）与 scripts/cd-old-map/bake-basemap.ts
 // （烘焙时）都从这里取值，确保「能拖到哪里」与「烘焙了哪些瓦片」永不漂移。
 // 全程 WGS-84。
 

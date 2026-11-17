@@ -5,8 +5,8 @@
 // 共享布局：网站随时间长出更多工具，每个工具 = 一个新路由，复用此外壳。
 // 内容页（首页/about）套「轻量顶栏 + 内容容器 + 页脚」骨架；占满视口的工具页
 // （地图）传 fullBleed，直接铺满、不带顶栏/页脚（沉浸式）。
-import SiteHeader from "../components/SiteHeader.astro";
-import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
 
 interface Props {
   title: string;
