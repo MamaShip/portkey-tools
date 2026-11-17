@@ -1,5 +1,5 @@
-name: 🐛 反馈 Bug
-description: 报告网站或地图工具的问题（显示异常、交互失灵、报错等）
+name: 🐛 成都老地图：反馈 Bug
+description: 报告成都老地图或网站本身的问题（显示异常、交互失灵、报错等）。刻印的问题请选「刻印：问题反馈」
 title: "[Bug] "
 labels: ["bug"]
 body:

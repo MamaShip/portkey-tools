@@ -1,0 +1,379 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later
+   Copyright (C) 2026 MamaShip
+   刻印工具的样式，只作用于 .keyin 内；颜色用站点的设计令牌（见 src/site/BaseLayout.astro）。 */
+
+.keyin {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.keyin-card {
+  padding: 1.25rem 1.35rem 1.35rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+}
+/* 还没读到数据：内容变灰不可点，标题（含「i」说明）照常可用 */
+.keyin-card[aria-disabled="true"] > :not(.keyin-step) {
+  opacity: 0.55;
+  pointer-events: none;
+}
+.keyin-step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+}
+.keyin-step-num {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  color: #fff;
+  background: var(--accent);
+}
+
+/* —— 平台选择：按分组排的小标签 —— */
+.keyin-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+}
+.keyin-group {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+.keyin-group-name {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.keyin-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.keyin-chip {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+.keyin-chip:hover {
+  border-color: rgba(236, 122, 69, 0.45);
+}
+.keyin-chip[aria-checked="true"] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+@media (max-width: 30rem) {
+  .keyin-group {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+}
+
+/* —— 平台说明 —— */
+.keyin-guide {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: rgba(236, 122, 69, 0.06);
+  border: 1px solid rgba(236, 122, 69, 0.14);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.keyin-guide h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+.keyin-guide h3 small {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.82rem;
+}
+.keyin-guide ol {
+  margin: 0 0 0.5rem;
+  padding-left: 1.3rem;
+}
+.keyin-guide li + li {
+  margin-top: 0.2rem;
+}
+.keyin-guide p {
+  margin: 0.3rem 0 0;
+}
+.keyin-guide code {
+  font-size: 0.82rem;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.05);
+  word-break: break-all;
+}
+.keyin-privacy {
+  color: #2f6b3a;
+}
+.keyin-tips {
+  margin: 0.4rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+/* —— 表单 —— */
+.keyin-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+.keyin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 0.75rem;
+}
+.keyin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.keyin-grow {
+  flex: 1 1 14rem;
+}
+.keyin-full {
+  flex-basis: 100%;
+}
+.keyin-field input:not([type="file"]),
+.keyin-field select {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.95rem;
+}
+.keyin-field input[type="file"] {
+  max-width: 100%;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+.keyin-field input:focus-visible,
+.keyin-field select:focus-visible,
+.keyin-button:focus-visible,
+.keyin-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.keyin-button {
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: #fff;
+  color: var(--accent-ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.keyin-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.keyin-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.keyin-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+.keyin-hint code,
+.keyin-hint kbd {
+  font-size: 0.78rem;
+  padding: 0.05rem 0.3rem;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.05);
+  word-break: break-all;
+}
+.keyin-status {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.keyin-error {
+  margin: 0.75rem 0 0;
+  color: #b42318;
+  font-size: 0.9rem;
+}
+.keyin-warning {
+  margin: 0.5rem 0 0;
+  color: #8a5a00;
+  font-size: 0.85rem;
+}
+.keyin-summary {
+  margin: 1rem 0 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  background: rgba(236, 122, 69, 0.08);
+  font-size: 0.92rem;
+}
+.keyin-note {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+/* —— 预览 —— */
+.keyin-stage {
+  position: relative;
+  height: clamp(16rem, 52vw, 26rem);
+  border-radius: 10px;
+  overflow: hidden;
+  background: radial-gradient(120% 90% at 50% 20%, #fff, #f1ebe4);
+}
+.keyin-preview {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  touch-action: none;
+}
+.keyin-preview:active {
+  cursor: grabbing;
+}
+.keyin-preview canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.keyin-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 1rem;
+  text-align: center;
+  color: var(--muted);
+  pointer-events: none;
+}
+.keyin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  margin-top: 1rem;
+}
+
+/* —— 标题旁的「i」说明 —— */
+.keyin-info-btn {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-left: -0.15rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  cursor: help;
+}
+.keyin-info-btn:hover,
+.keyin-info[data-open] .keyin-info-btn {
+  color: var(--accent-ink);
+  background: rgba(236, 122, 69, 0.1);
+}
+.keyin-info-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+/* 相对整个标题定位（.keyin-step 是 relative），宽度不超过卡片 */
+.keyin-info-pop {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: min(26rem, 100%);
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.55;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0.15s;
+}
+.keyin-info:hover .keyin-info-pop,
+.keyin-info:focus-within .keyin-info-pop,
+.keyin-info[data-open] .keyin-info-pop {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .keyin-info-pop {
+    transition: none;
+  }
+}
+
+/* —— 说明里的示例 —— */
+.keyin-example {
+  margin: 0.5rem 0 0.6rem;
+}
+.keyin-example figcaption {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.keyin-example pre {
+  margin: 0.25rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+/* —— 报错旁的反馈链接 —— */
+.keyin-report {
+  margin-left: 0.6rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}

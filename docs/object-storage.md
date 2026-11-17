@@ -44,7 +44,7 @@ portkey/                                   (bucket 根)
 - **`assetType`**：标识资产种类，便于一个工具下并存多类资产。当前用到：
   - `iiif/` —— IIIF Image API 静态瓦片（Allmaps 实时扭合的输入）。
   - `pmtiles/` / `data/` —— 预留给将来的栅格瓦片、PMTiles、GeoJSON 等。
-- **`resourceId`**：单个资源 id。历史地图即 `<mapId>`（与 `src/data/maps.ts` 的 `id` 一致）。
+- **`resourceId`**：单个资源 id。历史地图即 `<mapId>`（与 `src/tools/cd-old-map/data/maps.ts` 的 `id` 一致）。
 - **命名**：key 一律 **ASCII + kebab-case**，**不要用中文 / 空格**（源扫描图文件名可为中文，但切片/上传前改成 ASCII id，如 `chengdu-1933`）。id 一经发布即视为稳定，勿改名（会断链）。
 
 ## IIIF 瓦片专项规则（本站当前主要资产）
@@ -72,17 +72,17 @@ java -jar iiif-tiler.jar <ascii-name>.jpg -version 3 -tile_size 512 -output tile
 positron 在**成都包围盒 + z10–14** 范围内的矢量瓦片/sprite/拉丁字形快照到 Wasabi 自托管，
 运行时浏览器直连 Wasabi 取底图，大陆免翻墙可用，且零坐标改动（OSM/WGS-84，老图配准照旧）。
 
-| 项         | 值                                                                                  |
-| ---------- | ----------------------------------------------------------------------------------- |
-| 资产前缀   | `portkey/basemaps/openfreemap-positron/`                                            |
-| 范围/缩放  | 见 `src/data/basemap/extent.ts`（bbox 与 z 由它单一来源，MapViewer 与烘焙脚本共用） |
-| 运行时引用 | `src/data/basemap/positron.json`（改写后指向 Wasabi 的 style，提交入库、可评审）    |
-| 瓦片数量   | z10–14 约 1,300 张（区域小，故可自托管）                                            |
+| 项         | 值                                                                                                   |
+| ---------- | ---------------------------------------------------------------------------------------------------- |
+| 资产前缀   | `portkey/basemaps/openfreemap-positron/`                                                             |
+| 范围/缩放  | 见 `src/tools/cd-old-map/data/basemap/extent.ts`（bbox 与 z 由它单一来源，MapViewer 与烘焙脚本共用） |
+| 运行时引用 | `src/tools/cd-old-map/data/basemap/positron.json`（改写后指向 Wasabi 的 style，提交入库、可评审）    |
+| 瓦片数量   | z10–14 约 1,300 张（区域小，故可自托管）                                                             |
 
 **（重新）烘焙 + 上传步骤**（面向小白的完整图文指南见 [basemap.md](./basemap.md)）：
 
 ```bash
-pnpm bake:basemap          # 下载到 basemap-dist/ 并改写 src/data/basemap/positron.json（无需密钥）
+pnpm bake:basemap          # 下载到 basemap-dist/ 并改写 src/tools/cd-old-map/data/basemap/positron.json（无需密钥）
 pnpm format                # 规整改写后的 positron.json
 # 然后按脚本末尾打印的 rclone 命令上传（需 wasabi remote）：
 rclone copy basemap-dist/openfreemap-positron/tiles   wasabi:portkey/basemaps/openfreemap-positron/tiles \
@@ -97,6 +97,18 @@ rclone copy basemap-dist/openfreemap-positron/tiles   wasabi:portkey/basemaps/op
 > MapLibre 解不开 → 底图空白。CJK 汉字字形不烘焙（MapLibre `localIdeographFontFamily`
 > 用浏览器本地字体渲染）。底图为冻结快照、缓存 3 个月（`max-age=7776000`）：URL 不带哈希，
 > 故重烘焙覆盖同名对象后，回访用户最长 3 个月内自然刷新（全新访客立即生效）。
+
+## 刻印的字体
+
+刻印（`/keyin`）按需下载的 Noto 字体放在 `portkey/tools/keyin/fonts/`：
+
+```
+portkey/tools/keyin/fonts/
+├─ OFL.txt                          字体许可（随字体一起分发）
+└─ <上游提交前 12 位>/<文件名>         如 56d1bb314182/NotoSansArabic-Medium.ttf
+```
+
+路径带上游提交号，文件内容永不改变，上传时加 `Cache-Control: public, max-age=31536000, immutable`。用 `pnpm keyin:stage-fonts` 准备文件并打印上传命令，详见 [keyin.md](./keyin.md)。
 
 ## 当前实例：成都老地图
 

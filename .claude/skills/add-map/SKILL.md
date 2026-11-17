@@ -55,7 +55,7 @@ breaks the map and is annoying to debug later.
 
 ## Step 0 — Preflight
 
-Confirm you're at the repo root (the dir with `package.json` and `src/data/maps.ts`).
+Confirm you're at the repo root (the dir with `package.json` and `src/tools/cd-old-map/data/maps.ts`).
 Then check the tools the mechanical half needs and report what's missing — don't
 assume they're installed:
 
@@ -78,8 +78,8 @@ ls -la iiif-tiler.jar       # the slicer, gitignored, lives at repo root
 ## Step 1 — Interview (gather every input before touching anything)
 
 Collect these up front so the later steps run unattended. Read the existing
-[`src/data/maps.ts`](../../../src/data/maps.ts) and
-[`src/data/epochs.ts`](../../../src/data/epochs.ts) first — you need the current ids
+[`src/tools/cd-old-map/data/maps.ts`](../../../src/tools/cd-old-map/data/maps.ts) and
+[`src/tools/cd-old-map/data/epochs.ts`](../../../src/tools/cd-old-map/data/epochs.ts) first — you need the current ids
 and `order` values, and you must not collide with an existing `id`.
 
 | Input                   | How to get it          | Default / notes                                                                                                                                                                                                               |
@@ -200,13 +200,13 @@ the real values filled in:
 >    survey maps. For older / more distorted scans switch to **TPS** (thin-plate
 >    spline) and add extra corner points.
 > 4. Export the **Georeference Annotation** and save it to:
->    `src/data/annotations/<mapId>.json`
+>    `src/tools/cd-old-map/data/annotations/<mapId>.json`
 >    ⚠ Its `target.source.id` **must equal** the info.json `id`
 >    (`<BASE>`, no `/info.json`) or the viewer can't fetch tiles.
 >
 > Re-georeferencing later just means re-exporting over that JSON — no re-tiling.
 
-Then tell them: _"When you've saved `src/data/annotations/<mapId>.json`, let me know
+Then tell them: _"When you've saved `src/tools/cd-old-map/data/annotations/<mapId>.json`, let me know
 and I'll validate it and finish the registration."_ **Wait.** Don't poll
 aggressively or fabricate the annotation — the control points are the user's
 judgment, not something you can produce.
@@ -217,10 +217,10 @@ judgment, not something you can produce.
 
 When the user returns, first confirm the file exists and pre-check the link
 alignment **before** editing the registries — this mirrors the
-[`scripts/validate-data.ts`](../../../scripts/validate-data.ts) gate, so catching it
+[`scripts/cd-old-map/validate-data.ts`](../../../scripts/cd-old-map/validate-data.ts) gate, so catching it
 here saves a red gate later:
 
-- `src/data/annotations/<mapId>.json` exists and parses as JSON.
+- `src/tools/cd-old-map/data/annotations/<mapId>.json` exists and parses as JSON.
 - `items[0].target.source.id` **equals** `<BASE>` (the info.json id, i.e.
   `iiifInfoUrl` with `/info.json` stripped). If not, the user exported against the
   wrong info.json URL — send them back to Step 6 to re-export. (Multi-sheet: also
@@ -230,7 +230,7 @@ here saves a red gate later:
 Then register the map. **Don't touch `MapViewer.tsx` or any rendering code** — the
 renderer is registry-driven; three entries make the map appear automatically.
 
-**7a — [`src/data/maps.ts`](../../../src/data/maps.ts):** insert an entry
+**7a — [`src/tools/cd-old-map/data/maps.ts`](../../../src/tools/cd-old-map/data/maps.ts):** insert an entry
 (chronological position), matching the existing style:
 
 ```ts
@@ -240,7 +240,7 @@ renderer is registry-driven; three entries make the map appear automatically.
   year: <year>,
   iiifInfoUrl:
     "<BASE>/info.json",
-  annotationPath: "src/data/annotations/<mapId>.json",
+  annotationPath: "src/tools/cd-old-map/data/annotations/<mapId>.json",
   defaultOpacity: 0.7,
   provenance: {
     source: "<provenance.source>",
@@ -252,7 +252,7 @@ renderer is registry-driven; three entries make the map appear automatically.
 },
 ```
 
-**7b — [`src/data/epochs.ts`](../../../src/data/epochs.ts):** insert one station at
+**7b — [`src/tools/cd-old-map/data/epochs.ts`](../../../src/tools/cd-old-map/data/epochs.ts):** insert one station at
 the computed `order`:
 
 ```ts
@@ -286,7 +286,7 @@ pnpm fix      # prettier --write the whole repo, then run all five gates
 If anything is non-green — **even in a file you didn't touch** — fix it to green;
 don't dismiss it as unrelated. The two gates most likely to react to this change:
 `validate` (schema + the source.id link check from Step 7) and `test`
-(`tests/georef.test.ts` auto-covers the new map: ≥6 control points, geo inside the
+(`tests/cd-old-map/georef.test.ts` auto-covers the new map: ≥6 control points, geo inside the
 Chengdu bbox lng 103.6–104.4 / lat 30.3–30.9, pixels within source size). A
 `georef` failure usually means too few control points or a wrong-city/way-off
 georeference → back to Step 6.
@@ -304,8 +304,8 @@ matching — it's an approximate fit, not pixel-perfect); the opacity slider fad
 
 **Finally, summarize and stop** (don't commit — the user does that):
 
-- The three git-tracked changes: `src/data/annotations/<mapId>.json`,
-  `src/data/maps.ts`, `src/data/epochs.ts`.
+- The three git-tracked changes: `src/tools/cd-old-map/data/annotations/<mapId>.json`,
+  `src/tools/cd-old-map/data/maps.ts`, `src/tools/cd-old-map/data/epochs.ts`.
 - Gate result (which command, green or not).
 - Reminder that tiles and the source scan stay out of git (gitignored) and now live
   in Wasabi; the PR's Cloudflare preview URL is the place to re-check alignment.
@@ -318,4 +318,4 @@ matching — it's an approximate fit, not pixel-perfect); the opacity slider fad
 - Storage key convention: [`docs/object-storage.md`](../../../docs/object-storage.md)
 - Multi-sheet / 拼幅 variant: [`references/multi-sheet.md`](references/multi-sheet.md)
 - Data gate logic mirrored in Step 7:
-  [`scripts/validate-data.ts`](../../../scripts/validate-data.ts)
+  [`scripts/cd-old-map/validate-data.ts`](../../../scripts/cd-old-map/validate-data.ts)

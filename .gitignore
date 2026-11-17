@@ -16,7 +16,7 @@ playwright-report/
 # 本地瓦片中转目录：IIIF 瓦片体量大、极少变动，存于对象存储，不进 Git
 tiles/
 
-# 底图烘焙中转目录：positron 矢量瓦片快照（scripts/bake-basemap.ts 产物），上对象存储，不进 Git
+# 底图烘焙中转目录：positron 矢量瓦片快照（scripts/cd-old-map/bake-basemap.ts 产物），上对象存储，不进 Git
 basemap-dist/
 
 # 历史地图源扫描图：大二进制，切片后产物上对象存储，源图本地暂存不入库
@@ -26,7 +26,7 @@ basemap-dist/
 *.tif
 *.tiff
 
-# 拼幅地图（方案 B）的分幅原始导出：合并进 src/data/annotations/<mapId>.json 后即为中转输入，不入库
+# 拼幅地图（方案 B）的分幅原始导出：合并进 src/tools/cd-old-map/data/annotations/<mapId>.json 后即为中转输入，不入库
 /chengdu-*-left.json
 /chengdu-*-right.json
 
@@ -36,3 +36,8 @@ basemap-dist/
 
 # IIIF 切片工具（本地下载，勿入库）
 iiif-tiler.jar
+
+# 刻印字体中转目录：pnpm keyin:stage-fonts 的产物，上对象存储，不进 Git
+keyin-fonts-dist/
+# 字体清单生成脚本的下载缓存（pnpm keyin:build-font-catalog）
+.font-cache/

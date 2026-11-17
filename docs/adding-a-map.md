@@ -144,7 +144,7 @@ curl -s -I -H "Origin: https://tools.portkey.click" "$BASE/info.json" \
 3. **选变换方式**：
    - 默认 polynomial order 1（仿射，全局刚性）。民国测绘图整体能用。
    - **越老/形变越大的图，改用 TPS（薄板样条）**做局部「橡皮拉伸」，并多打、补四角点。
-4. **导出 Georeference Annotation**（一小段 JSON），保存为 `src/data/annotations/<mapId>.json`。
+4. **导出 Georeference Annotation**（一小段 JSON），保存为 `src/tools/cd-old-map/data/annotations/<mapId>.json`。
    - **⚠️ 校验**：该 JSON 里 `target.source.id` 必须等于 `info.json` 的 `id`（即 `.../iiif/<mapId>`），否则加载时取不到瓦片。
    - 这份标注是本仓库**唯一需要入库**的产物（几 KB），数据按 CC0 发布。
 
@@ -154,7 +154,7 @@ curl -s -I -H "Origin: https://tools.portkey.click" "$BASE/info.json" \
 
 ## 6. 登记到站点
 
-### 6.1 历史地图登记表 `src/data/maps.ts`
+### 6.1 历史地图登记表 `src/tools/cd-old-map/data/maps.ts`
 
 ```ts
 {
@@ -163,16 +163,16 @@ curl -s -I -H "Origin: https://tools.portkey.click" "$BASE/info.json" \
   year: 1933,
   iiifInfoUrl:
     "https://s3.ap-southeast-1.wasabisys.com/portkey/tools/chengdu-historical-map/iiif/chengdu-1933/info.json",
-  annotationPath: "src/data/annotations/chengdu-1933.json",
+  annotationPath: "src/tools/cd-old-map/data/annotations/chengdu-1933.json",
   defaultOpacity: 0.7,
   provenance: { source: "（填收藏机构/出处）", license: "Public Domain" },
   attribution: "《1933年成都街市图》（公共领域）",
 }
 ```
 
-字段含义见 [`../src/data/schema.ts`](../src/data/schema.ts)。`provenance.source` 务必补真实出处（供「来源与版权」页）。
+字段含义见 [`../src/tools/cd-old-map/data/schema.ts`](../src/tools/cd-old-map/data/schema.ts)。`provenance.source` 务必补真实出处（供「来源与版权」页）。
 
-### 6.2 时间轴站点 `src/data/epochs.ts`
+### 6.2 时间轴站点 `src/tools/cd-old-map/data/epochs.ts`
 
 ```ts
 { id: "1933", label: "1933", order: 50, kind: "historical", mapId: "chengdu-1933" }
@@ -182,9 +182,9 @@ curl -s -I -H "Origin: https://tools.portkey.click" "$BASE/info.json" \
 
 ### 6.3 ✅ 渲染器已泛化：新增图无需改组件代码（Phase 2 起）
 
-[`MapViewer.tsx`](../src/components/MapViewer.tsx) 已从「硬编码单图」泛化为**遍历 `epochs`/`maps` 登记表 + 离散时间轴驱动**：
+[`MapViewer.tsx`](../src/tools/cd-old-map/components/MapViewer.tsx) 已从「硬编码单图」泛化为**遍历 `epochs`/`maps` 登记表 + 离散时间轴驱动**：
 
-- 标注由 [`src/lib/annotations.ts`](../src/lib/annotations.ts) 用 `import.meta.glob` **按约定自动装载**（`src/data/annotations/<mapId>.json` 一放即被纳入，键 = 文件名 = `mapId`）。
+- 标注由 [`src/tools/cd-old-map/lib/annotations.ts`](../src/tools/cd-old-map/lib/annotations.ts) 用 `import.meta.glob` **按约定自动装载**（`src/tools/cd-old-map/data/annotations/<mapId>.json` 一放即被纳入，键 = 文件名 = `mapId`）。
 - 时间轴每图一站，单选切换；活动历史图层**首访才懒建**（未访问的图永不拉瓦片）。
 
 因此**新增一张图 = 6.1 登记 + 6.2 登记 + 放一个标注 JSON**，三者齐备即自动出现在时间轴上，**不再触碰渲染代码**。配准 sanity 测试（步骤 7）也已遍历 `maps`，新图自动获得覆盖。
@@ -200,7 +200,7 @@ pnpm check && pnpm lint && pnpm format:check && pnpm build   # 类型/规范/构
 pnpm dev        # http://localhost:4321/cd-old-map → 肉眼核对对齐 + 拖滑块淡入淡出
 ```
 
-- **配准 sanity 测试** [`tests/georef.test.ts`](../tests/georef.test.ts) 已**遍历 `maps` 登记表**（标注经 `src/lib/annotations.ts` 自动装载），断言每图控制点 ≥6、`geo` 落在成都经纬度框（lng 103.6–104.4 / lat 30.3–30.9）、像素坐标在源图尺寸内。新增图**自动获得覆盖，无需手写断言**。
+- **配准 sanity 测试** [`tests/cd-old-map/georef.test.ts`](../tests/cd-old-map/georef.test.ts) 已**遍历 `maps` 登记表**（标注经 `src/tools/cd-old-map/lib/annotations.ts` 自动装载），断言每图控制点 ≥6、`geo` 落在成都经纬度框（lng 103.6–104.4 / lat 30.3–30.9）、像素坐标在源图尺寸内。新增图**自动获得覆盖，无需手写断言**。
 - **预览里看什么**：① 老图叠在正确位置、主要街道/城门/河道大致对应（老图是近似贴合，非像素级）；② 滑块在「现今 0% ↔ 历史 100%」平滑过渡；③ 控制台无与我们相关的报错。
 - **关于控制台告警**：底图用的是 OpenFreeMap 公共样式（`positron`），可能残留几条 `Expected number, found null` 之类的**第三方样式 worker 告警**——纯 dev 噪声、对用户无影响，根治要等自托管底图（plan §4.2）。我们自己的代码不应有报错。
 
@@ -211,9 +211,9 @@ pnpm dev        # http://localhost:4321/cd-old-map → 肉眼核对对齐 + 拖�
 只提交**几 KB 的标注 JSON + 登记表/渲染代码改动**：
 
 ```
-src/data/annotations/<mapId>.json
-src/data/maps.ts
-src/data/epochs.ts
+src/tools/cd-old-map/data/annotations/<mapId>.json
+src/tools/cd-old-map/data/maps.ts
+src/tools/cd-old-map/data/epochs.ts
 ```
 
 **永不入库**（已在 `.gitignore`）：`tiles/`、源图 `*.jpg`、`iiif-tiler.jar`、`node_modules/`、`dist/`。
@@ -223,16 +223,16 @@ src/data/epochs.ts
 
 ## 附：常见坑速查
 
-| 现象                                          | 原因                                         | 解决                                                         |
-| --------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------ |
-| `info.json` id 出现 `iiif<mapId>`（少个斜杠） | `-identifier` 漏了末尾 `/`                   | 加 `/` 重切（步骤 2）                                        |
-| 浏览器/Allmaps 取不到瓦片、断链               | `info.json` id ≠ 瓦片实际公开 URL 基址       | 让 identifier == 上传前缀；或改 id 重切                      |
-| 标注加载报错、图不显示                        | 标注 `target.source.id` ≠ `info.json` id     | 在 Editor 用正确 info.json URL 重配导出                      |
-| curl 403 / 无 CORS 头                         | 桶/前缀没设 public                           | Wasabi 控制台设 public（步骤 3）                             |
-| 瓦片散落桶根、与别的工具混在一起              | 上传到了 `wasabi:portkey/<mapId>`            | 传到 `tools/<toolId>/iiif/<mapId>`（步骤 3）                 |
-| URL 里出现中文/`%E5%9B%BE`                    | 源图用了中文文件名                           | 切片前 `cp` 成 ASCII 的 `<mapId>.jpg`（步骤 1）              |
-| `pnpm validate` 报标注文件缺失                | `maps.ts` 的 `annotationPath` 写错或文件没放 | 路径对齐 `src/data/annotations/<mapId>.json`                 |
-| 老图边角对不齐                                | 用了仿射（order 1）                          | Editor 改 TPS + 补四角控制点，重新导出（步骤 5，无需重切片） |
+| 现象                                          | 原因                                         | 解决                                                          |
+| --------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------- |
+| `info.json` id 出现 `iiif<mapId>`（少个斜杠） | `-identifier` 漏了末尾 `/`                   | 加 `/` 重切（步骤 2）                                         |
+| 浏览器/Allmaps 取不到瓦片、断链               | `info.json` id ≠ 瓦片实际公开 URL 基址       | 让 identifier == 上传前缀；或改 id 重切                       |
+| 标注加载报错、图不显示                        | 标注 `target.source.id` ≠ `info.json` id     | 在 Editor 用正确 info.json URL 重配导出                       |
+| curl 403 / 无 CORS 头                         | 桶/前缀没设 public                           | Wasabi 控制台设 public（步骤 3）                              |
+| 瓦片散落桶根、与别的工具混在一起              | 上传到了 `wasabi:portkey/<mapId>`            | 传到 `tools/<toolId>/iiif/<mapId>`（步骤 3）                  |
+| URL 里出现中文/`%E5%9B%BE`                    | 源图用了中文文件名                           | 切片前 `cp` 成 ASCII 的 `<mapId>.jpg`（步骤 1）               |
+| `pnpm validate` 报标注文件缺失                | `maps.ts` 的 `annotationPath` 写错或文件没放 | 路径对齐 `src/tools/cd-old-map/data/annotations/<mapId>.json` |
+| 老图边角对不齐                                | 用了仿射（order 1）                          | Editor 改 TPS + 补四角控制点，重新导出（步骤 5，无需重切片）  |
 
 ---
 
@@ -244,8 +244,8 @@ src/data/epochs.ts
 
 1. **切片/上传（步骤 2–4）跑 N 遍**：每幅一个 ASCII 图幅 id（`<mapId>-left` / `<mapId>-right` …），各自切片、各自传到 `.../iiif/<图幅id>`、各自验 public+CORS。
 2. **配准（步骤 5）每幅一次**：分别用各自 `info.json` 在 Editor 配准。**接缝一侧额外多打几个控制点**；若两幅有**重叠带**，在重叠带选同一批地物，把各幅那份都钉到**同一经纬度** → 接缝必然重合。各幅独立 warp 会各自吸收各次扫描的比例/朝向差。
-3. **合并标注**：把各幅导出的 Annotation 收进**一个** `src/data/annotations/<mapId>.json` 的 `items`（数组）。**主图幅放 `items[0]`**——`maps.ts` 的 `iiifInfoUrl` 填这一幅的 info.json，`validate` 用它做断链主锚点。
+3. **合并标注**：把各幅导出的 Annotation 收进**一个** `src/tools/cd-old-map/data/annotations/<mapId>.json` 的 `items`（数组）。**主图幅放 `items[0]`**——`maps.ts` 的 `iiifInfoUrl` 填这一幅的 info.json，`validate` 用它做断链主锚点。
 4. **登记/渲染照常**：`maps.ts` + `epochs.ts` 各一行，**渲染器零改动**。
-5. **测试与数据闸门已支持多 items**：[`tests/georef.test.ts`](../tests/georef.test.ts) 遍历每一幅断言控制点数/地理框/像素尺寸；[`scripts/validate-data.ts`](../scripts/validate-data.ts) 除主锚点外，还校验其余每幅 `source.id` 都落在同一 `/iiif/` 前缀下（防某幅断链漏过 CI）。
+5. **测试与数据闸门已支持多 items**：[`tests/cd-old-map/georef.test.ts`](../tests/cd-old-map/georef.test.ts) 遍历每一幅断言控制点数/地理框/像素尺寸；[`scripts/cd-old-map/validate-data.ts`](../scripts/cd-old-map/validate-data.ts) 除主锚点外，还校验其余每幅 `source.id` 都落在同一 `/iiif/` 前缀下（防某幅断链漏过 CI）。
 
 实例：`mapId=chengdu-1915`，图幅 `chengdu-1915-left` / `chengdu-1915-right`，`iiifInfoUrl` 指 `chengdu-1915-left/info.json`。

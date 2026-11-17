@@ -1,0 +1,146 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 MamaShip
+import BaseLayout from "../site/BaseLayout.astro";
+import KeyinTool from "../tools/keyin/components/KeyinTool.tsx";
+import { keyinBugUrl, keyinPlatformUrl } from "../tools/keyin/feedback";
+import oflUrl from "../tools/keyin/text/fonts/OFL.txt?url";
+---
+
+<BaseLayout
+  title="刻印"
+  description="把你一年的 GitHub 贡献、LeetCode 刷题、Claude Code token、跑步距离、观影记录等每日数据，做成可以 3D 打印的模型。支持 17 个平台。"
+  wide
+>
+  <header class="intro">
+    <h1>刻印</h1>
+    <p>
+      把你一年的每日记录做成可以 3D
+      打印的模型：一天一根柱子，高度对应当天的数值，底座正面压印平台名、你的名字和年份。支持编程、AI、运动健康、影音阅读、笔记任务、游戏等
+      17 个平台，也可以用你自己的 JSON / CSV。
+    </p>
+  </header>
+
+  <KeyinTool client:only="react">
+    <p slot="fallback" class="loading">正在加载…</p>
+  </KeyinTool>
+
+  <section class="feedback" aria-labelledby="feedback-title">
+    <h2 id="feedback-title">问题反馈</h2>
+    <p>
+      读不到数据、模型不对，或者想让刻印支持更多平台，欢迎到 GitHub 提一个
+      issue（需要 GitHub 账号）。点下面的按钮会打开填好一部分的反馈表。
+    </p>
+    <div class="feedback-actions">
+      {/* href 会随当前选中的平台更新（KeyinTool 里设置），方便预填 */}
+      <a
+        id="keyin-report"
+        class="feedback-btn feedback-primary"
+        href={keyinBugUrl()}
+        target="_blank"
+        rel="noopener noreferrer">反馈问题</a
+      >
+      <a
+        class="feedback-btn"
+        href={keyinPlatformUrl}
+        target="_blank"
+        rel="noopener noreferrer">想支持新平台</a
+      >
+    </div>
+  </section>
+
+  <section class="about">
+    <h2>来源与许可</h2>
+    <p>
+      刻印衍生自 <a
+        href="https://github.com/yihong0618/GitHubPoster"
+        target="_blank"
+        rel="noopener noreferrer">GitHubPoster</a
+      >（yihong0618，MIT 协议）：skyline
+      模型的设计和多数平台的数据读取方式都来自它。
+    </p>
+    <p>
+      文字使用 Google 的 <a
+        href="https://notofonts.github.io/"
+        target="_blank"
+        rel="noopener noreferrer">Noto</a
+      > 字体，未经修改，许可为 <a href={oflUrl} target="_blank"
+        >SIL Open Font License 1.1</a
+      >。你生成的模型归你所有。
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .intro {
+    margin-bottom: 1.5rem;
+  }
+  .intro h1 {
+    margin: 0 0 0.4rem;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+  }
+  .intro p {
+    margin: 0;
+    max-width: 44rem;
+    color: var(--muted);
+  }
+  .loading {
+    color: var(--muted);
+  }
+  .about {
+    margin-top: 2.5rem;
+    max-width: 44rem;
+    font-size: 0.92rem;
+  }
+  .about h2 {
+    font-size: 1rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .feedback {
+    margin-top: 2.5rem;
+    max-width: 44rem;
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--radius);
+    border: 1px dashed rgba(236, 122, 69, 0.45);
+    font-size: 0.92rem;
+  }
+  .feedback h2 {
+    font-size: 1rem;
+    margin: 0 0 0.4rem;
+  }
+  .feedback p {
+    margin: 0;
+    color: var(--muted);
+  }
+  .feedback-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.85rem;
+  }
+  .feedback-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    border: 1px solid var(--accent);
+    color: var(--accent-ink);
+    background: #fff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .feedback-btn:hover {
+    background: rgba(236, 122, 69, 0.08);
+  }
+  .feedback-primary {
+    color: #fff;
+    background: var(--accent);
+  }
+  .feedback-primary:hover {
+    background: var(--accent-ink);
+  }
+  .feedback-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+</style>

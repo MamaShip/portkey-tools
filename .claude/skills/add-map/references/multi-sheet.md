@@ -36,7 +36,7 @@ Run the mechanical half (SKILL.md Steps 2–5) **once per sheet**:
      Each sheet's independent warp absorbs its own scan drift.
 
 3. **Merge the exported annotations into ONE file**
-   `src/data/annotations/<mapId>.json`: collect each sheet's exported Annotation
+   `src/tools/cd-old-map/data/annotations/<mapId>.json`: collect each sheet's exported Annotation
    into a single `items` array. **Primary sheet must be `items[0]`** — the validate
    gate uses it as the dead-link anchor (`items[0].target.source.id` must equal the
    `iiifInfoUrl` base).
@@ -49,11 +49,11 @@ Run the mechanical half (SKILL.md Steps 2–5) **once per sheet**:
 
 The gates already support multiple items:
 
-- [`scripts/validate-data.ts`](../../../../scripts/validate-data.ts) checks
+- [`scripts/cd-old-map/validate-data.ts`](../../../../scripts/cd-old-map/validate-data.ts) checks
   `items[0].source.id == iiifInfoUrl` base **and** that _every_ other item's
   `source.id` starts with the shared `.../iiif/` prefix — so a single mis-pointed
   sheet can't slip through CI.
-- [`tests/georef.test.ts`](../../../../tests/georef.test.ts) iterates every item,
+- [`tests/cd-old-map/georef.test.ts`](../../../../tests/cd-old-map/georef.test.ts) iterates every item,
   asserting control-point count, Chengdu bbox, and pixel bounds per sheet.
 
 So when pre-checking in Step 7, verify **all** items: `items[0].source.id` equals

@@ -40,11 +40,19 @@
 1. 预处理扫描图（裁切、纠斜）。
 2. 切静态 IIIF 瓦片：`java -jar iiif-tiler.jar <map>.jpg -version 3 -output ./tiles`。
 3. 上传瓦片到对象存储（`rclone copy ...`）——key 目录约定见 [`docs/object-storage.md`](./docs/object-storage.md)，资产放在 `tools/<toolId>/iiif/<mapId>/`。
-4. 在 [Allmaps Editor](https://editor.allmaps.org) 对照现代底图打控制点 → 导出 Georeference Annotation 到 `src/data/annotations/<id>.json`。
-5. 在 `src/data/maps.ts` 与 `src/data/epochs.ts` 登记该图。
+4. 在 [Allmaps Editor](https://editor.allmaps.org) 对照现代底图打控制点 → 导出 Georeference Annotation 到 `src/tools/cd-old-map/data/annotations/<id>.json`。
+5. 在 `src/tools/cd-old-map/data/maps.ts` 与 `src/tools/cd-old-map/data/epochs.ts` 登记该图。
 6. `pnpm validate && pnpm test` 通过后提交 PR，在预览 URL 上肉眼确认对齐。
 
 **大文件政策**：IIIF 瓦片（及可选的 PMTiles 底图）体量大、极少变动，**不进 Git**——它们存于对象存储，仓库内只保存其 URL 与几 KB 的标注 JSON。`tiles/` 为本地中转目录，已在 `.gitignore` 内。
+
+## 工具#2：刻印
+
+把你一年的每日记录做成可以 3D 打印的模型（STL）：一天一根柱子，高度对应当天的数值，底座正面压印平台名、你的名字和年份。支持 17 个平台：GitHub、LeetCode / 力扣、GitHub Issue 打卡、WakaTime、Claude Code、ChatGPT、Apple 健康、Strava、GPX 轨迹、AutoSleep、YouTube、NeoDB、Notion、Todoist、Google Keep、Dota 2，以及你自己的 JSON / CSV。每个平台都附有获取数据的步骤说明。
+
+- **在浏览器里完成**：读数据、排版文字、生成网格都在本地进行，文件不上传；需要 token 的平台由浏览器直接请求，token 不经过本站；只有 GitHub、LeetCode 的公开日历经本站的 Cloudflare Pages Function 转发。
+- **几乎所有文字都能印**：Noto 字体回退链加 [HarfBuzz](https://harfbuzz.github.io) 排版，中日韩、阿拉伯文、印度系文字、emoji 都能正确成形；字体按需下载并缓存。
+- **来源**：衍生自 [GitHubPoster](https://github.com/yihong0618/GitHubPoster)（yihong0618，MIT）的 skyline 功能与各平台的数据读取。机制与维护见 [`docs/keyin.md`](./docs/keyin.md)。
 
 ## 本地开发
 
@@ -84,9 +92,11 @@ CI 由 GitHub Actions 跑上述质量闸门（见 `.github/workflows/ci.yml`）�
 
 - **代码：[AGPL-3.0-or-later](./LICENSE)（GNU Affero GPL v3）。** AGPL-3.0 与本项目所用的 MIT/BSD 依赖（Astro、React、MapLibre 等）兼容。
   - 若你（fork 者）希望严格锁定 3.0，可在源文件声明里去掉 “or any later version”，即 `AGPL-3.0-only`。
-- **配准数据**（Georeference Annotations，`src/data/annotations/*.json`）：贴合 Allmaps 生态，通过 [CC0](./src/data/annotations/LICENSE) 协议开源。
+- **配准数据**（Georeference Annotations，`src/tools/cd-old-map/data/annotations/*.json`）：贴合 Allmaps 生态，通过 [CC0](./src/tools/cd-old-map/data/annotations/LICENSE) 协议开源。
 - **历史地图图像**：**公共领域**（多为当时政府机构所制）。它们不在本仓库内，按站内“来源与版权”页逐图标注出处；不受本仓库许可约束。
 - **现代底图**：© OpenStreetMap 贡献者 / OpenFreeMap，**需保留署名**（MapLibre 会自动渲染）。
+- **刻印的模型与数据读取代码**（`src/tools/keyin/` 下标注 MIT 的文件）：衍生自 GitHubPoster，按 MIT 许可保留原作者 yihong 的版权声明。MIT 与 AGPL-3.0 兼容。
+- **刻印使用的 Noto 字体**：未经修改，[SIL Open Font License 1.1](./src/tools/keyin/text/fonts/OFL.txt)。
 
 给源文件加许可声明，推荐使用轻量的 SPDX 标识（放在文件首行注释）：
 
@@ -105,4 +115,4 @@ CI 由 GitHub Actions 跑上述质量闸门（见 `.github/workflows/ci.yml`）�
 
 ## 致谢
 
-[Allmaps](https://allmaps.org)（TU Delft Library 等）· [glenrobson/iiif-tiler](https://github.com/glenrobson/iiif-tiler) · [OpenStreetMap](https://www.openstreetmap.org) · [OpenFreeMap](https://openfreemap.org) · [MapLibre](https://maplibre.org) · [Astro](https://astro.build) · IIIF 社区
+[GitHubPoster](https://github.com/yihong0618/GitHubPoster) · [HarfBuzz](https://harfbuzz.github.io) · [Noto](https://notofonts.github.io) · [three.js](https://threejs.org) · [Allmaps](https://allmaps.org)（TU Delft Library 等）· [glenrobson/iiif-tiler](https://github.com/glenrobson/iiif-tiler) · [OpenStreetMap](https://www.openstreetmap.org) · [OpenFreeMap](https://openfreemap.org) · [MapLibre](https://maplibre.org) · [Astro](https://astro.build) · IIIF 社区
