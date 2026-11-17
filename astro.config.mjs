@@ -8,6 +8,11 @@ export default defineConfig({
   site: "https://tools.portkey.click",
   integrations: [react()],
   vite: {
+    // 刻印的模型生成跑在 module worker 里（harfbuzzjs 用了顶层 await）
+    worker: { format: "es" },
+    // harfbuzzjs 用 new URL("harfbuzz.wasm", import.meta.url) 找 wasm；开发时若被预构建
+    // 挪进 .vite/deps，旁边就没有 wasm 了，所以不预构建它
+    optimizeDeps: { exclude: ["harfbuzzjs"] },
     build: {
       rollupOptions: {
         output: {
@@ -20,6 +25,7 @@ export default defineConfig({
             if (!id.includes("node_modules")) return;
             if (id.includes("maplibre-gl")) return "maplibre";
             if (id.includes("@allmaps")) return "allmaps";
+            if (/[\\/]node_modules[\\/]three[\\/]/.test(id)) return "three";
             if (
               /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id)
             )

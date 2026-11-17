@@ -11,9 +11,12 @@ Copyright (C) 2026 MamaShip
 
 ## 这是什么
 
-一个**个人工具集**网站（Astro 多页站，随时间不断长出新工具，每个工具 = 一个路由）。当前唯一工具是**成都老地图**：现代底图上叠加经地理配准的成都历史老地图，时间轴切换时间点、透明度滑块古今淡入淡出。
+一个**个人工具集**网站（Astro 多页站，随时间不断长出新工具，每个工具 = 一个路由）。目前有两个工具：
 
-- 线上：**https://tools.portkey.click/cd-old-map**
+- **成都老地图**（`/cd-old-map`）：现代底图上叠加经地理配准的成都历史老地图，时间轴切换时间点、透明度滑块古今淡入淡出。
+- **刻印**（`/keyin`）：把一年的每日使用记录（GitHub、Claude Code、ChatGPT、JSON/CSV）做成可 3D 打印的 STL，全部在浏览器里生成。详见 [`docs/keyin.md`](./docs/keyin.md)。
+
+- 线上：**https://tools.portkey.click/cd-old-map**、**https://tools.portkey.click/keyin**
 - 仓库托管：Cloudflare Pages（原生 Git 集成，每个 PR 自动出预览 URL）。
 
 ## 当前状态（2026-06）
@@ -75,6 +78,13 @@ e2e/<toolId>/                 该工具的 Playwright 冒烟
 - `scripts/cd-old-map/` — `validate-data.ts`（CI 数据闸门）、`bake-basemap.ts`（烘焙底图）。
 - `tests/cd-old-map/` — `georef.test.ts`（配准 sanity，遍历全部图）、`timeline.test.ts`、`opacity.test.ts`、`deeplink.test.ts`。
 
+**刻印（`keyin`）**（详见 [`docs/keyin.md`](./docs/keyin.md)）
+
+- `src/tools/keyin/model/`、`text/`、`sources/` — 从 keyin（Python，MIT）移植的网格、文字排版、数据源解析，保留 MIT 声明。
+- `src/tools/keyin/components/` — React island（`KeyinTool.tsx` 是主体）；`worker.ts` 在 Web Worker 里生成模型。
+- `functions/api/keyin/github.ts` — Pages Function，转发 GitHub 公开贡献日历（站点唯一的服务端代码）。
+- `scripts/keyin/stage-fonts.ts` — 下载并校验字体，准备上传 Wasabi。
+
 **其他**
 
 - `docs/` — 专题深度文档（见下「文档索引」）。
@@ -104,5 +114,6 @@ e2e/<toolId>/                 该工具的 Playwright 冒烟
 | [`docs/adding-a-map.md`](./docs/adding-a-map.md)                       | 新增一张历史图的完整 SOP                         |
 | [`docs/basemap.md`](./docs/basemap.md)                                 | 自托管底图的机制与（重）烘焙指南                 |
 | [`docs/object-storage.md`](./docs/object-storage.md)                   | Wasabi 桶内对象 key 目录约定                     |
+| [`docs/keyin.md`](./docs/keyin.md)                                     | 刻印：数据流、字体、GitHub 转发、许可            |
 | [`CONTRIBUTING.md`](./CONTRIBUTING.md)                                 | 贡献流程、许可、闸门                             |
 | [`docs/archive/phase-0-1-guide.md`](./docs/archive/phase-0-1-guide.md) | Phase 0–1 历史竣工记录（已部分被取代）           |

@@ -98,6 +98,18 @@ rclone copy basemap-dist/openfreemap-positron/tiles   wasabi:portkey/basemaps/op
 > 用浏览器本地字体渲染）。底图为冻结快照、缓存 3 个月（`max-age=7776000`）：URL 不带哈希，
 > 故重烘焙覆盖同名对象后，回访用户最长 3 个月内自然刷新（全新访客立即生效）。
 
+## 刻印的字体
+
+刻印（`/keyin`）按需下载的 Noto 字体放在 `portkey/tools/keyin/fonts/`：
+
+```
+portkey/tools/keyin/fonts/
+├─ OFL.txt                          字体许可（随字体一起分发）
+└─ <上游提交前 12 位>/<文件名>         如 56d1bb314182/NotoSansArabic-Medium.ttf
+```
+
+路径带上游提交号，文件内容永不改变，上传时加 `Cache-Control: public, max-age=31536000, immutable`。用 `pnpm keyin:stage-fonts` 准备文件并打印上传命令，详见 [keyin.md](./keyin.md)。
+
 ## 当前实例：成都老地图
 
 | 项                 | 值                                                                                                         |

@@ -36,3 +36,6 @@ basemap-dist/
 
 # IIIF 切片工具（本地下载，勿入库）
 iiif-tiler.jar
+
+# 刻印字体中转目录：pnpm keyin:stage-fonts 的产物，上对象存储，不进 Git
+keyin-fonts-dist/

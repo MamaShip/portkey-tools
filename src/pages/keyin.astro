@@ -1,0 +1,102 @@
+---
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 MamaShip
+import BaseLayout from "../site/BaseLayout.astro";
+import KeyinTool from "../tools/keyin/components/KeyinTool.tsx";
+import oflUrl from "../tools/keyin/text/fonts/OFL.txt?url";
+---
+
+<BaseLayout
+  title="刻印"
+  description="把你一年的 GitHub 贡献、Claude Code token 用量、ChatGPT 消息等每日记录，做成可以 3D 打印的模型。"
+  wide
+>
+  <header class="intro">
+    <h1>刻印</h1>
+    <p>
+      把你一年的每日使用记录做成可以 3D
+      打印的模型：一天一根柱子，高度对应当天的用量，底座正面压印平台名、你的名字和年份。
+    </p>
+  </header>
+
+  <KeyinTool client:only="react">
+    <p slot="fallback" class="loading">正在加载…</p>
+  </KeyinTool>
+
+  <section class="about">
+    <h2>说明</h2>
+    <ul>
+      <li>
+        <strong>隐私：</strong>Claude Code、ChatGPT
+        和你自己的文件都只在浏览器里读取和计算，不会上传。GitHub
+        的公开贡献日历由本站服务器转发请求。
+      </li>
+      <li>
+        <strong>文字：</strong
+        >几乎所有语言都能印，包括中日韩、阿拉伯文、印地文、泰文和 emoji。
+        西文字体随页面加载；其他文字的字体在第一次用到时下载并缓存在浏览器里，中日韩字体约
+        18 MB。
+      </li>
+      <li>
+        <strong>打印：</strong>模型是闭合的流形网格，切片软件不会报错。底座 150
+        × 30 mm，柱子高 1–21 mm。
+      </li>
+      <li>
+        <strong>更多数据源：</strong>GitLab、Anthropic / OpenAI
+        组织用量等需要密钥或登录的数据，请用命令行版 keyin。
+      </li>
+    </ul>
+    <h2>来源与许可</h2>
+    <p>
+      模型生成移植自开源项目 keyin（MIT 协议），keyin 衍生自
+      <a
+        href="https://github.com/yihong0618/GitHubPoster"
+        target="_blank"
+        rel="noopener noreferrer">GitHubPoster</a
+      >（yihong0618，MIT 协议）的 skyline 功能。文字使用 Google 的
+      <a
+        href="https://notofonts.github.io/"
+        target="_blank"
+        rel="noopener noreferrer">Noto</a
+      >
+      字体，未经修改，许可为 <a href={oflUrl} target="_blank"
+        >SIL Open Font License 1.1</a
+      >。
+    </p>
+    <p>你生成的模型归你所有。</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .intro {
+    margin-bottom: 1.5rem;
+  }
+  .intro h1 {
+    margin: 0 0 0.4rem;
+    font-size: clamp(1.8rem, 5vw, 2.4rem);
+  }
+  .intro p {
+    margin: 0;
+    max-width: 44rem;
+    color: var(--muted);
+  }
+  .loading {
+    color: var(--muted);
+  }
+  .about {
+    margin-top: 2.5rem;
+    max-width: 44rem;
+    font-size: 0.92rem;
+  }
+  .about h2 {
+    font-size: 1rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .about ul {
+    margin: 0;
+    padding-left: 1.2rem;
+  }
+  .about li + li {
+    margin-top: 0.35rem;
+  }
+</style>

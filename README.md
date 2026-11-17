@@ -46,6 +46,14 @@
 
 **大文件政策**：IIIF 瓦片（及可选的 PMTiles 底图）体量大、极少变动，**不进 Git**——它们存于对象存储，仓库内只保存其 URL 与几 KB 的标注 JSON。`tiles/` 为本地中转目录，已在 `.gitignore` 内。
 
+## 工具#2：刻印
+
+把你一年的每日使用记录做成可以 3D 打印的模型（STL）：一天一根柱子，高度对应当天的用量，底座正面压印平台名、你的名字和年份。数据可以来自 GitHub 公开贡献日历、Claude Code 本地会话日志、ChatGPT 数据导出，或你自己的 JSON / CSV。
+
+- **在浏览器里完成**：读数据、排版文字、生成网格都在本地进行，文件不上传；只有 GitHub 的公开日历经本站的 Cloudflare Pages Function 转发。
+- **几乎所有文字都能印**：Noto 字体回退链加 [HarfBuzz](https://harfbuzz.github.io) 排版，中日韩、阿拉伯文、印度系文字、emoji 都能正确成形；字体按需下载并缓存。
+- **来源**：模型生成移植自开源项目 keyin（MIT），keyin 衍生自 [GitHubPoster](https://github.com/yihong0618/GitHubPoster)（MIT）。机制与维护见 [`docs/keyin.md`](./docs/keyin.md)。
+
 ## 本地开发
 
 前置（Ubuntu 示例）：
@@ -87,6 +95,8 @@ CI 由 GitHub Actions 跑上述质量闸门（见 `.github/workflows/ci.yml`）�
 - **配准数据**（Georeference Annotations，`src/tools/cd-old-map/data/annotations/*.json`）：贴合 Allmaps 生态，通过 [CC0](./src/tools/cd-old-map/data/annotations/LICENSE) 协议开源。
 - **历史地图图像**：**公共领域**（多为当时政府机构所制）。它们不在本仓库内，按站内“来源与版权”页逐图标注出处；不受本仓库许可约束。
 - **现代底图**：© OpenStreetMap 贡献者 / OpenFreeMap，**需保留署名**（MapLibre 会自动渲染）。
+- **刻印的模型生成代码**（`src/tools/keyin/` 下标注 MIT 的文件）：移植自 keyin，保留 MIT 声明（GitHubPoster 原作者与 keyin 的版权行）。MIT 与 AGPL-3.0 兼容。
+- **刻印使用的 Noto 字体**：未经修改，[SIL Open Font License 1.1](./src/tools/keyin/text/fonts/OFL.txt)。
 
 给源文件加许可声明，推荐使用轻量的 SPDX 标识（放在文件首行注释）：
 
@@ -105,4 +115,4 @@ CI 由 GitHub Actions 跑上述质量闸门（见 `.github/workflows/ci.yml`）�
 
 ## 致谢
 
-[Allmaps](https://allmaps.org)（TU Delft Library 等）· [glenrobson/iiif-tiler](https://github.com/glenrobson/iiif-tiler) · [OpenStreetMap](https://www.openstreetmap.org) · [OpenFreeMap](https://openfreemap.org) · [MapLibre](https://maplibre.org) · [Astro](https://astro.build) · IIIF 社区
+[GitHubPoster](https://github.com/yihong0618/GitHubPoster) · [HarfBuzz](https://harfbuzz.github.io) · [Noto](https://notofonts.github.io) · [three.js](https://threejs.org) · [Allmaps](https://allmaps.org)（TU Delft Library 等）· [glenrobson/iiif-tiler](https://github.com/glenrobson/iiif-tiler) · [OpenStreetMap](https://www.openstreetmap.org) · [OpenFreeMap](https://openfreemap.org) · [MapLibre](https://maplibre.org) · [Astro](https://astro.build) · IIIF 社区
