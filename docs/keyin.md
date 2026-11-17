@@ -5,7 +5,7 @@ Copyright (C) 2026 MamaShip
 
 # 刻印（keyin）
 
-路由 `/keyin`。把一年的每日记录做成可以 3D 打印的 STL：一天一根柱子，底座斜面压印平台名、名字和年份。支持 17 个平台（见下表），全部在浏览器里完成，只有 GitHub 和 LeetCode 的公开日历经 Pages Function 转发。
+路由 `/keyin`。把一年的每日记录做成 skyline 3D 模型（STL）：一天一根柱子，底座斜面压印平台名、名字和年份。支持的平台见下表，全部在浏览器里完成，只有 GitHub 和 LeetCode 的公开日历经 Pages Function 转发。
 
 刻印衍生自 [GitHubPoster](https://github.com/yihong0618/GitHubPoster)（yihong0618，MIT）：skyline 模型的设计、多数平台的数据读取方式都来自它。在此基础上重写了网格生成（直接构造、保证流形）、换成了支持几乎所有文字的字体与排版，并把一切搬到浏览器里。
 

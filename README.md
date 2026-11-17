@@ -48,7 +48,9 @@
 
 ## 工具#2：刻印
 
-把你一年的每日记录做成可以 3D 打印的模型（STL）：一天一根柱子，高度对应当天的数值，底座正面压印平台名、你的名字和年份。支持 17 个平台：GitHub、LeetCode / 力扣、GitHub Issue 打卡、WakaTime、Claude Code、ChatGPT、Apple 健康、Strava、GPX 轨迹、AutoSleep、YouTube、NeoDB、Notion、Todoist、Google Keep、Dota 2，以及你自己的 JSON / CSV。每个平台都附有获取数据的步骤说明。
+把一年的 GPT、Claude 用量等每日记录做成 skyline 3D 模型（STL）：一天一根柱子，高度对应当天的数值，底座正面印上平台名、你的名字和年份。也可以用你自己的 JSON / CSV；每个平台都附有获取数据的步骤说明。
+
+<p align="center"><img src="docs/images/keyin-example.png" alt="刻印生成的 skyline 3D 模型示例：一天一根柱子，底座印着 Example 和 2026" width="720" /></p>
 
 - **在浏览器里完成**：读数据、排版文字、生成网格都在本地进行，文件不上传；需要 token 的平台由浏览器直接请求，token 不经过本站；只有 GitHub、LeetCode 的公开日历经本站的 Cloudflare Pages Function 转发。
 - **几乎所有文字都能印**：Noto 字体回退链加 [HarfBuzz](https://harfbuzz.github.io) 排版，中日韩、阿拉伯文、印度系文字、emoji 都能正确成形；字体按需下载并缓存。

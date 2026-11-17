@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 MamaShip
 //
-// 刻印：把一年的每日使用记录做成可以 3D 打印的模型（STL）。React island 主体。
+// 刻印：把一年的每日记录做成 skyline 3D 模型（STL）。React island 主体。
 import { useEffect, useMemo, useState } from "react";
 import { yearsOf, summarize } from "../sources/daily";
 import type { Scale, SkylineInput } from "../model/skyline";
 import { platformById, PLATFORMS } from "../platforms";
 import type { LoadedData } from "../platforms/types";
+import { EXAMPLE_INPUT } from "../example";
 import { keyinBugUrl } from "../feedback";
 import { PlatformPanel, PlatformPicker, ReportLink } from "./PlatformPanel";
 import InfoTip from "./InfoTip";
@@ -72,6 +73,8 @@ export default function KeyinTool() {
         : null,
     [data, activeYear, effectiveLabel, name, effectiveScale],
   );
+  // 还没读到数据时先生成示例模型，让人一进来就看到成品的样子
+  const example = !data;
   // 页面底部的「反馈问题」按钮（静态 HTML）跟着当前平台预填
   useEffect(() => {
     document
@@ -79,7 +82,7 @@ export default function KeyinTool() {
       ?.setAttribute("href", keyinBugUrl({ platform: platform.name }));
   }, [platform.name]);
 
-  const build = useBuilder(input, lang || null);
+  const build = useBuilder(example ? EXAMPLE_INPUT : input, lang || null);
   const summary =
     data && activeYear ? summarize(data.values, activeYear) : null;
 
@@ -232,8 +235,11 @@ export default function KeyinTool() {
         </h2>
         <div className="keyin-stage">
           <Preview positions={build.kind === "done" ? build.positions : null} />
+          {example && build.kind === "done" && (
+            <span className="keyin-badge">示例</span>
+          )}
           {build.kind === "idle" && (
-            <p className="keyin-overlay">读取数据后，模型会出现在这里</p>
+            <p className="keyin-overlay">没有可以生成模型的记录</p>
           )}
           {build.kind === "building" && (
             <p className="keyin-overlay" role="status">
@@ -257,7 +263,12 @@ export default function KeyinTool() {
             />
           </p>
         )}
-        {build.kind === "done" && (
+        {example && build.kind === "done" && (
+          <p className="keyin-actions keyin-hint">
+            这是用示例数据生成的模型，可以拖动旋转、滚轮缩放。在上面读取你的数据后，这里会换成你自己的模型。
+          </p>
+        )}
+        {!example && build.kind === "done" && (
           <div className="keyin-actions">
             <button
               className="keyin-button keyin-primary"
@@ -273,7 +284,8 @@ export default function KeyinTool() {
             </span>
           </div>
         )}
-        {build.kind === "done" &&
+        {!example &&
+          build.kind === "done" &&
           build.warnings.map((w) => (
             <p key={w} className="keyin-warning">
               {w}

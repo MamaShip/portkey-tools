@@ -377,3 +377,17 @@
   font-size: 0.85rem;
   white-space: nowrap;
 }
+
+/* 示例模型的角标 */
+.keyin-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(236, 122, 69, 0.12);
+  color: var(--accent-ink);
+  font-size: 0.8rem;
+  font-weight: 600;
+  pointer-events: none;
+}

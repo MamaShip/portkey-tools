@@ -25,6 +25,12 @@ test("读 JSON、生成并下载 STL", async ({ page }) => {
   });
 
   await page.goto("/keyin");
+  // 进入页面先生成示例模型；示例不提供下载
+  await expect(page.locator(".keyin-badge")).toHaveText("示例", {
+    timeout: 30_000,
+  });
+  await expect(page.getByRole("button", { name: /下载 STL/ })).toHaveCount(0);
+
   await page.getByRole("radio", { name: "自己的数据" }).click();
   await page.locator(".keyin-data input[type=file]").setInputFiles({
     name: "steps.json",

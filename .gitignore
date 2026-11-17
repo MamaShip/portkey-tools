@@ -25,6 +25,8 @@ basemap-dist/
 *.png
 *.tif
 *.tiff
+# 文档配图（几十 KB 的截图）例外，要入库
+!docs/images/*.png
 
 # 拼幅地图（方案 B）的分幅原始导出：合并进 src/tools/cd-old-map/data/annotations/<mapId>.json 后即为中转输入，不入库
 /chengdu-*-left.json

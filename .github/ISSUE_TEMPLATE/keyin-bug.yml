@@ -1,5 +1,5 @@
 name: 🐛 刻印：问题反馈
-description: 刻印（3D 打印模型生成）读不到数据、模型不对、页面出错等问题
+description: 刻印（skyline 3D 模型）读不到数据、模型不对、页面出错等问题
 title: "[刻印] "
 labels: ["keyin", "bug"]
 body:
