@@ -49,15 +49,124 @@ export function fetchGithub(user: string, year: number): Promise<DailyValues> {
   return fetchProxy(`/api/keyin/github?${q}`, "GitHub");
 }
 
+const GRAPHQL_QUERY = `query ($login: String!, $from: DateTime!, $to: DateTime!) {
+  user(login: $login) {
+    contributionsCollection(from: $from, to: $to) {
+      contributionCalendar { weeks { contributionDays { date contributionCount } } }
+    }
+  }
+}`;
+
+interface GraphQlCalendar {
+  data?: {
+    user?: {
+      contributionsCollection?: {
+        contributionCalendar?: {
+          weeks?: {
+            contributionDays?: { date: string; contributionCount: number }[];
+          }[];
+        };
+      };
+    } | null;
+  } | null;
+  errors?: { type?: string; message?: string }[];
+}
+
+/** GraphQL 的贡献日历 → 每日数值（只留当年、有贡献的日子） */
+export function parseGraphQlCalendar(
+  body: GraphQlCalendar,
+  year: number,
+): DailyValues {
+  const values: DailyValues = {};
+  const weeks =
+    body.data?.user?.contributionsCollection?.contributionCalendar?.weeks ?? [];
+  for (const w of weeks) {
+    for (const d of w.contributionDays ?? []) {
+      if (d.contributionCount > 0 && d.date.startsWith(`${year}-`)) {
+        values[d.date] = d.contributionCount;
+      }
+    }
+  }
+  return values;
+}
+
+type Upstream = { days: DailyValues } | { error: string; status: number };
+
+/** 有 token：走官方 GraphQL 接口（每小时 5000 次，不受共享 IP 限流影响） */
+async function viaGraphQl(
+  user: string,
+  year: number,
+  token: string,
+  fetchImpl: typeof fetch,
+): Promise<Upstream> {
+  const res = await fetchImpl("https://api.github.com/graphql", {
+    method: "POST",
+    headers: {
+      authorization: `bearer ${token}`,
+      "content-type": "application/json",
+      "user-agent": "portkey-tools-keyin",
+    },
+    body: JSON.stringify({
+      query: GRAPHQL_QUERY,
+      variables: {
+        login: user,
+        from: `${year}-01-01T00:00:00Z`,
+        to: `${year}-12-31T23:59:59Z`,
+      },
+    }),
+  });
+  if (res.status === 401) {
+    return { error: "本站的 GitHub token 失效了，请联系站长", status: 502 };
+  }
+  if (!res.ok) return { error: `GitHub 返回 HTTP ${res.status}`, status: 502 };
+  const body = (await res.json()) as GraphQlCalendar;
+  if (!body.data?.user) {
+    if (
+      body.errors?.some((e) => e.type === "NOT_FOUND") ||
+      body.data?.user === null
+    ) {
+      return { error: `找不到 GitHub 用户「${user}」`, status: 404 };
+    }
+    return {
+      error: body.errors?.[0]?.message ?? "GitHub 没有返回数据",
+      status: 502,
+    };
+  }
+  return { days: parseGraphQlCalendar(body, year) };
+}
+
+/** 没有 token：抓公开个人主页的日历 HTML（Cloudflare 的共享出口 IP 容易被 GitHub 限流） */
+async function viaHtml(
+  user: string,
+  year: number,
+  fetchImpl: typeof fetch,
+): Promise<Upstream> {
+  const res = await fetchImpl(contributionsUrl(user, year), {
+    headers: { "user-agent": "portkey-tools-keyin", accept: "text/html" },
+  });
+  if (res.status === 404)
+    return { error: `找不到 GitHub 用户「${user}」`, status: 404 };
+  if (res.status === 429) {
+    return {
+      error: "GitHub 暂时限制了本站的访问，请过几分钟再试",
+      status: 503,
+    };
+  }
+  if (!res.ok) return { error: `GitHub 返回 HTTP ${res.status}`, status: 502 };
+  return { days: parseContributions(await res.text()) };
+}
+
 /**
  * Pages Function 的实现（放在这里是为了能单测）：GET ?user=&year= →
- * {user, year, days}。结果在边缘缓存一小时（往年缓存一天）。
+ * {user, year, days}。配置了 token（Pages 环境变量 GITHUB_TOKEN）时用 GraphQL，
+ * 否则抓个人主页。结果在边缘缓存一小时（往年缓存一天）。
  */
 export async function handleGithubRequest(
   request: Request,
   fetchImpl: typeof fetch = fetch,
   cache?: CacheLike,
   now = new Date(),
+  token = "",
 ): Promise<Response> {
   const url = new URL(request.url);
   const user = url.searchParams.get("user") ?? "";
@@ -72,19 +181,15 @@ export async function handleGithubRequest(
     return json({ error: "年份不对" }, 400);
   }
   return cached(cache, `github/${user.toLowerCase()}/${year}`, async () => {
-    let upstream: Response;
+    let r: Upstream;
     try {
-      upstream = await fetchImpl(contributionsUrl(user, year), {
-        headers: { "user-agent": "portkey-tools-keyin", accept: "text/html" },
-      });
+      r = token
+        ? await viaGraphQl(user, year, token, fetchImpl)
+        : await viaHtml(user, year, fetchImpl);
     } catch {
       return json({ error: "暂时连不上 GitHub，请稍后再试" }, 502);
     }
-    if (upstream.status === 404)
-      return json({ error: `找不到 GitHub 用户「${user}」` }, 404);
-    if (!upstream.ok)
-      return json({ error: `GitHub 返回 HTTP ${upstream.status}` }, 502);
-    const days = parseContributions(await upstream.text());
-    return json({ user, year, days }, 200, maxAgeFor(year, now));
+    if ("error" in r) return json({ error: r.error }, r.status);
+    return json({ user, year, days: r.days }, 200, maxAgeFor(year, now));
   });
 }

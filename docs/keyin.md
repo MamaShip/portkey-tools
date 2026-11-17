@@ -99,7 +99,20 @@ rclone copy keyin-fonts-dist wasabi:portkey/tools/keyin/fonts \
 
 LeetCode 的转发（`functions/api/keyin/leetcode.ts`）向 `leetcode.com/graphql` 或 `leetcode.cn/graphql/noj-go/` 查询公开的 `userCalendar.submissionCalendar`，用法和缓存规则与 GitHub 相同。
 
-github.com 不允许浏览器跨域读取贡献日历，所以 `functions/api/keyin/github.ts` 代为请求 `https://github.com/users/<user>/contributions?from=<年>-01-01&to=<年>-12-31`，解析成 `{user, year, days}` 返回，并放进 Cloudflare 边缘缓存（今年 1 小时，往年 1 天）。用户名和年份都先校验格式，不碰任何密钥。计入 Workers 免费额度（每天 10 万次请求）。
+github.com 不允许浏览器跨域读取贡献日历，所以 `functions/api/keyin/github.ts` 代为读取，解析成 `{user, year, days}` 返回，并放进 Cloudflare 边缘缓存（今年 1 小时，往年 1 天）。用户名和年份都先校验格式。计入 Workers 免费额度（每天 10 万次请求）。
+
+读取有两种方式：
+
+- **配置了 `GITHUB_TOKEN`（推荐，线上必须）**：走官方 GraphQL 接口 `contributionsCollection.contributionCalendar`，每小时 5000 次额度。
+- **没有配置**：抓个人主页的日历 HTML（`https://github.com/users/<user>/contributions?from=…&to=…`）。Cloudflare 的出口 IP 是大量网站共用的，GitHub 经常对它返回 HTTP 429，所以只适合本地调试。
+
+### 配置 GITHUB_TOKEN
+
+1. 打开 GitHub 的 [新建 fine-grained token](https://github.com/settings/personal-access-tokens/new)：名字如 `portkey-keyin`，Resource owner 选你自己，Repository access 选 **Public repositories**，**不要勾任何权限**（读公开的贡献日历不需要权限）。过期时间按需要设，过期后要换新的。
+2. Cloudflare 控制台 → Workers & Pages → 本站的 Pages 项目 → Settings → Variables and Secrets → Add：类型选 **Secret**，名字 `GITHUB_TOKEN`，值填刚才的 token。Production 和 Preview 两个环境都要加。
+3. 环境变量只在新部署里生效：加完后重新部署一次（推一个提交，或在 Deployments 里对最新一次点 Retry deployment）。
+
+token 只存在 Cloudflare 的加密变量里，不进仓库、不发给浏览器。
 
 **本地开发**：`pnpm dev` 不运行 Pages Function，GitHub、LeetCode 会报错，其他平台正常。要在本地试它们，可以先 `pnpm build`，再用 Cloudflare 的 `wrangler pages dev dist` 同时起静态站和函数。
 

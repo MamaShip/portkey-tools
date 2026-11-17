@@ -232,4 +232,91 @@ describe("GitHub", () => {
     );
     expect(down.status).toBe(502);
   });
+  it("没有 token 时被限流：给出能看懂的提示", async () => {
+    const limited = await handleGithubRequest(
+      req("user=ok&year=2026"),
+      upstream(429) as unknown as typeof fetch,
+      undefined,
+      now,
+    );
+    expect(limited.status).toBe(503);
+    expect((await limited.json()).error).toMatch(/限制/);
+  });
+
+  it("有 token 时走 GraphQL", async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const calendar = {
+      data: {
+        user: {
+          contributionsCollection: {
+            contributionCalendar: {
+              weeks: [
+                {
+                  contributionDays: [
+                    { date: "2024-12-29", contributionCount: 9 },
+                    { date: "2025-01-01", contributionCount: 0 },
+                    { date: "2025-01-02", contributionCount: 4 },
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
+    };
+    const fetchImpl = (async (url: string, init: RequestInit) => {
+      calls.push({ url, init });
+      return new Response(JSON.stringify(calendar));
+    }) as unknown as typeof fetch;
+    const res = await handleGithubRequest(
+      req("user=octocat&year=2025"),
+      fetchImpl,
+      undefined,
+      now,
+      "tok",
+    );
+    expect(await res.json()).toEqual({
+      user: "octocat",
+      year: 2025,
+      days: { "2025-01-02": 4 },
+    });
+    expect(calls[0].url).toBe("https://api.github.com/graphql");
+    expect(calls[0].init.headers).toMatchObject({
+      authorization: "bearer tok",
+    });
+    const body = JSON.parse(String(calls[0].init.body));
+    expect(body.variables).toEqual({
+      login: "octocat",
+      from: "2025-01-01T00:00:00Z",
+      to: "2025-12-31T23:59:59Z",
+    });
+  });
+
+  it("GraphQL：找不到用户、token 失效", async () => {
+    const reply = (body: unknown, status = 200) =>
+      (async () =>
+        new Response(JSON.stringify(body), {
+          status,
+        })) as unknown as typeof fetch;
+    const missing = await handleGithubRequest(
+      req("user=ghost&year=2025"),
+      reply({
+        data: { user: null },
+        errors: [{ type: "NOT_FOUND", message: "x" }],
+      }),
+      undefined,
+      now,
+      "tok",
+    );
+    expect(missing.status).toBe(404);
+    const bad = await handleGithubRequest(
+      req("user=ok&year=2025"),
+      reply({ message: "Bad credentials" }, 401),
+      undefined,
+      now,
+      "tok",
+    );
+    expect(bad.status).toBe(502);
+    expect((await bad.json()).error).toMatch(/token/);
+  });
 });
