@@ -81,7 +81,7 @@ OpenFreeMap 本就是基于 OpenStreetMap 的开放数据、**鼓励自托管**�
 
 ### 1. 仓库能跑
 
-能 `pnpm dev` 起本地站点就说明 Node 22 / pnpm 都就绪了。没有的话见 README「本地开发」。
+能 `pnpm dev` 起本地站点就说明 Node 22 / pnpm 都就绪了。没有的话见 [`development.md`](./development.md)「快速开始」。
 
 ### 2. rclone 已安装并配好 `wasabi` 远端
 

@@ -55,4 +55,4 @@ pnpm check && pnpm lint && pnpm format:check && pnpm validate && pnpm test
 
 - **代码**按 **[AGPL-3.0-or-later](./LICENSE)** 发布；提交 PR 即表示你同意你的贡献以此许可发布。
 - **配准标注数据**（`src/tools/cd-old-map/data/annotations/*.json`）以 **CC0** 发布；许可全文与说明见 **[`src/tools/cd-old-map/data/annotations/README.md`](./src/tools/cd-old-map/data/annotations/README.md)**。
-- 详见 [`README.md`](./README.md) 的「许可（分层）」一节。
+- 详见 [`docs/licensing.md`](./docs/licensing.md)。

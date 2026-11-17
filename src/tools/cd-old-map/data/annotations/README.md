@@ -63,4 +63,4 @@
 | **历史地图图像**                    | 公共领域（不在本仓库，逐图标注出处） |
 | **现代底图**                        | © OpenStreetMap / OpenFreeMap，需保留署名 |
 
-详见仓库根 [`README.md`](../../../../../README.md) 的「许可（分层）」一节。
+详见 [`docs/licensing.md`](../../../../../docs/licensing.md)。
