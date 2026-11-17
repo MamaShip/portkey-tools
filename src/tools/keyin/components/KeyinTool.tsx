@@ -2,12 +2,13 @@
 // Copyright (C) 2026 MamaShip
 //
 // 刻印：把一年的每日使用记录做成可以 3D 打印的模型（STL）。React island 主体。
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { yearsOf, summarize } from "../sources/daily";
 import type { Scale, SkylineInput } from "../model/skyline";
 import { platformById, PLATFORMS } from "../platforms";
 import type { LoadedData } from "../platforms/types";
-import { PlatformPanel, PlatformPicker } from "./PlatformPanel";
+import { keyinBugUrl } from "../feedback";
+import { PlatformPanel, PlatformPicker, ReportLink } from "./PlatformPanel";
 import InfoTip from "./InfoTip";
 import Preview from "./Preview";
 import { useBuilder } from "./useBuilder";
@@ -71,6 +72,13 @@ export default function KeyinTool() {
         : null,
     [data, activeYear, effectiveLabel, name, effectiveScale],
   );
+  // 页面底部的「反馈问题」按钮（静态 HTML）跟着当前平台预填
+  useEffect(() => {
+    document
+      .getElementById("keyin-report")
+      ?.setAttribute("href", keyinBugUrl({ platform: platform.name }));
+  }, [platform.name]);
+
   const build = useBuilder(input, lang || null);
   const summary =
     data && activeYear ? summarize(data.values, activeYear) : null;
@@ -117,7 +125,13 @@ export default function KeyinTool() {
           </p>
         )}
         {data && !data.year && !years.length && (
-          <p className="keyin-error">没有读到任何记录。</p>
+          <p className="keyin-error">
+            没有读到任何记录。
+            <ReportLink
+              platform={platform.name}
+              problem="读取成功，但没有读到任何记录。"
+            />
+          </p>
         )}
       </section>
 
@@ -234,6 +248,15 @@ export default function KeyinTool() {
             </p>
           )}
         </div>
+        {build.kind === "error" && (
+          <p className="keyin-error">
+            模型没能生成。
+            <ReportLink
+              platform={platform.name}
+              problem={`生成模型时出错：${build.message}`}
+            />
+          </p>
+        )}
         {build.kind === "done" && (
           <div className="keyin-actions">
             <button

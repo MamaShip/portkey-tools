@@ -1,4 +1,7 @@
-# Issue 选择页配置。模板文件名即 SourcesModal 里 ?template= 的值。
+# Issue 选择页配置。模板文件名即站内链接里 ?template= 的值，改名会让已分享的链接失效：
+#   bug / new-map / calibration —— 成都老地图（SourcesModal）
+#   keyin-bug / keyin-platform —— 刻印（src/tools/keyin/feedback.ts）
+#   tool-request —— 首页「许愿池」
 # 留 blank_issues_enabled: true 作为逃生口（其他主题仍可开空白 issue）；
 # 想强制走模板可改 false。
 blank_issues_enabled: true

@@ -370,3 +370,10 @@
   line-height: 1.5;
   overflow-x: auto;
 }
+
+/* —— 报错旁的反馈链接 —— */
+.keyin-report {
+  margin-left: 0.6rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}

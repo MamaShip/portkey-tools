@@ -3,6 +3,7 @@
 //
 // 第一步：选平台 → 看说明 → 填表单读数据。
 import { useRef, useState } from "react";
+import { keyinBugUrl } from "../feedback";
 import { PLATFORMS } from "../platforms";
 import {
   GROUPS,
@@ -55,6 +56,26 @@ export function PlatformPicker({
         );
       })}
     </div>
+  );
+}
+
+/** 报错旁的「反馈这个问题」：带上平台和报错原文跳到 GitHub */
+export function ReportLink({
+  platform,
+  problem,
+}: {
+  platform: string;
+  problem: string;
+}) {
+  return (
+    <a
+      className="keyin-report"
+      href={keyinBugUrl({ platform, problem })}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      反馈这个问题
+    </a>
   );
 }
 
@@ -141,6 +162,7 @@ export function PlatformPanel({
       {error && (
         <p className="keyin-error" role="alert">
           {error}
+          <ReportLink platform={platform.name} problem={error} />
         </p>
       )}
     </div>

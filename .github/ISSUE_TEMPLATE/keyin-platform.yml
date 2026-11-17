@@ -1,0 +1,56 @@
+name: 🧩 刻印：想支持新的平台
+description: 希望刻印能读取某个 App 或网站的数据
+title: "[刻印] 新平台："
+labels: ["keyin", "platform-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        刻印能支持的平台需要满足下面任意一条（**需要你把密码或登录 Cookie 交给网站的不行**）：
+        - 能**导出文件**（CSV、JSON、XML、GPX 等），比如 Apple 健康、Strava、Google Takeout；
+        - 有**公开页面**能看到每天的数据，比如 GitHub、LeetCode 的个人主页；
+        - 有**个人 token** 能调用的官方接口，比如 Notion、Todoist。
+  - type: input
+    id: platform
+    attributes:
+      label: 平台名称
+      placeholder: 例：微信读书 / Kindle / 多邻国
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: 想统计什么
+      description: 每天的什么数字适合做成柱子？
+      placeholder: 例：每天的阅读时长；每天背的单词数。
+    validations:
+      required: true
+  - type: dropdown
+    id: access
+    attributes:
+      label: 数据怎么拿到
+      description: 不确定就选最后一项。
+      options:
+        - 可以导出文件
+        - 公开页面上能看到
+        - 有官方接口和个人 token
+        - 不确定
+    validations:
+      required: true
+  - type: textarea
+    id: how
+    attributes:
+      label: 导出或获取的方法（可选）
+      description: 在哪里导出、导出的文件长什么样；或者公开页面、接口文档的链接。
+      placeholder: |
+        例：App 里「我的 → 设置 → 导出数据」，会得到一个 CSV，
+        前几行是：日期,时长 / 2025-01-01,35 ……
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认
+      options:
+        - label: 我已搜索过现有 issue，没有重复的请求。
+          required: true
+        - label: 我贴出的样例里没有 token、密码或不想公开的个人数据。
+          required: true

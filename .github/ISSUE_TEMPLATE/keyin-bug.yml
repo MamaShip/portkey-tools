@@ -1,0 +1,59 @@
+name: 🐛 刻印：问题反馈
+description: 刻印（3D 打印模型生成）读不到数据、模型不对、页面出错等问题
+title: "[刻印] "
+labels: ["keyin", "bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！请尽量写清楚，方便复现。
+        **请不要上传你的数据文件、token，或带有个人信息的截图**——需要样例时，删掉敏感内容、只留几行就够了。
+  - type: input
+    id: platform
+    attributes:
+      label: 数据来源
+      description: 在「选择数据」里选的是哪个平台。从页面上的「反馈问题」按钮进来时会自动填好。
+      placeholder: 例：Apple 健康 / GitHub / 自己的数据
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 遇到了什么问题
+      description: 页面上显示的报错原文、读出来的数据不对、模型哪里不对……
+      placeholder: 例：选了 export.xml 之后一直显示「正在读取」，等了五分钟也没反应。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 怎么操作能重现（可选）
+      placeholder: |
+        1. 选「Strava」
+        2. 选择 activities.csv
+        3. 统计方式选「次数」
+        4. 看到 ……
+  - type: textarea
+    id: expected
+    attributes:
+      label: 你期望的结果（可选）
+      placeholder: 例：2025 年应该有 120 天有记录，页面上只显示了 30 天。
+  - type: input
+    id: env
+    attributes:
+      label: 浏览器和设备（可选）
+      placeholder: 例：Chrome 130 / Windows 11；Safari / iPhone 15
+  - type: textarea
+    id: extra
+    attributes:
+      label: 截图 / 样例数据（可选）
+      description: 可以贴页面截图，或数据文件里出问题的那几行（先删掉个人信息）。
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认
+      options:
+        - label: 我已搜索过现有 issue，没有重复。
+          required: true
+        - label: 我没有贴出 token、密码或不想公开的个人数据。
+          required: true

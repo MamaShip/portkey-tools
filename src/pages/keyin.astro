@@ -3,6 +3,7 @@
 // Copyright (C) 2026 MamaShip
 import BaseLayout from "../site/BaseLayout.astro";
 import KeyinTool from "../tools/keyin/components/KeyinTool.tsx";
+import { keyinBugUrl, keyinPlatformUrl } from "../tools/keyin/feedback";
 import oflUrl from "../tools/keyin/text/fonts/OFL.txt?url";
 ---
 
@@ -23,6 +24,30 @@ import oflUrl from "../tools/keyin/text/fonts/OFL.txt?url";
   <KeyinTool client:only="react">
     <p slot="fallback" class="loading">正在加载…</p>
   </KeyinTool>
+
+  <section class="feedback" aria-labelledby="feedback-title">
+    <h2 id="feedback-title">问题反馈</h2>
+    <p>
+      读不到数据、模型不对，或者想让刻印支持更多平台，欢迎到 GitHub 提一个
+      issue（需要 GitHub 账号）。点下面的按钮会打开填好一部分的反馈表。
+    </p>
+    <div class="feedback-actions">
+      {/* href 会随当前选中的平台更新（KeyinTool 里设置），方便预填 */}
+      <a
+        id="keyin-report"
+        class="feedback-btn feedback-primary"
+        href={keyinBugUrl()}
+        target="_blank"
+        rel="noopener noreferrer">反馈问题</a
+      >
+      <a
+        class="feedback-btn"
+        href={keyinPlatformUrl}
+        target="_blank"
+        rel="noopener noreferrer">想支持新平台</a
+      >
+    </div>
+  </section>
 
   <section class="about">
     <h2>来源与许可</h2>
@@ -70,5 +95,52 @@ import oflUrl from "../tools/keyin/text/fonts/OFL.txt?url";
   .about h2 {
     font-size: 1rem;
     margin: 1.5rem 0 0.5rem;
+  }
+  .feedback {
+    margin-top: 2.5rem;
+    max-width: 44rem;
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--radius);
+    border: 1px dashed rgba(236, 122, 69, 0.45);
+    font-size: 0.92rem;
+  }
+  .feedback h2 {
+    font-size: 1rem;
+    margin: 0 0 0.4rem;
+  }
+  .feedback p {
+    margin: 0;
+    color: var(--muted);
+  }
+  .feedback-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.85rem;
+  }
+  .feedback-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    border: 1px solid var(--accent);
+    color: var(--accent-ink);
+    background: #fff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .feedback-btn:hover {
+    background: rgba(236, 122, 69, 0.08);
+  }
+  .feedback-primary {
+    color: #fff;
+    background: var(--accent);
+  }
+  .feedback-primary:hover {
+    background: var(--accent-ink);
+  }
+  .feedback-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 </style>
