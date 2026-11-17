@@ -8,14 +8,15 @@ import oflUrl from "../tools/keyin/text/fonts/OFL.txt?url";
 
 <BaseLayout
   title="刻印"
-  description="把你一年的 GitHub 贡献、Claude Code token 用量、ChatGPT 消息等每日记录，做成可以 3D 打印的模型。"
+  description="把你一年的 GitHub 贡献、LeetCode 刷题、Claude Code token、跑步距离、观影记录等每日数据，做成可以 3D 打印的模型。支持 17 个平台。"
   wide
 >
   <header class="intro">
     <h1>刻印</h1>
     <p>
-      把你一年的每日使用记录做成可以 3D
-      打印的模型：一天一根柱子，高度对应当天的用量，底座正面压印平台名、你的名字和年份。
+      把你一年的每日记录做成可以 3D
+      打印的模型：一天一根柱子，高度对应当天的数值，底座正面压印平台名、你的名字和年份。支持编程、AI、运动健康、影音阅读、笔记任务、游戏等
+      17 个平台，也可以用你自己的 JSON / CSV。
     </p>
   </header>
 
@@ -27,9 +28,10 @@ import oflUrl from "../tools/keyin/text/fonts/OFL.txt?url";
     <h2>说明</h2>
     <ul>
       <li>
-        <strong>隐私：</strong>Claude Code、ChatGPT
-        和你自己的文件都只在浏览器里读取和计算，不会上传。GitHub
-        的公开贡献日历由本站服务器转发请求。
+        <strong>隐私：</strong>导出文件都只在浏览器里读取和计算，不会上传。需要
+        token 的平台（NeoDB、Notion、Todoist 等）由你的浏览器直接请求，token
+        不经过本站、不保存。GitHub 和 LeetCode
+        的公开数据由本站服务器转发。每个平台的说明里都写明了数据去向。
       </li>
       <li>
         <strong>文字：</strong
@@ -42,8 +44,9 @@ import oflUrl from "../tools/keyin/text/fonts/OFL.txt?url";
         × 30 mm，柱子高 1–21 mm。
       </li>
       <li>
-        <strong>更多数据源：</strong>GitLab、Anthropic / OpenAI
-        组织用量等需要密钥或登录的数据，请用命令行版 keyin。
+        <strong>更多数据源：</strong>GitLab、B 站、微信读书等需要登录 Cookie
+        或密码的平台，以及 Anthropic / OpenAI
+        组织用量，网页版不支持，请用命令行版 keyin。
       </li>
     </ul>
     <h2>来源与许可</h2>

@@ -25,7 +25,7 @@ test("读 JSON、生成并下载 STL", async ({ page }) => {
   });
 
   await page.goto("/keyin");
-  await page.getByRole("tab", { name: /自己的数据/ }).click();
+  await page.getByRole("radio", { name: "自己的数据" }).click();
   await page.locator(".keyin-data input[type=file]").setInputFiles({
     name: "steps.json",
     mimeType: "application/json",
@@ -44,7 +44,7 @@ test("读 JSON、生成并下载 STL", async ({ page }) => {
     page.waitForEvent("download"),
     button.click(),
   ]);
-  expect(download.suggestedFilename()).toBe("keyin_file_2025.stl");
+  expect(download.suggestedFilename()).toBe("keyin_custom_2025.stl");
 
   expect(pageErrors, `未捕获异常：\n${pageErrors.join("\n")}`).toEqual([]);
 });

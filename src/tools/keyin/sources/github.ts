@@ -6,6 +6,7 @@
 // 所以由本站的 Pages Function（functions/api/keyin/github.ts）代为请求并解析。
 
 import type { DailyValues } from "./daily";
+import { cached, fetchProxy, json, maxAgeFor, type CacheLike } from "./edge";
 
 export const GITHUB_USER =
   /^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$/;
@@ -42,27 +43,11 @@ export function contributionsUrl(user: string, year: number) {
   return `https://github.com/users/${user}/contributions?from=${year}-01-01&to=${year}-12-31`;
 }
 
-/** 本站代理接口的客户端 */
-export async function fetchGithub(
-  user: string,
-  year: number,
-): Promise<DailyValues> {
-  const res = await fetch(
-    `/api/keyin/github?user=${encodeURIComponent(user)}&year=${encodeURIComponent(year)}`,
-  );
-  let body: { days?: DailyValues; error?: string } = {};
-  try {
-    body = await res.json();
-  } catch {
-    // 本地 `pnpm dev` 没有 Pages Function，会拿到 HTML 404
-  }
-  if (!res.ok || !body.days) {
-    throw new Error(body.error ?? `GitHub 数据获取失败（HTTP ${res.status}）`);
-  }
-  return body.days;
+/** 浏览器端：经本站转发读取 */
+export function fetchGithub(user: string, year: number): Promise<DailyValues> {
+  const q = new URLSearchParams({ user, year: String(year) });
+  return fetchProxy(`/api/keyin/github?${q}`, "GitHub");
 }
-
-type CacheLike = Pick<Cache, "match" | "put">;
 
 /**
  * Pages Function 的实现（放在这里是为了能单测）：GET ?user=&year= →
@@ -77,14 +62,6 @@ export async function handleGithubRequest(
   const url = new URL(request.url);
   const user = url.searchParams.get("user") ?? "";
   const year = Number(url.searchParams.get("year"));
-  const json = (body: unknown, status: number, maxAge = 0) =>
-    new Response(JSON.stringify(body), {
-      status,
-      headers: {
-        "content-type": "application/json; charset=utf-8",
-        "cache-control": maxAge ? `public, max-age=${maxAge}` : "no-store",
-      },
-    });
   if (!GITHUB_USER.test(user))
     return json({ error: "GitHub 用户名格式不对" }, 400);
   if (
@@ -94,26 +71,20 @@ export async function handleGithubRequest(
   ) {
     return json({ error: "年份不对" }, 400);
   }
-  const key = new Request(
-    `https://keyin.cache/github/${user.toLowerCase()}/${year}`,
-  );
-  const hit = await cache?.match(key);
-  if (hit) return hit;
-  let upstream: Response;
-  try {
-    upstream = await fetchImpl(contributionsUrl(user, year), {
-      headers: { "user-agent": "portkey-tools-keyin", accept: "text/html" },
-    });
-  } catch {
-    return json({ error: "暂时连不上 GitHub，请稍后再试" }, 502);
-  }
-  if (upstream.status === 404)
-    return json({ error: `找不到 GitHub 用户「${user}」` }, 404);
-  if (!upstream.ok)
-    return json({ error: `GitHub 返回 HTTP ${upstream.status}` }, 502);
-  const days = parseContributions(await upstream.text());
-  const maxAge = year < now.getUTCFullYear() ? 86_400 : 3_600;
-  const res = json({ user, year, days }, 200, maxAge);
-  await cache?.put(key, res.clone());
-  return res;
+  return cached(cache, `github/${user.toLowerCase()}/${year}`, async () => {
+    let upstream: Response;
+    try {
+      upstream = await fetchImpl(contributionsUrl(user, year), {
+        headers: { "user-agent": "portkey-tools-keyin", accept: "text/html" },
+      });
+    } catch {
+      return json({ error: "暂时连不上 GitHub，请稍后再试" }, 502);
+    }
+    if (upstream.status === 404)
+      return json({ error: `找不到 GitHub 用户「${user}」` }, 404);
+    if (!upstream.ok)
+      return json({ error: `GitHub 返回 HTTP ${upstream.status}` }, 502);
+    const days = parseContributions(await upstream.text());
+    return json({ user, year, days }, 200, maxAgeFor(year, now));
+  });
 }

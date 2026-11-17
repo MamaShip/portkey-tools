@@ -5,11 +5,9 @@
 import { useMemo, useState } from "react";
 import { yearsOf, summarize } from "../sources/daily";
 import type { Scale, SkylineInput } from "../model/skyline";
-import DataPanel, {
-  SOURCES,
-  type LoadedData,
-  type SourceId,
-} from "./DataPanel";
+import { platformById, PLATFORMS } from "../platforms";
+import type { LoadedData } from "../platforms/types";
+import { PlatformPanel, PlatformPicker } from "./PlatformPanel";
 import Preview from "./Preview";
 import { useBuilder } from "./useBuilder";
 import "./keyin.css";
@@ -44,7 +42,8 @@ function downloadStl(stl: ArrayBuffer, name: string) {
 }
 
 export default function KeyinTool() {
-  const [source, setSource] = useState<SourceId>("github");
+  const [platformId, setPlatformId] = useState(PLATFORMS[0].id);
+  const platform = platformById(platformId) ?? PLATFORMS[0];
   const [data, setData] = useState<LoadedData | null>(null);
   const [year, setYear] = useState<number | null>(null);
   const [name, setName] = useState("");
@@ -75,8 +74,8 @@ export default function KeyinTool() {
   const summary =
     data && activeYear ? summarize(data.values, activeYear) : null;
 
-  const pickSource = (id: SourceId) => {
-    setSource(id);
+  const pickPlatform = (id: string) => {
+    setPlatformId(id);
     setData(null);
     setLabel(null);
     setScale(null);
@@ -89,21 +88,12 @@ export default function KeyinTool() {
         <h2 className="keyin-step">
           <span>1</span>选择数据
         </h2>
-        <div className="keyin-tabs" role="tablist" aria-label="数据源">
-          {SOURCES.map((s) => (
-            <button
-              key={s.id}
-              role="tab"
-              aria-selected={source === s.id}
-              className="keyin-tab"
-              onClick={() => pickSource(s.id)}
-            >
-              <strong>{s.title}</strong>
-              <small>{s.hint}</small>
-            </button>
-          ))}
-        </div>
-        <DataPanel key={source} source={source} onLoaded={setData} />
+        <PlatformPicker value={platformId} onChange={pickPlatform} />
+        <PlatformPanel
+          key={platformId}
+          platform={platform}
+          onLoaded={setData}
+        />
         {data && summary && (
           <p className="keyin-summary">
             {summary.activeDays
@@ -112,7 +102,7 @@ export default function KeyinTool() {
             {data.note && <span className="keyin-note">{data.note}</span>}
           </p>
         )}
-        {data && !years.length && (
+        {data && !data.year && !years.length && (
           <p className="keyin-error">没有读到任何记录。</p>
         )}
       </section>
@@ -207,10 +197,7 @@ export default function KeyinTool() {
             <button
               className="keyin-button keyin-primary"
               onClick={() =>
-                downloadStl(
-                  build.stl,
-                  `keyin_${data?.source ?? "data"}_${activeYear}.stl`,
-                )
+                downloadStl(build.stl, `keyin_${platformId}_${activeYear}.stl`)
               }
             >
               下载 STL（{(build.stl.byteLength / 1e6).toFixed(1)} MB）
