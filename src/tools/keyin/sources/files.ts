@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
-// 你自己的数据：JSON {"YYYY-MM-DD": 数值} 或带日期列的 CSV。移植自 keyin/sources/files.py。
+// 你自己的数据：JSON {"YYYY-MM-DD": 数值} 或带日期列的 CSV。JSON 部分参考 GitHubPoster 的 json_loader.py。
 
 import { addTo, type DailyValues } from "./daily";
 

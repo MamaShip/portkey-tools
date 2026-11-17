@@ -25,48 +25,24 @@ import oflUrl from "../tools/keyin/text/fonts/OFL.txt?url";
   </KeyinTool>
 
   <section class="about">
-    <h2>说明</h2>
-    <ul>
-      <li>
-        <strong>隐私：</strong>导出文件都只在浏览器里读取和计算，不会上传。需要
-        token 的平台（NeoDB、Notion、Todoist 等）由你的浏览器直接请求，token
-        不经过本站、不保存。GitHub 和 LeetCode
-        的公开数据由本站服务器转发。每个平台的说明里都写明了数据去向。
-      </li>
-      <li>
-        <strong>文字：</strong
-        >几乎所有语言都能印，包括中日韩、阿拉伯文、印地文、泰文和 emoji。
-        西文字体随页面加载；其他文字的字体在第一次用到时下载并缓存在浏览器里，中日韩字体约
-        18 MB。
-      </li>
-      <li>
-        <strong>打印：</strong>模型是闭合的流形网格，切片软件不会报错。底座 150
-        × 30 mm，柱子高 1–21 mm。
-      </li>
-      <li>
-        <strong>更多数据源：</strong>GitLab、B 站、微信读书等需要登录 Cookie
-        或密码的平台，以及 Anthropic / OpenAI
-        组织用量，网页版不支持，请用命令行版 keyin。
-      </li>
-    </ul>
     <h2>来源与许可</h2>
     <p>
-      模型生成移植自开源项目 keyin（MIT 协议），keyin 衍生自
-      <a
+      刻印衍生自 <a
         href="https://github.com/yihong0618/GitHubPoster"
         target="_blank"
         rel="noopener noreferrer">GitHubPoster</a
-      >（yihong0618，MIT 协议）的 skyline 功能。文字使用 Google 的
-      <a
+      >（yihong0618，MIT 协议）：skyline
+      模型的设计和多数平台的数据读取方式都来自它。
+    </p>
+    <p>
+      文字使用 Google 的 <a
         href="https://notofonts.github.io/"
         target="_blank"
         rel="noopener noreferrer">Noto</a
-      >
-      字体，未经修改，许可为 <a href={oflUrl} target="_blank"
+      > 字体，未经修改，许可为 <a href={oflUrl} target="_blank"
         >SIL Open Font License 1.1</a
-      >。
+      >。你生成的模型归你所有。
     </p>
-    <p>你生成的模型归你所有。</p>
   </section>
 </BaseLayout>
 
@@ -94,12 +70,5 @@ import oflUrl from "../tools/keyin/text/fonts/OFL.txt?url";
   .about h2 {
     font-size: 1rem;
     margin: 1.5rem 0 0.5rem;
-  }
-  .about ul {
-    margin: 0;
-    padding-left: 1.2rem;
-  }
-  .about li + li {
-    margin-top: 0.35rem;
   }
 </style>

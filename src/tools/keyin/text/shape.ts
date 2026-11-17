@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
-// 文字 → 像素掩码，任何文字都行。移植自 keyin/text/shape.py：
+// 文字 → 像素掩码，任何文字都行：
 // 1. 分段：切成「同一字体、同一嵌入层级」的段
 // 2. 重排：按 Unicode 双向算法把段排成视觉顺序（简化到段级）
 // 3. 整形：HarfBuzz 处理连写（阿拉伯文）、重排（印度系）、组合符、字距

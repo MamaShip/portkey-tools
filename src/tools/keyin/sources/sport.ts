@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2021 yihong (GitHubPoster, https://github.com/yihong0618/GitHubPoster)
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
 // 运动与睡眠：GPX 轨迹、Strava 导出的 activities.csv、AutoSleep 导出的 CSV。
 // GPX、AutoSleep 移植自 GitHubPoster 的 gpx_loader.py、autosleep_loader.py。

@@ -12,6 +12,7 @@ coverage/
 pnpm-lock.yaml
 tiles/
 keyin-fonts-dist/
+.font-cache/
 *.jpg
 
 # 刻印的字体清单：由 keyin 仓库的脚本生成，原样拷贝（压缩成一行）

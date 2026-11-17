@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2021 yihong (GitHubPoster, https://github.com/yihong0618/GitHubPoster)
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
-// 模型尺寸，单位毫米。与 keyin（Python 版）的 keyin/model/config.py 保持一致。
+// 模型尺寸，单位毫米。底座与柱子的尺寸沿用 GitHubPoster 的 skyline。
 
 export const BASE_LENGTH = 150;
 export const BASE_TOP_LENGTH = 143;

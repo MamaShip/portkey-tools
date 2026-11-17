@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2021 yihong (GitHubPoster, https://github.com/yihong0618/GitHubPoster)
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
-// 直接构造三角网格（不做体素采样），移植自 keyin/model/mesh.py。
+// 直接构造三角网格（GitHubPoster 的 skyline 原本用体素采样，这里改写为直接构造）。
 // 这里产出的每个实体单独都是闭合的二维流形：每条边恰好被两个三角形共用。
 // 实体之间可以相互重叠（柱子和文字嵌进底座），切片软件会合并重叠的壳，
 // 但会拒绝非流形边。
@@ -157,7 +157,7 @@ export function closeDiagonals(mask: Mask): Mask {
   const { width: w, height: h } = mask;
   const m = mask.data.slice();
   for (;;) {
-    // 与 Python 版一致：先找出本轮所有对角对，再统一补
+    // 先找出本轮所有对角对，再统一补
     const fill: number[] = [];
     for (let r = 0; r + 1 < h; r++) {
       for (let c = 0; c + 1 < w; c++) {

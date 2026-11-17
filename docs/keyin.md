@@ -7,7 +7,7 @@ Copyright (C) 2026 MamaShip
 
 路由 `/keyin`。把一年的每日记录做成可以 3D 打印的 STL：一天一根柱子，底座斜面压印平台名、名字和年份。支持 17 个平台（见下表），全部在浏览器里完成，只有 GitHub 和 LeetCode 的公开日历经 Pages Function 转发。
 
-模型生成移植自开源项目 keyin（Python，MIT），keyin 衍生自 [GitHubPoster](https://github.com/yihong0618/GitHubPoster)（MIT）。
+刻印衍生自 [GitHubPoster](https://github.com/yihong0618/GitHubPoster)（yihong0618，MIT）：skyline 模型的设计、多数平台的数据读取方式都来自它。在此基础上重写了网格生成（直接构造、保证流形）、换成了支持几乎所有文字的字体与排版，并把一切搬到浏览器里。
 
 ## 数据流
 
@@ -28,19 +28,19 @@ Preview.tsx（three.js，按需加载）     下载按钮（Blob → keyin_<平�
 
 ## 目录
 
-| 路径                                | 是什么                                                                                        |
-| ----------------------------------- | --------------------------------------------------------------------------------------------- |
-| `src/tools/keyin/model/`            | 网格与 skyline 模型（从 keyin 移植，MIT）。`config.ts` 是所有尺寸。                           |
-| `src/tools/keyin/text/`             | 字体清单、下载缓存、双向文字、HarfBuzz 排版与填充（MIT）。                                    |
-| `src/tools/keyin/text/catalog.json` | 169 个 Noto 字体的清单（固定提交 + sha256 + 覆盖范围），由 keyin 仓库的脚本生成，原样拷贝。   |
-| `src/tools/keyin/text/fonts/`       | 随站点发布的 Noto Sans 与 OFL 许可。                                                          |
-| `src/tools/keyin/sources/`          | 各平台的解析与请求（纯函数）；`github.ts`、`leetcode.ts` 里还有 Pages Function 的实现。       |
-| `src/tools/keyin/platforms/`        | 每个平台一个文件：说明 + 表单；`index.ts` 登记顺序，`types.ts` 定义接口与分组。               |
-| `src/tools/keyin/components/`       | React island：`KeyinTool`（主体）、`PlatformPanel`（选择器 + 说明）、`Preview`、样式等。      |
-| `src/tools/keyin/worker.ts`         | 模型 worker；消息格式在 `protocol.ts`。                                                       |
-| `functions/api/keyin/`              | Pages Function：`github?user=&year=`、`leetcode?user=&year=&site=com\|cn`。                   |
-| `scripts/keyin/stage-fonts.ts`      | `pnpm keyin:stage-fonts`：下载并校验全部字体，摆成 Wasabi 上的目录结构。                      |
-| `tests/keyin/`、`e2e/keyin/`        | 单测（网格流形、双向文字、各平台解析、接口翻页、两个转发）与 e2e 冒烟（读 JSON → 下载 STL）。 |
+| 路径                                | 是什么                                                                                                  |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `src/tools/keyin/model/`            | 网格与 skyline 模型（衍生自 GitHubPoster，MIT）。`config.ts` 是所有尺寸。                               |
+| `src/tools/keyin/text/`             | 字体清单、下载缓存、双向文字、HarfBuzz 排版与填充（MIT）。                                              |
+| `src/tools/keyin/text/catalog.json` | 169 个 Noto 字体的清单（固定提交 + sha256 + 覆盖范围），由 `scripts/keyin/build-font-catalog.ts` 生成。 |
+| `src/tools/keyin/text/fonts/`       | 随站点发布的 Noto Sans 与 OFL 许可。                                                                    |
+| `src/tools/keyin/sources/`          | 各平台的解析与请求（纯函数）；`github.ts`、`leetcode.ts` 里还有 Pages Function 的实现。                 |
+| `src/tools/keyin/platforms/`        | 每个平台一个文件：说明 + 表单；`index.ts` 登记顺序，`types.ts` 定义接口与分组。                         |
+| `src/tools/keyin/components/`       | React island：`KeyinTool`（主体）、`PlatformPanel`（选择器 + 说明）、`Preview`、样式等。                |
+| `src/tools/keyin/worker.ts`         | 模型 worker；消息格式在 `protocol.ts`。                                                                 |
+| `functions/api/keyin/`              | Pages Function：`github?user=&year=`、`leetcode?user=&year=&site=com\|cn`。                             |
+| `scripts/keyin/stage-fonts.ts`      | `pnpm keyin:stage-fonts`：下载并校验全部字体，摆成 Wasabi 上的目录结构。                                |
+| `tests/keyin/`、`e2e/keyin/`        | 单测（网格流形、双向文字、各平台解析、接口翻页、两个转发）与 e2e 冒烟（读 JSON → 下载 STL）。           |
 
 ## 平台
 
@@ -64,7 +64,7 @@ Preview.tsx（three.js，按需加载）     下载按钮（Blob → keyin_<平�
 | Dota 2            | 游戏       | OpenDota API，浏览器直连                       | 每天比赛场数                   |
 | 自己的数据        | 通用       | JSON 或 CSV                                    | 你给的数值                     |
 
-**为什么其他平台没有上网页版**：B 站、Kindle、微信读书、即刻、佳明、Forest、Switch、Nike Run Club、开心词场、OpenLanguage、多邻国在 GitHubPoster 里都要登录 Cookie 或密码，网页版要让用户把它们交给本站，不做；佳明等运动数据可以导出 GPX 用上面的「GPX 轨迹」。扇贝的接口已经要求登录。GitLab 继续只在命令行版 keyin 里支持。
+**为什么其他平台没有上网页版**：B 站、Kindle、微信读书、即刻、佳明、Forest、Switch、Nike Run Club、开心词场、OpenLanguage、多邻国在 GitHubPoster 里都要登录 Cookie 或密码，网页版要让用户把它们交给本站，不做；佳明等运动数据可以导出 GPX 用上面的「GPX 轨迹」。扇贝的接口已经要求登录。GitLab 自建实例同样需要登录，gitlab.com 也不允许跨域访问，暂不支持。
 
 ### 新增一个平台
 
@@ -93,7 +93,7 @@ rclone copy keyin-fonts-dist wasabi:portkey/tools/keyin/fonts \
 
 ### 更新字体清单
 
-`catalog.json` 由 keyin 仓库的 `tools/build_font_catalog.py` 生成。更新后把新文件拷到 `src/tools/keyin/text/`，重新跑上面的上传步骤（旧提交号目录可以留着，不影响新版本）。
+`catalog.json` 由 `pnpm keyin:build-font-catalog` 生成（`scripts/keyin/build-font-catalog.ts`，下载缓存在 `.font-cache/`）。要升级字体，先改脚本里固定的上游提交号，重新生成清单，再跑上面的准备与上传步骤（旧提交号目录可以留着，不影响新版本）。
 
 ## GitHub 与 LeetCode 转发
 
@@ -118,6 +118,6 @@ token 只存在 Cloudflare 的加密变量里，不进仓库、不发给浏览�
 
 ## 许可
 
-- `src/tools/keyin/model/`、`text/`、`sources/` 里移植自 keyin 的文件保留 MIT 声明（GitHubPoster 原作者与 keyin 两行版权），MIT 代码可以并入本仓库的 AGPL 项目。
+- `src/tools/keyin/model/`、`text/`、`sources/` 里的文件用 MIT 许可，保留 GitHubPoster 原作者 yihong 的版权声明（衍生自它的文件）。MIT 代码可以并入本仓库的 AGPL 项目。
 - 本工具新写的界面、worker、Pages Function 用 AGPL-3.0-or-later，和仓库其他代码一致。
 - Noto 字体未经修改，SIL Open Font License 1.1；`text/fonts/OFL.txt` 随站点发布，也随字体一起上传到 Wasabi。页面底部有许可说明和链接。

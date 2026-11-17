@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
-// 简化的 Unicode 双向算法（UBA），移植自 keyin/text/shape.py。
+// 简化的 Unicode 双向算法（UBA）。
 // JavaScript 没有 Bidi_Class 查询，这里用文字（Script）属性近似：
 // 从右往左的文字里的字母算 R，其余字母与间距组合符算 L，十进制数字算数字。
 

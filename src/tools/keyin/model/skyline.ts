@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2021 yihong (GitHubPoster, https://github.com/yihong0618/GitHubPoster)
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
-// Skyline 模型：一年的每日数据 → 可打印的 STL。移植自 keyin/model/skyline.py，
-// 设计源自 GitHubPoster 的 skyline（MIT）。
+// Skyline 模型：一年的每日数据 → 可打印的 STL。设计衍生自 GitHubPoster 的 skyline（MIT），
+// 网格改为直接构造，并保证是流形。
 
 import {
   BASE_HEIGHT,

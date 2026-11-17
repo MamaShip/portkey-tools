@@ -80,11 +80,11 @@ e2e/<toolId>/                 该工具的 Playwright 冒烟
 
 **刻印（`keyin`）**（详见 [`docs/keyin.md`](./docs/keyin.md)）
 
-- `src/tools/keyin/model/`、`text/`、`sources/` — 从 keyin（Python，MIT）移植的网格、文字排版、数据源解析（纯函数，单测主战场），保留 MIT 声明。
+- `src/tools/keyin/model/`、`text/`、`sources/` — 网格、文字排版、各平台数据解析（纯函数，单测主战场）。衍生自 GitHubPoster 的文件用 MIT 许可并保留原作者声明。
 - `src/tools/keyin/platforms/` — **每个平台一个文件**：说明（怎么拿数据、统计什么、隐私）+ 输入表单；`index.ts` 是登记表。加平台见 [`docs/keyin.md`](./docs/keyin.md)。
 - `src/tools/keyin/components/` — React island（`KeyinTool.tsx` 是主体）；`worker.ts` 在 Web Worker 里生成模型。
 - `functions/api/keyin/` — Pages Function，转发 GitHub、LeetCode 的公开日历（站点仅有的服务端代码）。
-- `scripts/keyin/stage-fonts.ts` — 下载并校验字体，准备上传 Wasabi。
+- `scripts/keyin/` — `build-font-catalog.ts` 生成字体清单，`stage-fonts.ts` 下载并校验字体、准备上传 Wasabi。
 
 **其他**
 

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2021 yihong (GitHubPoster, https://github.com/yihong0618/GitHubPoster)
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
 // ChatGPT 官方数据导出里的 conversations.json。导出文件里没有 token 数，
-// 所以统计你每天发出的消息数。移植自 keyin/sources/chatgpt.py。
+// 所以统计你每天发出的消息数。移植自 GitHubPoster 的 chatgpt_loader.py。
 
 import { addTo, localDay, type DailyValues } from "./daily";
 

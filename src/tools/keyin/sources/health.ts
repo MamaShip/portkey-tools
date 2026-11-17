@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2021 yihong (GitHubPoster, https://github.com/yihong0618/GitHubPoster)
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
 // Apple 健康的 export.xml 与 WakaTime 的导出文件。
 // Apple 健康参考 GitHubPoster 的 apple_health_loader.py：

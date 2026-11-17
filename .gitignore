@@ -39,3 +39,5 @@ iiif-tiler.jar
 
 # 刻印字体中转目录：pnpm keyin:stage-fonts 的产物，上对象存储，不进 Git
 keyin-fonts-dist/
+# 字体清单生成脚本的下载缓存（pnpm keyin:build-font-catalog）
+.font-cache/

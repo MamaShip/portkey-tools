@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
-// Claude Code 的 token 用量，读本地会话日志。移植自 keyin/sources/claude_code.py。
+// Claude Code 的 token 用量，读本地会话日志。
 // Claude Code 在 ~/.claude/projects 下为每个会话写一个 JSONL 文件，每条助手回复都带
 // API 的 usage。一次回复拆成多个内容块时，会以相同的 message id 和 request id
 // 记多次，所以要去重。全部在浏览器里处理，不上传。

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
-// 字体清单：哪个字体覆盖哪些字符、去哪下载。catalog.json 由 keyin 仓库的
-// tools/build_font_catalog.py 生成，按回退顺序排列：第一个覆盖某字符的字体就用它。
+// 字体清单：哪个字体覆盖哪些字符、去哪下载。catalog.json 由
+// scripts/keyin/build-font-catalog.ts 生成，按回退顺序排列：第一个覆盖某字符的字体就用它。
 
 import raw from "./catalog.json";
 

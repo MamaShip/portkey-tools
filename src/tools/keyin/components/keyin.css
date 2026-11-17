@@ -14,18 +14,20 @@
   background: var(--card-bg);
   box-shadow: var(--card-shadow);
 }
-.keyin-card[aria-disabled="true"] {
+/* 还没读到数据：内容变灰不可点，标题（含「i」说明）照常可用 */
+.keyin-card[aria-disabled="true"] > :not(.keyin-step) {
   opacity: 0.55;
   pointer-events: none;
 }
 .keyin-step {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.6rem;
   margin: 0 0 1rem;
   font-size: 1.05rem;
 }
-.keyin-step span {
+.keyin-step-num {
   display: grid;
   place-items: center;
   width: 1.6rem;
@@ -285,4 +287,86 @@
   align-items: center;
   gap: 0.6rem 1rem;
   margin-top: 1rem;
+}
+
+/* —— 标题旁的「i」说明 —— */
+.keyin-info-btn {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-left: -0.15rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  cursor: help;
+}
+.keyin-info-btn:hover,
+.keyin-info[data-open] .keyin-info-btn {
+  color: var(--accent-ink);
+  background: rgba(236, 122, 69, 0.1);
+}
+.keyin-info-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+/* 相对整个标题定位（.keyin-step 是 relative），宽度不超过卡片 */
+.keyin-info-pop {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: min(26rem, 100%);
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--card-border);
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.55;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0.15s;
+}
+.keyin-info:hover .keyin-info-pop,
+.keyin-info:focus-within .keyin-info-pop,
+.keyin-info[data-open] .keyin-info-pop {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .keyin-info-pop {
+    transition: none;
+  }
+}
+
+/* —— 说明里的示例 —— */
+.keyin-example {
+  margin: 0.5rem 0 0.6rem;
+}
+.keyin-example figcaption {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.keyin-example pre {
+  margin: 0.25rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  overflow-x: auto;
 }

@@ -28,7 +28,7 @@ export const githubIssue: Platform = {
     measures: "每天评论第一行的数字之和；也可以改成只数每天的评论条数。",
     privacy: { kind: "direct", host: "api.github.com" },
     tips: [
-      "不带 token 时，GitHub 限制每小时 60 次请求（每次读 100 条评论），一般够用。",
+      "公开仓库不填 token 也能读，一小时内最多能读约 6000 条评论，一般够用。",
       "第一行不是数字的评论按 0 计。",
     ],
   },

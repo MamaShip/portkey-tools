@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2021 yihong (GitHubPoster, https://github.com/yihong0618/GitHubPoster)
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
 // 浏览器能直接调用的平台接口（都允许跨域访问）：请求从用户的浏览器直接发往平台，
 // token 不经过本站。参考 GitHubPoster 的 from_github_issue / dota2 / neodb /

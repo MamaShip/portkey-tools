@@ -17,7 +17,7 @@ export const autosleep: Platform = {
     measures: "每天的睡眠时长（小时），取 CSV 里的「asleep / 睡眠时间」列。",
     privacy: { kind: "local" },
     tips: [
-      "CSV 里需要有 `ISO8601` 和 `asleep`（中文版是「睡眠时间」）这两列。",
+      "直接用 App 导出的文件就行，不用改。它需要有日期列（`ISO8601`）和睡眠时长列（`asleep`，中文版叫「睡眠时间」）。",
     ],
   },
   Form({ run }) {

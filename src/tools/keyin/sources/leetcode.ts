@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
 // LeetCode 公开个人主页上的提交日历（不需要登录）。GitHubPoster 原来用登录 Cookie
 // 翻提交记录；这里改用公开的 GraphQL 日历接口，只要用户名。LeetCode 不允许浏览器

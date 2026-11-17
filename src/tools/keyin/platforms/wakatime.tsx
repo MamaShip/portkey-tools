@@ -18,7 +18,7 @@ export const wakatime: Platform = {
     measures: "每天的编程时长（小时）。",
     privacy: { kind: "local" },
     tips: [
-      "WakaTime 的接口不允许网页直接调用，所以这里读导出文件，不需要 API key。",
+      "这里读的是导出文件，不需要填写 API key。",
       "免费账户在网站上只能看到最近的数据，但导出文件里有全部历史。",
     ],
   },

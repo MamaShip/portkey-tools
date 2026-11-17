@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2021 yihong (GitHubPoster, https://github.com/yihong0618/GitHubPoster)
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
 // Google Takeout 导出：YouTube 观看记录、Google Keep 笔记。
 // 移植自 GitHubPoster 的 youtube_loader.py、googlekeep_loader.py。

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
 // 按需下载字体：先试 Wasabi 镜像，再试 GitHub 与 jsDelivr；下载后校验 sha256，
 // 存进浏览器的 Cache Storage，下次直接用。Noto Sans 随站点一起发布，不走下载。

@@ -71,6 +71,12 @@ function GuideBox({ platform }: { platform: Platform }) {
           <li key={i}>{rich(s)}</li>
         ))}
       </ol>
+      {guide.examples?.map((ex) => (
+        <figure key={ex.title} className="keyin-example">
+          <figcaption>{ex.title}</figcaption>
+          <pre>{ex.text}</pre>
+        </figure>
+      ))}
       <p>
         <strong>统计：</strong>
         {rich(guide.measures)}

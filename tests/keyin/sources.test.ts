@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
 // 各数据源的解析，以及 GitHub 代理（Pages Function）的行为。
 import { describe, expect, it } from "vitest";

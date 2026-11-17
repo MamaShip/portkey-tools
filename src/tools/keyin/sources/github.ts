@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2021 yihong (GitHubPoster, https://github.com/yihong0618/GitHubPoster)
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
 // GitHub 贡献，来自公开的贡献日历（不需要 token）。github.com 不允许浏览器跨域读取，
 // 所以由本站的 Pages Function（functions/api/keyin/github.ts）代为请求并解析。

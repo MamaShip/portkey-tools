@@ -39,6 +39,8 @@ export interface Guide {
   /** 每根柱子代表什么 */
   measures: string;
   privacy: Privacy;
+  /** 照着就能做的例子，原样显示（保留换行） */
+  examples?: { title: string; text: string }[];
   tips?: string[];
 }
 

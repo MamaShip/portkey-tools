@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
 // 模型与文字：只用随站点发布的 Noto Sans（从本地文件读，不联网）。
 import { readFileSync } from "node:fs";
@@ -181,7 +181,7 @@ describe("完整模型", () => {
       {
         year: 2025,
         label: "GitHub",
-        userName: "Li Song",
+        userName: "Portkey",
         values,
         scale: "sqrt",
       },

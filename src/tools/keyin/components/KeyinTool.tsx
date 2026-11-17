@@ -8,6 +8,7 @@ import type { Scale, SkylineInput } from "../model/skyline";
 import { platformById, PLATFORMS } from "../platforms";
 import type { LoadedData } from "../platforms/types";
 import { PlatformPanel, PlatformPicker } from "./PlatformPanel";
+import InfoTip from "./InfoTip";
 import Preview from "./Preview";
 import { useBuilder } from "./useBuilder";
 import "./keyin.css";
@@ -86,7 +87,20 @@ export default function KeyinTool() {
     <div className="keyin">
       <section className="keyin-card">
         <h2 className="keyin-step">
-          <span>1</span>选择数据
+          <span className="keyin-step-num">1</span>
+          选择数据
+          <InfoTip label="隐私说明">
+            <strong>隐私</strong>
+            <span>你选的文件只在这个页面里读取和计算，不会上传。</span>
+            <span>
+              需要 token 的平台（NeoDB、Notion、Todoist
+              等）由你的浏览器直接请求平台，token 不经过本站，也不会保存。
+            </span>
+            <span>
+              GitHub 和 LeetCode 的公开日历由本站服务器代为读取，不需要登录。
+            </span>
+            <span>每个平台的说明里都写明了数据去向。</span>
+          </InfoTip>
         </h2>
         <PlatformPicker value={platformId} onChange={pickPlatform} />
         <PlatformPanel
@@ -109,7 +123,22 @@ export default function KeyinTool() {
 
       <section className="keyin-card" aria-disabled={!input}>
         <h2 className="keyin-step">
-          <span>2</span>调整文字与外观
+          <span className="keyin-step-num">2</span>
+          调整文字与外观
+          <InfoTip label="文字说明">
+            <strong>文字</strong>
+            <span>
+              几乎所有语言都能印：中日韩、阿拉伯文、印地文、泰文、emoji 等。
+            </span>
+            <span>
+              西文字体随页面加载；其他文字的字体第一次用到时才下载，之后存在浏览器里。中日韩字体约
+              18 MB，第一次会慢几秒。
+            </span>
+            <span>
+              「汉字写法」决定同一个汉字按简体、繁体、香港、日本还是韩国的字形印；选「自动」时按文字内容和浏览器语言判断。
+            </span>
+            <span>名字太长时会自动缩小，不会碰到右边的年份。</span>
+          </InfoTip>
         </h2>
         <div className="keyin-grid">
           {!data?.year && (
@@ -172,7 +201,20 @@ export default function KeyinTool() {
 
       <section className="keyin-card keyin-result">
         <h2 className="keyin-step">
-          <span>3</span>预览与下载
+          <span className="keyin-step-num">3</span>
+          预览与下载
+          <InfoTip label="打印说明">
+            <strong>打印</strong>
+            <span>
+              底座 150 × 30 mm、高 10 mm；每天一根 2.5 mm 见方的柱子，高 1–21
+              mm；文字凸起 0.8 mm。
+            </span>
+            <span>
+              模型是闭合的网格，可以直接导入 Bambu Studio、PrusaSlicer、Cura
+              等切片软件。
+            </span>
+            <span>文字笔画较细，建议用较小的层高（如 0.12 mm）打印。</span>
+          </InfoTip>
         </h2>
         <div className="keyin-stage">
           <Preview positions={build.kind === "done" ? build.positions : null} />

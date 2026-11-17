@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2026 Li Song (keyin)
+// Copyright (c) 2026 MamaShip
 //
 // 新增平台的解析与请求：文件格式、接口分页、LeetCode 转发。
 import { afterEach, describe, expect, it, vi } from "vitest";
