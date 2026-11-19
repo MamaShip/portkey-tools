@@ -11,7 +11,12 @@ node_modules/
 coverage/
 pnpm-lock.yaml
 tiles/
+keyin-fonts-dist/
+.font-cache/
 *.jpg
+
+# 刻印的字体清单：由 keyin 仓库的脚本生成，原样拷贝（压缩成一行）
+src/tools/keyin/text/catalog.json
 
 # 拼幅地图分幅原始导出（中转输入，不入库，见 .gitignore）
 /chengdu-*-left.json

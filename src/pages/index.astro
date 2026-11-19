@@ -1,7 +1,7 @@
 ---
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (C) 2026 MamaShip
-import BaseLayout from "../layouts/BaseLayout.astro";
+import BaseLayout from "../site/BaseLayout.astro";
 
 const REPO_URL = "https://github.com/MamaShip/portkey-tools";
 
@@ -26,6 +26,14 @@ const tools: Tool[] = [
     desc: "在现代地图上叠加经过锚点标定的成都历史老地图。可以切换不同时间节点，进行古今对照查看。",
     status: "live",
     paths: ["M9 4 3 7v13l6-3 6 3 6-3V4l-6 3-6-3z", "M9 4v13", "M15 7v13"],
+  },
+  {
+    href: "/keyin",
+    title: "刻印",
+    desc: "把一年的 GPT、Claude 用量等每日记录做成 skyline 3D 模型，在浏览器里生成、预览、下载。",
+    status: "live",
+    // 一排高低不同的柱子，立在底座上
+    paths: ["M3 20h18", "M5 20v-5", "M9 20V9", "M13 20v-8", "M17 20V5"],
   },
   {
     title: "更多工具",
