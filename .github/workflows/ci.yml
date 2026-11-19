@@ -87,5 +87,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec playwright install --with-deps chromium
+      # 不加 --with-deps：runner 镜像已自带 Chromium 需要的系统库，--with-deps 只会再用 apt
+      # 装几个字体包，而 Ubuntu 软件源偶尔 503 会让整个任务失败。冒烟只做 DOM 断言，不依赖字体。
+      - run: pnpm exec playwright install chromium
       - run: pnpm run test:e2e
