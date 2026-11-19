@@ -163,9 +163,7 @@ export default function SourcesModal({ open, onClose }: SourcesModalProps) {
         <h3 style={{ margin: "1.2rem 0 0.5rem", fontSize: "1rem" }}>
           反馈与贡献
         </h3>
-        <p style={{ marginTop: 0 }}>
-          欢迎到 GitHub 提交 issue：
-        </p>
+        <p style={{ marginTop: 0 }}>欢迎到 GitHub 提交 issue：</p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           {ISSUE_LINKS.map((l) => (
             <a
