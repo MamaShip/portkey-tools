@@ -75,8 +75,8 @@ jobs:
   # 不做像素 diff（WebGL 在无头 CI 里像素结果不稳定）。见 playwright.config.ts 与 e2e/。
   e2e:
     name: E2E 冒烟（Playwright）
-    # 固定 24.04：ubuntu-latest 已指向 26.04，而 Playwright 1.60 不支持在 26.04 上
-    # 安装浏览器（install --with-deps 直接失败）。以后升级 Playwright 并确认支持后再改回。
+    # 固定 24.04：ubuntu-latest 已指向 26.04，Playwright 1.60 还不支持 26.04。
+    # 以后升级 Playwright 并确认支持后再改回。
     runs-on: ubuntu-24.04
     needs: quality
     steps:
@@ -87,7 +87,8 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # 不加 --with-deps：runner 镜像已自带 Chromium 需要的系统库，--with-deps 只会再用 apt
-      # 装几个字体包，而 Ubuntu 软件源偶尔 503 会让整个任务失败。冒烟只做 DOM 断言，不依赖字体。
-      - run: pnpm exec playwright install chromium
+      # 用 runner 镜像自带的 Google Chrome，不跑 playwright install：不下载浏览器、不碰 apt，
+      # 不会因为外部软件源故障失败。冒烟只做 DOM 断言，对浏览器版本不敏感。
       - run: pnpm run test:e2e
+        env:
+          PLAYWRIGHT_CHANNEL: chrome

@@ -9,6 +9,9 @@ import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 4321;
 const BASE_URL = `http://localhost:${PORT}`;
+// 设了 PLAYWRIGHT_CHANNEL（如 chrome）就用本机已装的浏览器，不需要 playwright install。
+// CI 用 runner 自带的 Chrome；本地不设时用 Playwright 自带的 Chromium。
+const CHANNEL = process.env.PLAYWRIGHT_CHANNEL || undefined;
 
 export default defineConfig({
   testDir: "e2e",
@@ -21,7 +24,12 @@ export default defineConfig({
     baseURL: BASE_URL,
     trace: "on-first-retry",
   },
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"], channel: CHANNEL },
+    },
+  ],
   webServer: {
     command: `pnpm build && pnpm preview --port ${PORT}`,
     url: `${BASE_URL}/cd-old-map`,
