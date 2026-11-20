@@ -9,7 +9,7 @@ const REPO_URL = "https://github.com/MamaShip/portkey-tools";
 // status: "live" 可点进工具页；"cta" 行动卡（虚线样式但可点击，跳外链，如提需求）；
 //         "soon" 占位卡（暗示站点持续生长，不可点击）。
 // external: true → 用新标签页打开（外部链接，如 GitHub）。
-// icon: 内联 SVG 的 <path d> 列表，统一在 24×24 视框、currentColor 描边渲染。
+// 图标默认在 24×24 视框内描边，实心标志可指定自己的视框。
 type Tool = {
   href?: string;
   external?: boolean;
@@ -17,6 +17,8 @@ type Tool = {
   desc: string;
   status: "live" | "cta" | "soon";
   paths: string[];
+  viewBox?: string;
+  filled?: boolean;
 };
 
 const tools: Tool[] = [
@@ -34,6 +36,16 @@ const tools: Tool[] = [
     status: "live",
     // 一排高低不同的柱子，立在底座上
     paths: ["M3 20h18", "M5 20v-5", "M9 20V9", "M13 20v-8", "M17 20V5"],
+  },
+  {
+    href: "https://ob.portkey.click/",
+    external: true,
+    title: "折光观察者",
+    desc: "提交微信公众号文章链接，即可备份文章。如果原文被删除，你会收到邮件提醒。",
+    status: "live",
+    viewBox: "0 0 32 32",
+    filled: true,
+    paths: ["M1 9L13 13.5L14.5 17L10 22Z M31 9L19 13.5L17.5 17L22 22Z"],
   },
   {
     title: "更多工具",
@@ -81,7 +93,7 @@ const tools: Tool[] = [
           const icon = (
             <svg
               class="card-icon"
-              viewBox="0 0 24 24"
+              viewBox={t.viewBox ?? "0 0 24 24"}
               width="26"
               height="26"
               aria-hidden="true"
@@ -89,8 +101,8 @@ const tools: Tool[] = [
               {t.paths.map((d) => (
                 <path
                   d={d}
-                  fill="none"
-                  stroke="currentColor"
+                  fill={t.filled ? "currentColor" : "none"}
+                  stroke={t.filled ? "none" : "currentColor"}
                   stroke-width="1.8"
                   stroke-linecap="round"
                   stroke-linejoin="round"
